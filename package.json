@@ -1,0 +1,53 @@
+{
+	"name": "report.w0s.jp",
+	"version": "1.0.0",
+	"description": "report.w0s.jp",
+	"homepage": "https://github.com/SaekiTominaga/report.w0s.jp#readme",
+	"bugs": {
+		"url": "https://github.com/SaekiTominaga/report.w0s.jp/issues"
+	},
+	"license": "MIT",
+	"author": "Saeki Tominaga",
+	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/SaekiTominaga/report.w0s.jp.git"
+	},
+	"scripts": {
+		"build": "tsc",
+		"build:watch": "tsc -w",
+		"config:validate": "ajv --spec=draft7 -s node/configure/schema/Report.json -d node/configure/Report.json",
+		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type",
+		"app:dev": "nodemon node/dist/app.js"
+	},
+	"dependencies": {
+		"@log4js-node/smtp": "^1.1.0",
+		"cors": "^2.8.5",
+		"ejs": "^3.1.6",
+		"express": "^4.17.1",
+		"log4js": "^6.3.0",
+		"nodemailer": "^6.5.0",
+		"sqlite": "^4.0.21",
+		"sqlite3": "^5.0.2"
+	},
+	"devDependencies": {
+		"@types/cors": "^2.8.10",
+		"@types/ejs": "^3.0.6",
+		"@types/express": "^4.17.11",
+		"@types/nodemailer": "^6.4.1",
+		"@typescript-eslint/eslint-plugin": "^4.22.0",
+		"@typescript-eslint/parser": "^4.22.0",
+		"ajv-cli": "^5.0.0",
+		"eslint": "^7.24.0",
+		"eslint-config-prettier": "^8.2.0",
+		"eslint-plugin-jsdoc": "^32.3.0",
+		"json-schema-to-typescript": "^10.1.4",
+		"nodemon": "^2.0.7",
+		"prettier": "^2.2.1",
+		"stylelint": "^13.12.0",
+		"stylelint-config-prettier": "^8.0.2",
+		"stylelint-config-standard": "^21.0.0",
+		"stylelint-prettier": "^1.2.0",
+		"typescript": "^4.2.4"
+	}
+}

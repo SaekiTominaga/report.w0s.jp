@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>report.w0s.jp</title>
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<style>
+			:root {
+				--anchor-hover-color: #d00;
+			}
+
+			:focus {
+				outline: 1px solid #4d90fe;
+			}
+
+			:any-link:is(:focus, :hover) {
+				color: var(--anchor-hover-color);
+			}
+
+			body {
+				margin: auto;
+				padding: 0 2vw;
+				box-sizing: border-box;
+				width: min(100vw, 1280px);
+			}
+
+			.link a {
+				--bullet-size: 0.75em;
+				--bullet-color: #0bb;
+
+				outline-offset: 0.1em;
+			}
+
+			.link a::before {
+				margin-right: 0.5em;
+				content: '';
+				display: inline-block;
+				clip-path: polygon(0 0, 0 100%, 100% 50%);
+				width: calc(var(--bullet-size) * 0.6);
+				height: var(--bullet-size);
+				background: var(--bullet-color);
+			}
+
+			.link a:is(:focus, :hover)::before {
+				--bullet-color: var(--anchor-hover-color);
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>report.w0s.jp</h1>
+		</header>
+
+		<main>
+			<p class="link"><a href="https://github.com/SaekiTominaga/report.w0s.jp">Source Code (GitHub)</a></p>
+		</main>
+	</body>
+</html>
