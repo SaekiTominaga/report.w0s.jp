@@ -40,7 +40,6 @@ app.use(Express.json());
 app.use(
 	Express.static(config.static.root, {
 		extensions: config.static.options.extensions,
-		immutable: true,
 		index: config.static.options.index,
 		maxAge: config.static.options.max_age,
 	})
