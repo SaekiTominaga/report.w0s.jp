@@ -14,11 +14,11 @@
 		"url": "git+https://github.com/SaekiTominaga/report.w0s.jp.git"
 	},
 	"scripts": {
+		"app:dev": "nodemon --inspect node/dist/app.js",
 		"build": "tsc",
 		"build:watch": "tsc -w",
 		"config:validate": "ajv --spec=draft7 -s node/configure/schema/Report.json -d node/configure/Report.json",
-		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type",
-		"app:dev": "nodemon node/dist/app.js"
+		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type"
 	},
 	"dependencies": {
 		"@log4js-node/smtp": "^1.1.0",
