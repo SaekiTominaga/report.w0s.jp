@@ -3,7 +3,7 @@ import ControllerInterface from '../ControllerInterface.js';
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import { ReportW0SJp as Configure } from '../../configure/type/Report';
+import { ReportW0SJp as Configure } from '../../configure/type/report';
 import { Request, Response } from 'express';
 
 /**

@@ -17,7 +17,7 @@
 		"app:dev": "nodemon --inspect node/dist/app.js",
 		"build": "tsc",
 		"build:watch": "tsc -w",
-		"config:validate": "ajv --spec=draft7 -s node/configure/schema/Report.json -d node/configure/Report.json",
+		"config:validate": "ajv --spec=draft7 -s node/configure/schema/report.json -d node/configure/report.json",
 		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type"
 	},
 	"dependencies": {
