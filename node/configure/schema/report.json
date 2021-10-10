@@ -3,13 +3,45 @@
 	"$id": "https://schema.w0s.jp/report.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "static", "response", "views", "errorpage", "logger", "mail", "js", "referrer"],
+	"required": ["port", "response", "static", "views", "errorpage", "logger", "mail", "js", "referrer"],
 	"properties": {
 		"port": {
 			"type": "integer",
 			"minimum": 1,
 			"maximum": 65535,
 			"title": "HTTP サーバーのポート番号"
+		},
+		"response": {
+			"type": "object",
+			"title": "レスポンス",
+			"required": ["mime_extension", "mime_path", "header"],
+			"properties": {
+				"mime_extension": {
+					"type": "object",
+					"title": "MIME と拡張子の紐付け"
+				},
+				"mime_path": {
+					"type": "object",
+					"title": "MIME とファイルパスの紐付け"
+				},
+				"header": {
+					"type": "object",
+					"title": "レスポンスヘッダー",
+					"required": ["hsts", "csp"],
+					"properties": {
+						"hsts": {
+							"type": "string",
+							"title": "Strict-Transport-Security"
+						},
+						"csp": {
+							"type": "string",
+							"title": "Content-Security-Policy (HTML 以外)"
+						}
+					},
+					"additionalProperties": false
+				}
+			},
+			"additionalProperties": false
 		},
 		"static": {
 			"type": "object",
@@ -81,34 +113,6 @@
 							"type": "object",
 							"title": "set_headers",
 							"description": "Function for setting HTTP headers to serve with the file."
-						}
-					},
-					"additionalProperties": false
-				}
-			},
-			"additionalProperties": false
-		},
-		"response": {
-			"type": "object",
-			"title": "レスポンス",
-			"required": ["mime", "header"],
-			"properties": {
-				"mime": {
-					"type": "object",
-					"title": "MIME と拡張子の紐付け"
-				},
-				"header": {
-					"type": "object",
-					"title": "レスポンスヘッダー",
-					"required": ["hsts", "csp"],
-					"properties": {
-						"hsts": {
-							"type": "string",
-							"title": "Strict-Transport-Security"
-						},
-						"csp": {
-							"type": "string",
-							"title": "Content-Security-Policy (HTML 以外)"
 						}
 					},
 					"additionalProperties": false

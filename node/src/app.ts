@@ -16,7 +16,7 @@ Log4js.configure(config.logger.path);
 const logger = Log4js.getLogger();
 
 /* Express 設定 */
-Express.static.mime.define(<TypeMap>config.response.mime); // 静的ファイルの MIME
+Express.static.mime.define(<TypeMap>config.response.mime_extension); // 静的ファイルの MIME
 
 const app = Express();
 
@@ -24,7 +24,9 @@ app.set('x-powered-by', false);
 app.set('trust proxy', true);
 app.set('views', config.views);
 app.set('view engine', 'ejs');
-app.use((_req, res, next) => {
+app.use((req, res, next) => {
+	const requestUrl = req.url;
+
 	/* HSTS */
 	res.setHeader('Strict-Transport-Security', config.response.header.hsts);
 
@@ -33,6 +35,12 @@ app.use((_req, res, next) => {
 
 	/* MIME スニッフィング抑止 */
 	res.setHeader('X-Content-Type-Options', 'nosniff');
+
+	/* 特殊なファイルパスの MIME */
+	const mimeOfPath = Object.entries(<{ [key: string]: string[] }>config.response.mime_path).find(([, paths]) => paths.includes(requestUrl))?.[0];
+	if (mimeOfPath !== undefined) {
+		res.setHeader('Content-Type', mimeOfPath);
+	}
 
 	next();
 });

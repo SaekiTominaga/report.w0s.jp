@@ -6,7 +6,9 @@
  */
 
 export type HTTP = number;
-export type NoName1 = string;
+export type StrictTransportSecurity = string;
+export type ContentSecurityPolicyHTML = string;
+export type NoName3 = string;
 /**
  * Determines how dotfiles (files or directories that begin with a dot “.”) are treated.
  */
@@ -43,8 +45,6 @@ export type MaxAge = string;
  * Redirect to trailing “/” when the pathname is a directory.
  */
 export type Redirect = boolean;
-export type StrictTransportSecurity = string;
-export type ContentSecurityPolicyHTML = string;
 export type NoName5 = string;
 export type FilepathFor403Forbidden = string;
 export type FilepathFor404NotFound = string;
@@ -58,8 +58,8 @@ export type View1 = string;
 
 export interface ReportW0SJp {
   port: HTTP;
-  static: NoName;
-  response: NoName3;
+  response: NoName;
+  static: NoName2;
   views: NoName5;
   errorpage: NoName6;
   logger: Logger;
@@ -68,13 +68,28 @@ export interface ReportW0SJp {
   referrer: NoName11;
 }
 export interface NoName {
-  root: NoName1;
-  options: NoName2;
+  mime_extension: MIME;
+  mime_path: MIME1;
+  header: NoName1;
+}
+export interface MIME {
+  [k: string]: unknown;
+}
+export interface MIME1 {
+  [k: string]: unknown;
+}
+export interface NoName1 {
+  hsts: StrictTransportSecurity;
+  csp: ContentSecurityPolicyHTML;
+}
+export interface NoName2 {
+  root: NoName3;
+  options: NoName4;
 }
 /**
  * https://expressjs.com/ja/4x/api.html#express.static
  */
-export interface NoName2 {
+export interface NoName4 {
   dotfiles?: Dotfiles;
   etag?: Etag;
   extensions?: Extensions;
@@ -91,17 +106,6 @@ export interface NoName2 {
  */
 export interface SetHeaders {
   [k: string]: unknown;
-}
-export interface NoName3 {
-  mime: MIME;
-  header: NoName4;
-}
-export interface MIME {
-  [k: string]: unknown;
-}
-export interface NoName4 {
-  hsts: StrictTransportSecurity;
-  csp: ContentSecurityPolicyHTML;
 }
 export interface NoName6 {
   path_403: FilepathFor403Forbidden;
