@@ -15,9 +15,6 @@ const config = <Configure>JSON.parse(fs.readFileSync('node/configure/report.json
 Log4js.configure(config.logger.path);
 const logger = Log4js.getLogger();
 
-/* Express 設定 */
-Express.static.mime.define(<TypeMap>config.response.mime_extension); // 静的ファイルの MIME
-
 const app = Express();
 
 app.set('x-powered-by', false);
@@ -26,6 +23,41 @@ app.set('views', config.views);
 app.set('view engine', 'ejs');
 app.use((req, res, next) => {
 	const requestUrl = req.url;
+
+	let requestFilePath: string | undefined; // 実ファイルパス
+	if (requestUrl.endsWith('/')) {
+		/* ディレクトリトップ（e.g. /foo/ ） */
+		const fileName = config.static.indexes?.find((name) => fs.existsSync(`${config.static.root}/${requestUrl}${name}`));
+		if (fileName !== undefined) {
+			requestFilePath = `${requestUrl}${fileName}`;
+		}
+	} else if (path.extname(requestUrl) === '') {
+		/* 拡張子のない URL（e.g. /foo ） */
+		const extension = config.static.extensions?.find((ext) => fs.existsSync(`${config.static.root}/${requestUrl}.${ext}`));
+		if (extension !== undefined) {
+			requestFilePath = `${requestUrl}.${extension}`;
+		}
+	} else {
+		/* 拡張子のある URL（e.g. /foo.txt ） */
+		requestFilePath = requestUrl;
+	}
+
+	/* Content-Type */
+	const mimeOfPath = Object.entries(<{ [key: string]: string[] }>config.static.headers.mime.path).find(
+		([, paths]) => requestFilePath !== undefined && paths.includes(requestFilePath)
+	)?.[0]; // ファイルパスから決定される MIME
+	const mimeOfExtension = Object.entries(<TypeMap>config.static.headers.mime.extension).find(
+		([, extensions]) => requestFilePath !== undefined && extensions.includes(path.extname(requestFilePath).substring(1))
+	)?.[0]; // 拡張子から決定される MIME
+	const mime = mimeOfPath ?? mimeOfExtension;
+
+	if (mime === undefined) {
+		logger.info('MIME が未定義のファイル', requestUrl);
+	} else {
+		logger.debug('Content-Type', `${requestUrl} - ${mime}`);
+
+		res.setHeader('Content-Type', mime);
+	}
 
 	/* HSTS */
 	res.setHeader('Strict-Transport-Security', config.response.header.hsts);
@@ -36,20 +68,29 @@ app.use((req, res, next) => {
 	/* MIME スニッフィング抑止 */
 	res.setHeader('X-Content-Type-Options', 'nosniff');
 
-	/* 特殊なファイルパスの MIME */
-	const mimeOfPath = Object.entries(<{ [key: string]: string[] }>config.response.mime_path).find(([, paths]) => paths.includes(requestUrl))?.[0];
-	if (mimeOfPath !== undefined) {
-		res.setHeader('Content-Type', mimeOfPath);
-	}
-
 	next();
 });
 app.use(Express.json());
 app.use(
 	Express.static(config.static.root, {
-		extensions: config.static.options.extensions,
-		index: config.static.options.index,
-		maxAge: config.static.options.max_age,
+		extensions: config.static.extensions,
+		index: config.static.indexes,
+		setHeaders: (res, localPath) => {
+			const requestUrl = res.req.url;
+			const extension = path.extname(localPath); // 拡張子
+
+			/* Cache */
+			if (config.static.headers.cache_control !== undefined) {
+				const cacheControlValue =
+					config.static.headers.cache_control.path.find((path) => path.paths.includes(requestUrl))?.value ??
+					config.static.headers.cache_control.extension.find((ext) => ext.extensions.includes(extension))?.value ??
+					config.static.headers.cache_control.default;
+
+				logger.debug('Cache-Control', `${requestUrl} - ${cacheControlValue}`);
+
+				res.setHeader('Cache-Control', cacheControlValue);
+			}
+		},
 	})
 );
 
