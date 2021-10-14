@@ -6,7 +6,6 @@ import Log4js from 'log4js';
 import path from 'path';
 import ReferrerController from './controller/ReferrerController.js';
 import { ReportW0SJp as Configure } from '../configure/type/report';
-import { TypeMap } from 'mime';
 
 /* 設定ファイル読み込み */
 const config = <Configure>JSON.parse(fs.readFileSync('node/configure/report.json', 'utf8'));
@@ -43,10 +42,8 @@ app.use((req, res, next) => {
 	}
 
 	/* Content-Type */
-	const mimeOfPath = Object.entries(<{ [key: string]: string[] }>config.static.headers.mime.path).find(
-		([, paths]) => requestFilePath !== undefined && paths.includes(requestFilePath)
-	)?.[0]; // ファイルパスから決定される MIME
-	const mimeOfExtension = Object.entries(<TypeMap>config.static.headers.mime.extension).find(
+	const mimeOfPath = Object.entries(config.static.headers.mime.path).find(([, paths]) => requestFilePath !== undefined && paths.includes(requestFilePath))?.[0]; // ファイルパスから決定される MIME
+	const mimeOfExtension = Object.entries(config.static.headers.mime.extension).find(
 		([, extensions]) => requestFilePath !== undefined && extensions.includes(path.extname(requestFilePath).substring(1))
 	)?.[0]; // 拡張子から決定される MIME
 	const mime = mimeOfPath ?? mimeOfExtension;

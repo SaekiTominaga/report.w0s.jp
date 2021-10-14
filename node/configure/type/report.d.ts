@@ -11,40 +11,42 @@ export type ContentSecurityPolicyHTML = string;
 export type NoName3 = string;
 export type NoName4 = string[];
 export type NoName5 = string[];
-export type NoName8 = string;
-export type NoName10 = string[];
-export type NoName11 = string;
-export type NoName9 = {
-  paths: NoName10;
-  value: NoName11;
+export type NoName7 = string[];
+export type NoName8 = string[];
+export type NoName10 = string;
+export type NoName12 = string[];
+export type NoName13 = string;
+export type NoName11 = {
+  paths: NoName12;
+  value: NoName13;
 }[];
-export type NoName13 = string[];
-export type NoName14 = string;
-export type NoName12 = {
-  extensions: NoName13;
-  value: NoName14;
+export type NoName15 = string[];
+export type NoName16 = string;
+export type NoName14 = {
+  extensions: NoName15;
+  value: NoName16;
 }[];
-export type NoName15 = string;
+export type NoName17 = string;
 export type FilepathFor403Forbidden = string;
 export type FilepathFor404NotFound = string;
-export type NoName17 = string;
-export type NoName18 = string[];
-export type NoName20 = string;
+export type NoName19 = string;
+export type NoName20 = string[];
+export type NoName22 = string;
 export type View = string;
-export type NoName22 = string[];
-export type NoName24 = string;
+export type NoName24 = string[];
+export type NoName26 = string;
 export type View1 = string;
 
 export interface ReportW0SJp {
   port: HTTP;
   response: NoName;
   static: NoName2;
-  views: NoName15;
-  errorpage: NoName16;
+  views: NoName17;
+  errorpage: NoName18;
   logger: Logger;
   mail: EMail;
   js: JavaScript;
-  referrer: NoName21;
+  referrer: NoName23;
 }
 export interface NoName {
   header: NoName1;
@@ -61,29 +63,29 @@ export interface NoName2 {
 }
 export interface NoName6 {
   mime: MIME;
-  cache_control?: NoName7;
+  cache_control?: NoName9;
 }
 export interface MIME {
   path: MIME1;
   extension: MIME2;
 }
 export interface MIME1 {
-  [k: string]: unknown;
+  [k: string]: NoName7;
 }
 export interface MIME2 {
-  [k: string]: unknown;
+  [k: string]: NoName8;
 }
-export interface NoName7 {
-  default: NoName8;
-  path: NoName9;
-  extension: NoName12;
+export interface NoName9 {
+  default: NoName10;
+  path: NoName11;
+  extension: NoName14;
 }
-export interface NoName16 {
+export interface NoName18 {
   path_403: FilepathFor403Forbidden;
   path_404: FilepathFor404NotFound;
 }
 export interface Logger {
-  path: NoName17;
+  path: NoName19;
 }
 export interface EMail {
   smtp: string;
@@ -94,18 +96,18 @@ export interface EMail {
   to: string;
 }
 export interface JavaScript {
-  allow_origins: NoName18;
-  mail: NoName19;
-}
-export interface NoName19 {
-  title: NoName20;
-  view: View;
+  allow_origins: NoName20;
+  mail: NoName21;
 }
 export interface NoName21 {
-  allow_origins: NoName22;
-  mail: NoName23;
+  title: NoName22;
+  view: View;
 }
 export interface NoName23 {
-  title: NoName24;
+  allow_origins: NoName24;
+  mail: NoName25;
+}
+export interface NoName25 {
+  title: NoName26;
   view: View1;
 }
