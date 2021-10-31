@@ -3,7 +3,7 @@
 	"$id": "https://report.w0s.jp/common.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "response", "static", "views", "errorpage", "logger", "mail"],
+	"required": ["port", "response", "static", "cors", "views", "errorpage", "logger", "mail"],
 	"properties": {
 		"port": {
 			"type": "integer",
@@ -151,6 +151,21 @@
 						}
 					},
 					"additionalProperties": false
+				}
+			},
+			"additionalProperties": false
+		},
+		"cors": {
+			"type": "object",
+			"title": "CORS",
+			"required": ["allow_origins"],
+			"properties": {
+				"allow_origins": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"title": "許可するオリジン"
 				}
 			},
 			"additionalProperties": false

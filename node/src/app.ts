@@ -73,11 +73,11 @@ app.use(
  * JavaScript エラー
  */
 const corsJsPreflightedRequestCallback = cors({
-	origin: config.js.allow_origins,
+	origin: config.cors.allow_origins,
 	methods: ['POST'],
 });
 const corsJsCallback = cors({
-	origin: config.js.allow_origins,
+	origin: config.cors.allow_origins,
 });
 app.options(['/js', '/js-sample'], corsJsPreflightedRequestCallback);
 app.post('/js', corsJsCallback, async (req, res, next) => {
@@ -95,11 +95,11 @@ app.post('/js-sample', corsJsCallback, async (_req, res) => {
  * リファラーエラー
  */
 const corsReferrerPreflightedRequestCallback = cors({
-	origin: config.referrer.allow_origins,
+	origin: config.cors.allow_origins,
 	methods: ['POST'],
 });
 const corsReferrerCallback = cors({
-	origin: config.referrer.allow_origins,
+	origin: config.cors.allow_origins,
 });
 app.options(['/referrer', '/referrer-sample'], corsReferrerPreflightedRequestCallback);
 app.post('/referrer', corsReferrerCallback, async (req, res, next) => {

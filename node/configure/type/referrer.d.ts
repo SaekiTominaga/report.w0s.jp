@@ -5,15 +5,13 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type NoName1 = string[];
-export type NoName3 = string;
+export type NoName2 = string;
 export type View = string;
 
 export interface NoName {
-  allow_origins: NoName1;
-  mail: NoName2;
+  mail: NoName1;
 }
-export interface NoName2 {
-  title: NoName3;
+export interface NoName1 {
+  title: NoName2;
   view: View;
 }
