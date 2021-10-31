@@ -15,8 +15,8 @@
 	},
 	"scripts": {
 		"app:dev": "nodemon --inspect node/dist/app.js",
-		"build": "tsc",
-		"build:watch": "tsc -w",
+		"build": "tsc --project node/tsconfig.json",
+		"build:watch": "tsc --project node/tsconfig.json -w",
 		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type",
 		"config:validate:common": "ajv --spec=draft7 -s node/configure/schema/common.json -d node/configure/common.json",
 		"config:validate:js": "ajv --spec=draft7 -s node/configure/schema/js.json -d node/configure/js.json",

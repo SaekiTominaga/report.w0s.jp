@@ -2,8 +2,7 @@
 	"compilerOptions": {
 		/* Project Options */
 		"incremental": true,
-		"module": "ESNext",
-		"outDir": "node/dist/",
+		"module": "ES2020",
 		"target": "ESNext",
 
 		/* Strict Checks */
@@ -11,7 +10,6 @@
 		"alwaysStrict": false,
 
 		/* Module Resolution */
-		"esModuleInterop": true,
 		"moduleResolution": "node",
 
 		/* Linter Checks */
@@ -24,6 +22,5 @@
 		"allowUnreachableCode": false,
 		"forceConsistentCasingInFileNames": true,
 		"newLine": "LF"
-	},
-	"include": ["node/src/**/*.ts"]
+	}
 }
