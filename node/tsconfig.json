@@ -1,6 +1,6 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["src/**/*.ts"],
+	"include": ["@types/*.d.ts", "src/**/*.ts"],
 	"compilerOptions": {
 		/* Project Options */
 		"outDir": "dist",
