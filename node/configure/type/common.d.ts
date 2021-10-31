@@ -26,27 +26,21 @@ export type NoName14 = {
   extensions: NoName15;
   value: NoName16;
 }[];
-export type NoName17 = string;
+export type NoName17 = string[];
+export type NoName18 = string;
 export type FilepathFor403Forbidden = string;
 export type FilepathFor404NotFound = string;
-export type NoName19 = string;
-export type NoName20 = string[];
-export type NoName22 = string;
-export type View = string;
-export type NoName24 = string[];
-export type NoName26 = string;
-export type View1 = string;
+export type NoName20 = string;
 
 export interface ReportW0SJp {
   port: HTTP;
   response: NoName;
   static: NoName2;
-  views: NoName17;
-  errorpage: NoName18;
+  cors: CORS;
+  views: NoName18;
+  errorpage: NoName19;
   logger: Logger;
   mail: EMail;
-  js: JavaScript;
-  referrer: NoName23;
 }
 export interface NoName {
   header: NoName1;
@@ -80,12 +74,15 @@ export interface NoName9 {
   path: NoName11;
   extension: NoName14;
 }
-export interface NoName18 {
+export interface CORS {
+  allow_origins: NoName17;
+}
+export interface NoName19 {
   path_403: FilepathFor403Forbidden;
   path_404: FilepathFor404NotFound;
 }
 export interface Logger {
-  path: NoName19;
+  path: NoName20;
 }
 export interface EMail {
   smtp: string;
@@ -94,20 +91,4 @@ export interface EMail {
   port: number;
   from: string;
   to: string;
-}
-export interface JavaScript {
-  allow_origins: NoName20;
-  mail: NoName21;
-}
-export interface NoName21 {
-  title: NoName22;
-  view: View;
-}
-export interface NoName23 {
-  allow_origins: NoName24;
-  mail: NoName25;
-}
-export interface NoName25 {
-  title: NoName26;
-  view: View1;
 }

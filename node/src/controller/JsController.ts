@@ -1,21 +1,28 @@
 import Controller from '../Controller.js';
 import ControllerInterface from '../ControllerInterface.js';
 import ejs from 'ejs';
+import fs from 'fs';
 import nodemailer from 'nodemailer';
 import ReportJsDao from '../dao/ReportJsDao.js';
-import { ReportW0SJp as Configure } from '../../configure/type/report';
+import { JavaScript as Configure } from '../../configure/type/js.js';
+import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
 import { Request, Response } from 'express';
 
 /**
  * JavaScript エラー
  */
 export default class JsController extends Controller implements ControllerInterface {
+	#configCommon: ConfigureCommon;
 	#config: Configure;
 
-	constructor(config: Configure) {
+	/**
+	 * @param {ConfigureCommon} configCommon - 共通設定
+	 */
+	constructor(configCommon: ConfigureCommon) {
 		super();
 
-		this.#config = config;
+		this.#configCommon = configCommon;
+		this.#config = <Configure>JSON.parse(fs.readFileSync('node/configure/js.json', 'utf8'));
 	}
 
 	/**
@@ -73,7 +80,7 @@ export default class JsController extends Controller implements ControllerInterf
 	 * @param {number} colno - 発生箇所の列数
 	 */
 	private async notice(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
-		const html = await ejs.renderFile(`${this.#config.views}/${this.#config.js.mail.view}.ejs`, {
+		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {
 			location: location,
 			message: message,
 			filename: filename,
@@ -84,18 +91,18 @@ export default class JsController extends Controller implements ControllerInterf
 		});
 
 		const transporter = nodemailer.createTransport({
-			port: this.#config.mail.port,
-			host: this.#config.mail.smtp,
+			port: this.#configCommon.mail.port,
+			host: this.#configCommon.mail.smtp,
 			auth: {
-				user: this.#config.mail.user,
-				pass: this.#config.mail.password,
+				user: this.#configCommon.mail.user,
+				pass: this.#configCommon.mail.password,
 			},
 		});
 
 		await transporter.sendMail({
-			from: this.#config.mail.from,
-			to: this.#config.mail.to,
-			subject: this.#config.js.mail.title,
+			from: this.#configCommon.mail.from,
+			to: this.#configCommon.mail.to,
+			subject: this.#config.mail.title,
 			html: html,
 		});
 	}

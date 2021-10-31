@@ -5,10 +5,10 @@ import JsController from './controller/JsController.js';
 import Log4js from 'log4js';
 import path from 'path';
 import ReferrerController from './controller/ReferrerController.js';
-import { ReportW0SJp as Configure } from '../configure/type/report';
+import { ReportW0SJp as Configure } from '../configure/type/common.js';
 
 /* 設定ファイル読み込み */
-const config = <Configure>JSON.parse(fs.readFileSync('node/configure/report.json', 'utf8'));
+const config = <Configure>JSON.parse(fs.readFileSync('node/configure/common.json', 'utf8'));
 
 /* Logger 設定 */
 Log4js.configure(config.logger.path);
@@ -73,11 +73,11 @@ app.use(
  * JavaScript エラー
  */
 const corsJsPreflightedRequestCallback = cors({
-	origin: config.js.allow_origins,
+	origin: config.cors.allow_origins,
 	methods: ['POST'],
 });
 const corsJsCallback = cors({
-	origin: config.js.allow_origins,
+	origin: config.cors.allow_origins,
 });
 app.options(['/js', '/js-sample'], corsJsPreflightedRequestCallback);
 app.post('/js', corsJsCallback, async (req, res, next) => {
@@ -95,11 +95,11 @@ app.post('/js-sample', corsJsCallback, async (_req, res) => {
  * リファラーエラー
  */
 const corsReferrerPreflightedRequestCallback = cors({
-	origin: config.referrer.allow_origins,
+	origin: config.cors.allow_origins,
 	methods: ['POST'],
 });
 const corsReferrerCallback = cors({
-	origin: config.referrer.allow_origins,
+	origin: config.cors.allow_origins,
 });
 app.options(['/referrer', '/referrer-sample'], corsReferrerPreflightedRequestCallback);
 app.post('/referrer', corsReferrerCallback, async (req, res, next) => {
