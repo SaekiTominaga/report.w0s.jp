@@ -1,21 +1,29 @@
 import Controller from '../Controller.js';
 import ControllerInterface from '../ControllerInterface.js';
 import ejs from 'ejs';
+import fs from 'fs';
 import nodemailer from 'nodemailer';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import { ReportW0SJp as Configure } from '../../configure/type/report';
+import { NoName as Configure } from '../../configure/type/referrer.js';
+import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
 import { Request, Response } from 'express';
 
 /**
  * リファラーエラー
  */
 export default class ReferrerController extends Controller implements ControllerInterface {
+	#configCommon: ConfigureCommon;
 	#config: Configure;
 
-	constructor(config: Configure) {
+	/**
+	 * @param {ConfigureCommon} configCommon - 共通設定
+	 */
+	constructor(configCommon: ConfigureCommon) {
 		super();
 
-		this.#config = config;
+
+		this.#configCommon = configCommon;
+		this.#config = <Configure>JSON.parse(fs.readFileSync('node/configure/referrer.json', 'utf8'));
 	}
 
 	/**
@@ -63,7 +71,7 @@ export default class ReferrerController extends Controller implements Controller
 	 * @param {string} referrer - リファラー
 	 */
 	private async notice(req: Request, location: string, referrer: string): Promise<void> {
-		const html = await ejs.renderFile(`${this.#config.views}/${this.#config.referrer.mail.view}.ejs`, {
+		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {
 			location: location,
 			referrer: referrer,
 			ua: req.get('User-Agent') ?? null,
@@ -71,18 +79,18 @@ export default class ReferrerController extends Controller implements Controller
 		});
 
 		const transporter = nodemailer.createTransport({
-			port: this.#config.mail.port,
-			host: this.#config.mail.smtp,
+			port: this.#configCommon.mail.port,
+			host: this.#configCommon.mail.smtp,
 			auth: {
-				user: this.#config.mail.user,
-				pass: this.#config.mail.password,
+				user: this.#configCommon.mail.user,
+				pass: this.#configCommon.mail.password,
 			},
 		});
 
 		await transporter.sendMail({
-			from: this.#config.mail.from,
-			to: this.#config.mail.to,
-			subject: this.#config.referrer.mail.title,
+			from: this.#configCommon.mail.from,
+			to: this.#configCommon.mail.to,
+			subject: this.#config.mail.title,
 			html: html,
 		});
 	}

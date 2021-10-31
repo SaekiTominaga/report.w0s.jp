@@ -1,9 +1,9 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
-	"$id": "https://schema.w0s.jp/report.json",
+	"$id": "https://report.w0s.jp/common.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "response", "static", "views", "errorpage", "logger", "mail", "js", "referrer"],
+	"required": ["port", "response", "static", "views", "errorpage", "logger", "mail"],
 	"properties": {
 		"port": {
 			"type": "integer",
@@ -210,68 +210,6 @@
 				},
 				"to": {
 					"type": "string"
-				}
-			},
-			"additionalProperties": false
-		},
-		"js": {
-			"type": "object",
-			"title": "JavaScript エラー",
-			"required": ["allow_origins", "mail"],
-			"properties": {
-				"allow_origins": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"title": "許可するオリジン"
-				},
-				"mail": {
-					"type": "object",
-					"title": "通知メール",
-					"required": ["title", "view"],
-					"properties": {
-						"title": {
-							"type": "string",
-							"title": "通知メールのタイトル"
-						},
-						"view": {
-							"type": "string",
-							"title": "view ファイル名"
-						}
-					},
-					"additionalProperties": false
-				}
-			},
-			"additionalProperties": false
-		},
-		"referrer": {
-			"type": "object",
-			"title": "リファラーエラー",
-			"required": ["allow_origins", "mail"],
-			"properties": {
-				"allow_origins": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"title": "許可するオリジン"
-				},
-				"mail": {
-					"type": "object",
-					"title": "通知メール",
-					"required": ["title", "view"],
-					"properties": {
-						"title": {
-							"type": "string",
-							"title": "通知メールのタイトル"
-						},
-						"view": {
-							"type": "string",
-							"title": "view ファイル名"
-						}
-					},
-					"additionalProperties": false
 				}
 			},
 			"additionalProperties": false

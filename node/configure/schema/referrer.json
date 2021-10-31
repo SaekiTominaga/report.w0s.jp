@@ -1,0 +1,33 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "https://report.w0s.jp/referrer.json",
+	"type": "object",
+	"title": "リファラーエラー",
+	"required": ["allow_origins", "mail"],
+	"properties": {
+		"allow_origins": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			},
+			"title": "許可するオリジン"
+		},
+		"mail": {
+			"type": "object",
+			"title": "通知メール",
+			"required": ["title", "view"],
+			"properties": {
+				"title": {
+					"type": "string",
+					"title": "通知メールのタイトル"
+				},
+				"view": {
+					"type": "string",
+					"title": "view ファイル名"
+				}
+			},
+			"additionalProperties": false
+		}
+	},
+	"additionalProperties": false
+}

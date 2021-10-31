@@ -18,7 +18,9 @@
 		"build": "tsc",
 		"build:watch": "tsc -w",
 		"config:tsconvert": "json2ts -i node/configure/schema -o node/configure/type",
-		"config:validate": "ajv --spec=draft7 -s node/configure/schema/report.json -d node/configure/report.json"
+		"config:validate:common": "ajv --spec=draft7 -s node/configure/schema/common.json -d node/configure/common.json",
+		"config:validate:js": "ajv --spec=draft7 -s node/configure/schema/js.json -d node/configure/js.json",
+		"config:validate:referrer": "ajv --spec=draft7 -s node/configure/schema/referrer.json -d node/configure/referrer.json"
 	},
 	"dependencies": {
 		"@log4js-node/smtp": "^1.1.0",

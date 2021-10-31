@@ -30,12 +30,6 @@ export type NoName17 = string;
 export type FilepathFor403Forbidden = string;
 export type FilepathFor404NotFound = string;
 export type NoName19 = string;
-export type NoName20 = string[];
-export type NoName22 = string;
-export type View = string;
-export type NoName24 = string[];
-export type NoName26 = string;
-export type View1 = string;
 
 export interface ReportW0SJp {
   port: HTTP;
@@ -45,8 +39,6 @@ export interface ReportW0SJp {
   errorpage: NoName18;
   logger: Logger;
   mail: EMail;
-  js: JavaScript;
-  referrer: NoName23;
 }
 export interface NoName {
   header: NoName1;
@@ -94,20 +86,4 @@ export interface EMail {
   port: number;
   from: string;
   to: string;
-}
-export interface JavaScript {
-  allow_origins: NoName20;
-  mail: NoName21;
-}
-export interface NoName21 {
-  title: NoName22;
-  view: View;
-}
-export interface NoName23 {
-  allow_origins: NoName24;
-  mail: NoName25;
-}
-export interface NoName25 {
-  title: NoName26;
-  view: View1;
 }
