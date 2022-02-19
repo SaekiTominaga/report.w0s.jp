@@ -1,5 +1,5 @@
 import cors from 'cors';
-import Express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import fs from 'fs';
 import JsController from './controller/JsController.js';
 import Log4js from 'log4js';
@@ -14,31 +14,33 @@ const config = <Configure>JSON.parse(fs.readFileSync('node/configure/common.json
 Log4js.configure(config.logger.path);
 const logger = Log4js.getLogger();
 
-const app = Express();
-
-const EXTENTIONS: { readonly [s: string]: string } = {
-	map: '.map',
-}; // 静的ファイル拡張子の定義
+const app = express();
 
 app.set('x-powered-by', false);
 app.set('trust proxy', true);
 app.set('views', config.views);
 app.set('view engine', 'ejs');
-app.use((_req, res, next) => {
-	/* HSTS */
-	res.setHeader('Strict-Transport-Security', config.response.header.hsts);
 
-	/* CSP */
-	res.setHeader('Content-Security-Policy', config.response.header.csp);
+const EXTENTIONS = {
+	brotli: '.br',
+	map: '.map',
+}; // 静的ファイル拡張子の定義
 
-	/* MIME スニッフィング抑止 */
-	res.setHeader('X-Content-Type-Options', 'nosniff');
-
-	next();
-});
-app.use(Express.json());
 app.use(
-	Express.static(config.static.root, {
+	(_req, res, next) => {
+		/* HSTS */
+		res.setHeader('Strict-Transport-Security', config.response.header.hsts);
+
+		/* CSP */
+		res.setHeader('Content-Security-Policy', config.response.header.csp);
+
+		/* MIME スニッフィング抑止 */
+		res.setHeader('X-Content-Type-Options', 'nosniff');
+
+		next();
+	},
+	express.json(),
+	express.static(config.static.root, {
 		extensions: config.static.extensions,
 		index: config.static.indexes,
 		setHeaders: (res, localPath) => {
