@@ -1,9 +1,9 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import fs from 'fs';
-import JsController from './controller/JsController.js';
 import Log4js from 'log4js';
 import path from 'path';
+import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
 import { ReportW0SJp as Configure } from '../configure/type/common.js';
 
@@ -61,8 +61,8 @@ app.use(
 			/* Cache-Control */
 			if (config.static.headers.cache_control !== undefined) {
 				const cacheControlValue =
-					config.static.headers.cache_control.path.find((path) => path.paths.includes(requestUrlOrigin))?.value ??
-					config.static.headers.cache_control.extension.find((ext) => ext.extensions.includes(extensionOrigin))?.value ??
+					config.static.headers.cache_control.path.find((ccPath) => ccPath.paths.includes(requestUrlOrigin))?.value ??
+					config.static.headers.cache_control.extension.find((ccExt) => ccExt.extensions.includes(extensionOrigin))?.value ??
 					config.static.headers.cache_control.default;
 
 				res.setHeader('Cache-Control', cacheControlValue);

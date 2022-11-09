@@ -1,18 +1,19 @@
-import Controller from '../Controller.js';
-import ControllerInterface from '../ControllerInterface.js';
 import ejs from 'ejs';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
+import { Request, Response } from 'express';
+import Controller from '../Controller.js';
+import ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
 import { NoName as Configure } from '../../configure/type/referrer.js';
 import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
-import { Request, Response } from 'express';
 
 /**
  * リファラーエラー
  */
 export default class ReferrerController extends Controller implements ControllerInterface {
 	#configCommon: ConfigureCommon;
+
 	#config: Configure;
 
 	/**
@@ -20,7 +21,6 @@ export default class ReferrerController extends Controller implements Controller
 	 */
 	constructor(configCommon: ConfigureCommon) {
 		super();
-
 
 		this.#configCommon = configCommon;
 		this.#config = <Configure>JSON.parse(fs.readFileSync('node/configure/referrer.json', 'utf8'));
@@ -44,8 +44,8 @@ export default class ReferrerController extends Controller implements Controller
 		}
 
 		const requestBody = req.body;
-		const location: string | undefined = requestBody.location;
-		const referrer: string | undefined = requestBody.referrer;
+		const location = requestBody.location !== undefined ? String(requestBody.location) : undefined;
+		const referrer = requestBody.referrer !== undefined ? String(requestBody.referrer) : undefined;
 
 		if (location === undefined || referrer === undefined) {
 			this.logger.error(`パラメーター location（${location}）, referrer${referrer}）のいずれかが未設定: ${req.get('User-Agent')}`);

@@ -1,18 +1,19 @@
-import Controller from '../Controller.js';
-import ControllerInterface from '../ControllerInterface.js';
 import ejs from 'ejs';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
+import { Request, Response } from 'express';
+import Controller from '../Controller.js';
+import ControllerInterface from '../ControllerInterface.js';
 import ReportJsDao from '../dao/ReportJsDao.js';
 import { JavaScript as Configure } from '../../configure/type/js.js';
 import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
-import { Request, Response } from 'express';
 
 /**
  * JavaScript エラー
  */
 export default class JsController extends Controller implements ControllerInterface {
 	#configCommon: ConfigureCommon;
+
 	#config: Configure;
 
 	/**
@@ -43,9 +44,9 @@ export default class JsController extends Controller implements ControllerInterf
 		}
 
 		const requestBody = req.body;
-		const location: string | undefined = requestBody.location;
-		const message: string | undefined = requestBody.message;
-		const filename: string | undefined = requestBody.filename;
+		const location = requestBody.location !== undefined ? String(requestBody.location) : undefined;
+		const message = requestBody.message !== undefined ? String(requestBody.message) : undefined;
+		const filename = requestBody.filename !== undefined ? String(requestBody.filename) : undefined;
 		const lineno = requestBody.lineno !== undefined ? Number(requestBody.lineno) : undefined;
 		const colno = requestBody.colno !== undefined ? Number(requestBody.colno) : undefined;
 
