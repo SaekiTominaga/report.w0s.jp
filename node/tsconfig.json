@@ -1,12 +1,8 @@
 {
-	"extends": "../tsconfig.json",
+	"extends": "@w0s/tsconfig",
 	"include": ["@types/*.d.ts", "src/**/*.ts"],
 	"compilerOptions": {
-		/* Project Options */
-		"outDir": "dist",
-		"target": "ESNext",
-
-		/* Module Resolution */
-		"esModuleInterop": true
+		/* Emit */
+		"outDir": "dist"
 	}
 }
