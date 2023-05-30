@@ -5,8 +5,8 @@ import { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import ControllerInterface from '../ControllerInterface.js';
 import ReportJsDao from '../dao/ReportJsDao.js';
-import { JavaScript as Configure } from '../../configure/type/js.js';
-import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
+import { JavaScript as Configure } from '../../../configure/type/js.js';
+import { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
 
 /**
  * JavaScript エラー
@@ -23,7 +23,7 @@ export default class JsController extends Controller implements ControllerInterf
 		super();
 
 		this.#configCommon = configCommon;
-		this.#config = <Configure>JSON.parse(fs.readFileSync('node/configure/js.json', 'utf8'));
+		this.#config = <Configure>JSON.parse(fs.readFileSync('configure/js.json', 'utf8'));
 	}
 
 	/**

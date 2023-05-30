@@ -5,8 +5,8 @@ import { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import { NoName as Configure } from '../../configure/type/referrer.js';
-import { ReportW0SJp as ConfigureCommon } from '../../configure/type/common.js';
+import { NoName as Configure } from '../../../configure/type/referrer.js';
+import { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
 
 /**
  * リファラーエラー
@@ -23,7 +23,7 @@ export default class ReferrerController extends Controller implements Controller
 		super();
 
 		this.#configCommon = configCommon;
-		this.#config = <Configure>JSON.parse(fs.readFileSync('node/configure/referrer.json', 'utf8'));
+		this.#config = <Configure>JSON.parse(fs.readFileSync('configure/referrer.json', 'utf8'));
 	}
 
 	/**

@@ -7,11 +7,11 @@
 		"watch": "tsc -w -p node/tsconfig.json",
 		"build": "tsc -p node/tsconfig.json",
 		"lint": "eslint node/src/**/*.ts",
-		"config-convert": "json2ts -i node/configure/schema -o node/configure/type",
+		"config-convert": "json2ts -i configure/schema -o configure/type",
 		"config-validate": "run-p _config-validate:*",
-		"_config-validate:common": "ajv --spec=draft7 -s node/configure/schema/common.json -d node/configure/common.json",
-		"_config-validate:js": "ajv --spec=draft7 -s node/configure/schema/js.json -d node/configure/js.json",
-		"_config-validate:referrer": "ajv --spec=draft7 -s node/configure/schema/referrer.json -d node/configure/referrer.json"
+		"_config-validate:common": "ajv --spec=draft7 -s configure/schema/common.json -d configure/common.json",
+		"_config-validate:js": "ajv --spec=draft7 -s configure/schema/js.json -d configure/js.json",
+		"_config-validate:referrer": "ajv --spec=draft7 -s configure/schema/referrer.json -d configure/referrer.json"
 	},
 	"dependencies": {
 		"@log4js-node/smtp": "^2.0.8",

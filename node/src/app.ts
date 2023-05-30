@@ -5,10 +5,10 @@ import express, { NextFunction, Request, Response } from 'express';
 import Log4js from 'log4js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
-import { ReportW0SJp as Configure } from '../configure/type/common.js';
+import { ReportW0SJp as Configure } from '../../configure/type/common.js';
 
 /* 設定ファイル読み込み */
-const config = <Configure>JSON.parse(await fs.promises.readFile('node/configure/common.json', 'utf8'));
+const config = <Configure>JSON.parse(await fs.promises.readFile('configure/common.json', 'utf8'));
 
 /* Logger 設定 */
 Log4js.configure(config.logger.path);
