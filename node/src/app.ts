@@ -5,10 +5,10 @@ import express, { NextFunction, Request, Response } from 'express';
 import Log4js from 'log4js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
-import { ReportW0SJp as Configure } from '../configure/type/common.js';
+import { ReportW0SJp as Configure } from '../../configure/type/common.js';
 
 /* 設定ファイル読み込み */
-const config = <Configure>JSON.parse(await fs.promises.readFile('node/configure/common.json', 'utf8'));
+const config: Configure = JSON.parse(await fs.promises.readFile('configure/common.json', 'utf8'));
 
 /* Logger 設定 */
 Log4js.configure(config.logger.path);
@@ -120,12 +120,16 @@ app.post('/referrer-sample', corsReferrerCallback, async (_req, res) => {
  */
 app.use((req, res): void => {
 	logger.warn(`404 Not Found: ${req.method} ${req.url}`);
-	res.status(404).sendFile(path.resolve(config.errorpage.path_404));
+	res.status(404).send(`<!DOCTYPE html>
+<html>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>report.w0s.jp</title>
+<h1>404 Not Found</h1>`);
 });
 app.use((err: Error, req: Request, res: Response, _next: NextFunction /* eslint-disable-line @typescript-eslint/no-unused-vars */): void => {
 	logger.fatal(`${req.method} ${req.url}`, err.stack);
 	res.status(500).send(`<!DOCTYPE html>
-<html lang=ja>
+<html>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>report.w0s.jp</title>
 <h1>500 Internal Server Error</h1>`);

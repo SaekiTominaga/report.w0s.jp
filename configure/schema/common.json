@@ -3,7 +3,7 @@
 	"$id": "https://report.w0s.jp/common.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "response", "static", "cors", "views", "errorpage", "logger", "mail"],
+	"required": ["port", "response", "static", "cors", "views", "logger", "mail"],
 	"properties": {
 		"port": {
 			"type": "integer",
@@ -173,22 +173,6 @@
 		"views": {
 			"type": "string",
 			"title": "テンプレートディレクトリ"
-		},
-		"errorpage": {
-			"type": "object",
-			"title": "エラーページ",
-			"required": ["path_403", "path_404"],
-			"properties": {
-				"path_403": {
-					"type": "string",
-					"title": "Filepath for `403 Forbidden`"
-				},
-				"path_404": {
-					"type": "string",
-					"title": "Filepath for `404 Not Found`"
-				}
-			},
-			"additionalProperties": false
 		},
 		"logger": {
 			"type": "object",

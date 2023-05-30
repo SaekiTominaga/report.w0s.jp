@@ -12,7 +12,7 @@
 				outline: 1px solid #4d90fe;
 			}
 
-			:any-link:is(:focus, :hover) {
+			:any-link:hover {
 				color: var(--anchor-hover-color);
 			}
 
@@ -20,7 +20,7 @@
 				margin: auto;
 				padding: 0 2vw;
 				box-sizing: border-box;
-				width: min(100vw, 1280px);
+				inline-size: min(100vw, 1280px);
 			}
 
 			.link a {
@@ -31,16 +31,16 @@
 			}
 
 			.link a::before {
-				margin-right: 0.5em;
+				margin-inline-end: 0.5em;
 				content: '';
 				display: inline-block;
 				clip-path: polygon(0 0, 0 100%, 100% 50%);
-				width: calc(var(--bullet-size) * 0.6);
-				height: var(--bullet-size);
+				inline-size: calc(var(--bullet-size) * 0.6);
+				block-size: var(--bullet-size);
 				background: var(--bullet-color);
 			}
 
-			.link a:is(:focus, :hover)::before {
+			.link a:hover::before {
 				--bullet-color: var(--anchor-hover-color);
 			}
 		</style>
