@@ -3,9 +3,9 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"app:dev": "nodemon --inspect node/dist/app.js",
-		"build-watch": "tsc -w -p node/tsconfig.json",
-		"build-all": "tsc -p node/tsconfig.json",
+		"app": "nodemon --inspect node/dist/app.js",
+		"watch": "tsc -w -p node/tsconfig.json",
+		"build": "tsc -p node/tsconfig.json",
 		"lint": "eslint node/src/**/*.ts",
 		"config-convert": "json2ts -i node/configure/schema -o node/configure/type",
 		"config-validate": "run-p _config-validate:*",
