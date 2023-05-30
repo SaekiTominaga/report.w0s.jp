@@ -23,7 +23,7 @@ export default class JsController extends Controller implements ControllerInterf
 		super();
 
 		this.#configCommon = configCommon;
-		this.#config = <Configure>JSON.parse(fs.readFileSync('configure/js.json', 'utf8'));
+		this.#config = JSON.parse(fs.readFileSync('configure/js.json', 'utf8'));
 	}
 
 	/**
