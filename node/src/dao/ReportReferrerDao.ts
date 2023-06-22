@@ -10,7 +10,7 @@ export default class ReportReferrerDao extends ReportDao {
 	 * @param {string} location - ページ URL
 	 * @param {string} referrer - リファラー
 	 */
-	public async insert(location: string, referrer: string): Promise<void> {
+	async insert(location: string, referrer: string): Promise<void> {
 		const dbh = await this.getDbh();
 
 		await dbh.exec('BEGIN');

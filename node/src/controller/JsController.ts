@@ -61,7 +61,7 @@ export default class JsController extends Controller implements ControllerInterf
 		}
 
 		/* エラー内容をDBに記録 */
-		const dao = new ReportJsDao();
+		const dao = new ReportJsDao(this.#configCommon.sqlite.db['report']);
 		dao.insert(req, location, message, filename, lineno, colno);
 
 		/* エラー内容を通知 */

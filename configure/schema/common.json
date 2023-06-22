@@ -3,7 +3,7 @@
 	"$id": "https://report.w0s.jp/common.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "response", "static", "cors", "views", "logger", "mail"],
+	"required": ["port", "response", "static", "cors", "views", "logger", "mail", "sqlite"],
 	"properties": {
 		"port": {
 			"type": "integer",
@@ -209,6 +209,26 @@
 				},
 				"to": {
 					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
+		"sqlite": {
+			"type": "object",
+			"title": "SQLite",
+			"required": ["db"],
+			"properties": {
+				"db": {
+					"type": "object",
+					"title": "テーブルファイルパス（絶対パス、または `node` ディレクトリを基準にした相対パス）",
+					"required": ["report"],
+					"properties": {
+						"report": {
+							"type": "string",
+							"title": "report テーブル"
+						}
+					},
+					"additionalProperties": false
 				}
 			},
 			"additionalProperties": false

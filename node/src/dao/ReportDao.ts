@@ -7,6 +7,20 @@ import sqlite3 from 'sqlite3';
 export default class ReportDao {
 	#dbh: sqlite.Database<sqlite3.Database, sqlite3.Statement> | null = null;
 
+	readonly #filepath: string;
+
+	/**
+	 * @param {string} filepath - DB ファイルパス
+	 * @param {sqlite.Database} dbh - DB 接続情報
+	 */
+	constructor(filepath: string, dbh?: sqlite.Database<sqlite3.Database, sqlite3.Statement>) {
+		this.#filepath = filepath;
+
+		if (dbh !== undefined) {
+			this.#dbh = dbh;
+		}
+	}
+
 	/**
 	 * DB 接続情報を取得する
 	 *
@@ -18,7 +32,7 @@ export default class ReportDao {
 		}
 
 		const dbh = await sqlite.open({
-			filename: '../db/report.db',
+			filename: this.#filepath,
 			driver: sqlite3.Database,
 		});
 

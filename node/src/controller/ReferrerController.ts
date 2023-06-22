@@ -54,7 +54,7 @@ export default class ReferrerController extends Controller implements Controller
 		}
 
 		/* エラー内容をDBに記録 */
-		const dao = new ReportReferrerDao();
+		const dao = new ReportReferrerDao(this.#configCommon.sqlite.db['report']);
 		dao.insert(location, referrer);
 
 		/* エラー内容を通知 */
