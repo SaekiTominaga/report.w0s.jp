@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import type { Request } from 'express';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -15,7 +15,7 @@ export default class ReportJsDao extends ReportDao {
 	 * @param {number} lineno - 発生箇所の行数
 	 * @param {number} colno - 発生箇所の列数
 	 */
-	public async insert(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
+	async insert(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
 		const dbh = await this.getDbh();
 
 		await dbh.exec('BEGIN');
