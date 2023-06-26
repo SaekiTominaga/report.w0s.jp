@@ -17,7 +17,7 @@ export default class ReferrerController extends Controller implements Controller
 	#config: Configure;
 
 	/**
-	 * @param {ConfigureCommon} configCommon - 共通設定
+	 * @param configCommon - 共通設定
 	 */
 	constructor(configCommon: ConfigureCommon) {
 		super();
@@ -27,8 +27,8 @@ export default class ReferrerController extends Controller implements Controller
 	}
 
 	/**
-	 * @param {Request} req - Request
-	 * @param {Response} res - Response
+	 * @param req - Request
+	 * @param res - Response
 	 */
 	async execute(req: Request, res: Response): Promise<void> {
 		if (res.get('Access-Control-Allow-Origin') === undefined) {
@@ -66,9 +66,9 @@ export default class ReferrerController extends Controller implements Controller
 	/**
 	 * エラー内容を通知
 	 *
-	 * @param {Request} req - Request
-	 * @param {string} location - ページ URL
-	 * @param {string} referrer - リファラー
+	 * @param req - Request
+	 * @param location - ページ URL
+	 * @param referrer - リファラー
 	 */
 	private async notice(req: Request, location: string, referrer: string): Promise<void> {
 		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {

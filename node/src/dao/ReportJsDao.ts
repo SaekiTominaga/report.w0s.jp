@@ -8,12 +8,12 @@ export default class ReportJsDao extends ReportDao {
 	/**
 	 * JavaScript エラー内容を DB に記録
 	 *
-	 * @param {Request} req - Request
-	 * @param {string} location - ページ URL
-	 * @param {string} message - エラーメッセージ
-	 * @param {string} filename - JS ファイルの URL
-	 * @param {number} lineno - 発生箇所の行数
-	 * @param {number} colno - 発生箇所の列数
+	 * @param req - Request
+	 * @param location - ページ URL
+	 * @param message - エラーメッセージ
+	 * @param filename - JS ファイルの URL
+	 * @param lineno - 発生箇所の行数
+	 * @param colno - 発生箇所の列数
 	 */
 	async insert(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
 		const dbh = await this.getDbh();
