@@ -17,7 +17,7 @@ export default class JsController extends Controller implements ControllerInterf
 	#config: Configure;
 
 	/**
-	 * @param {ConfigureCommon} configCommon - 共通設定
+	 * @param configCommon - 共通設定
 	 */
 	constructor(configCommon: ConfigureCommon) {
 		super();
@@ -27,8 +27,8 @@ export default class JsController extends Controller implements ControllerInterf
 	}
 
 	/**
-	 * @param {Request} req - Request
-	 * @param {Response} res - Response
+	 * @param req - Request
+	 * @param res - Response
 	 */
 	async execute(req: Request, res: Response): Promise<void> {
 		if (res.get('Access-Control-Allow-Origin') === undefined) {
@@ -73,12 +73,12 @@ export default class JsController extends Controller implements ControllerInterf
 	/**
 	 * エラー内容を通知
 	 *
-	 * @param {Request} req - Request
-	 * @param {string} location - ページ URL
-	 * @param {string} message - エラーメッセージ
-	 * @param {string} filename - JS ファイルの URL
-	 * @param {number} lineno - 発生箇所の行数
-	 * @param {number} colno - 発生箇所の列数
+	 * @param req - Request
+	 * @param location - ページ URL
+	 * @param message - エラーメッセージ
+	 * @param filename - JS ファイルの URL
+	 * @param lineno - 発生箇所の行数
+	 * @param colno - 発生箇所の列数
 	 */
 	private async notice(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
 		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {
