@@ -1,11 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import cors from 'cors';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import Log4js from 'log4js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
-import { ReportW0SJp as Configure } from '../../configure/type/common.js';
+import type { ReportW0SJp as Configure } from '../../configure/type/common.js';
 
 /* 設定ファイル読み込み */
 const config: Configure = JSON.parse(await fs.promises.readFile('configure/common.json', 'utf8'));

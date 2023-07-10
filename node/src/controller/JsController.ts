@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
-import ControllerInterface from '../ControllerInterface.js';
+import type ControllerInterface from '../ControllerInterface.js';
 import ReportJsDao from '../dao/ReportJsDao.js';
-import { JavaScript as Configure } from '../../../configure/type/js.js';
-import { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
+import type { JavaScript as Configure } from '../../../configure/type/js.js';
+import type { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
 
 /**
  * JavaScript エラー
