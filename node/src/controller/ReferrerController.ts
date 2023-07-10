@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import ejs from 'ejs';
 import nodemailer from 'nodemailer';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
-import ControllerInterface from '../ControllerInterface.js';
+import type ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import { NoName as Configure } from '../../../configure/type/referrer.js';
-import { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
+import type { NoName as Configure } from '../../../configure/type/referrer.js';
+import type { ReportW0SJp as ConfigureCommon } from '../../../configure/type/common.js';
 
 /**
  * リファラーエラー
