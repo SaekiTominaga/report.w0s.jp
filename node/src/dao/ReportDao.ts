@@ -5,7 +5,7 @@ import sqlite3 from 'sqlite3';
  * レポート共通
  */
 export default class ReportDao {
-	#dbh: sqlite.Database<sqlite3.Database, sqlite3.Statement> | null = null;
+	#dbh: sqlite.Database | null = null;
 
 	readonly #filepath: string;
 
@@ -13,7 +13,7 @@ export default class ReportDao {
 	 * @param filepath - DB ファイルパス
 	 * @param dbh - DB 接続情報
 	 */
-	constructor(filepath: string, dbh?: sqlite.Database<sqlite3.Database, sqlite3.Statement>) {
+	constructor(filepath: string, dbh?: sqlite.Database) {
 		this.#filepath = filepath;
 
 		if (dbh !== undefined) {
@@ -26,7 +26,7 @@ export default class ReportDao {
 	 *
 	 * @returns DB 接続情報
 	 */
-	protected async getDbh(): Promise<sqlite.Database<sqlite3.Database, sqlite3.Statement>> {
+	protected async getDbh(): Promise<sqlite.Database> {
 		if (this.#dbh !== null) {
 			return this.#dbh;
 		}
