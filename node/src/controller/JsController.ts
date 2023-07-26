@@ -53,8 +53,8 @@ export default class JsController extends Controller implements ControllerInterf
 		if (location === undefined || message === undefined || filename === undefined || lineno === undefined || colno === undefined) {
 			this.logger.error(
 				`パラメーター location（${location}）, message（${message}）, filename（${filename}）, lineno（${lineno}）, colno（${colno}）のいずれかが未設定: ${req.get(
-					'User-Agent'
-				)}`
+					'User-Agent',
+				)}`,
 			);
 			res.status(403).end();
 			return;
@@ -62,10 +62,10 @@ export default class JsController extends Controller implements ControllerInterf
 
 		/* エラー内容をDBに記録 */
 		const dao = new ReportJsDao(this.#configCommon.sqlite.db['report']);
-		dao.insert(req, location, message, filename, lineno, colno);
+		await dao.insert(req, location, message, filename, lineno, colno);
 
 		/* エラー内容を通知 */
-		this.notice(req, location, message, filename, lineno, colno);
+		await this.#notice(req, location, message, filename, lineno, colno);
 
 		res.status(204).end();
 	}
@@ -80,7 +80,7 @@ export default class JsController extends Controller implements ControllerInterf
 	 * @param lineno - 発生箇所の行数
 	 * @param colno - 発生箇所の列数
 	 */
-	private async notice(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
+	async #notice(req: Request, location: string, message: string, filename: string, lineno: number, colno: number): Promise<void> {
 		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {
 			location: location,
 			message: message,

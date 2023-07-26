@@ -55,10 +55,10 @@ export default class ReferrerController extends Controller implements Controller
 
 		/* エラー内容をDBに記録 */
 		const dao = new ReportReferrerDao(this.#configCommon.sqlite.db['report']);
-		dao.insert(location, referrer);
+		await dao.insert(location, referrer);
 
 		/* エラー内容を通知 */
-		this.notice(req, location, referrer);
+		await this.#notice(req, location, referrer);
 
 		res.status(204).end();
 	}
@@ -70,7 +70,7 @@ export default class ReferrerController extends Controller implements Controller
 	 * @param location - ページ URL
 	 * @param referrer - リファラー
 	 */
-	private async notice(req: Request, location: string, referrer: string): Promise<void> {
+	async #notice(req: Request, location: string, referrer: string): Promise<void> {
 		const html = await ejs.renderFile(`${this.#configCommon.views}/${this.#config.mail.view}.ejs`, {
 			location: location,
 			referrer: referrer,

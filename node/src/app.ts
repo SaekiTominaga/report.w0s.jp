@@ -8,7 +8,7 @@ import ReferrerController from './controller/ReferrerController.js';
 import type { ReportW0SJp as Configure } from '../../configure/type/common.js';
 
 /* 設定ファイル読み込み */
-const config: Configure = JSON.parse(await fs.promises.readFile('configure/common.json', 'utf8'));
+const config = JSON.parse(await fs.promises.readFile('configure/common.json', 'utf8')) as Configure;
 
 /* Logger 設定 */
 Log4js.configure(config.logger.path);
@@ -68,7 +68,7 @@ app.use(
 				res.setHeader('Cache-Control', cacheControlValue);
 			}
 		},
-	})
+	}),
 );
 
 /**
@@ -89,7 +89,7 @@ app.post('/js', corsJsCallback, async (req, res, next) => {
 		next(e);
 	}
 });
-app.post('/js-sample', corsJsCallback, async (_req, res) => {
+app.post('/js-sample', corsJsCallback, (_req, res) => {
 	res.status(204).end();
 });
 
@@ -111,7 +111,7 @@ app.post('/referrer', corsReferrerCallback, async (req, res, next) => {
 		next(e);
 	}
 });
-app.post('/referrer-sample', corsReferrerCallback, async (_req, res) => {
+app.post('/referrer-sample', corsReferrerCallback, (_req, res) => {
 	res.status(204).end();
 });
 
