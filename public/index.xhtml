@@ -17,9 +17,9 @@
 			}
 
 			body {
+				box-sizing: border-box;
 				margin: auto;
 				padding: 0 2vw;
-				box-sizing: border-box;
 				inline-size: min(100vw, 1280px);
 			}
 
@@ -31,13 +31,13 @@
 			}
 
 			.link a::before {
+				display: inline flow-root;
 				margin-inline-end: 0.5em;
-				content: '';
-				display: inline-block;
-				clip-path: polygon(0 0, 0 100%, 100% 50%);
-				inline-size: calc(var(--bullet-size) * 0.6);
-				block-size: var(--bullet-size);
 				background: var(--bullet-color);
+				block-size: var(--bullet-size);
+				inline-size: calc(var(--bullet-size) * 0.6);
+				content: '';
+				clip-path: polygon(0 0, 0 100%, 100% 50%);
 			}
 
 			.link a:hover::before {
