@@ -8,6 +8,7 @@
 		"build": "tsc -p node/tsconfig.json",
 		"lint": "eslint node/src/**/*.ts",
 		"config": "run-p _config:*",
+		"format": "prettier -w .",
 		"github-actions-lint": "yamllint .github/workflows/*.yml",
 		"_config:convert": "json2ts -i configure/schema -o configure/type",
 		"_config:validate-common": "ajv --spec=draft7 -s configure/schema/common.json -d configure/common.json",
