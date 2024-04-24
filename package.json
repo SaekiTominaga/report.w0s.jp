@@ -6,14 +6,15 @@
 		"app": "nodemon --inspect node/dist/app.js",
 		"watch": "tsc -w -p node/tsconfig.json",
 		"build": "tsc -p node/tsconfig.json",
+		"prelint": "npm run _config-convert",
 		"lint": "eslint node/src/**/*.ts",
-		"config": "run-p _config:*",
+		"config": "run-p _config-convert _config-validate:*",
 		"format": "prettier -w .",
 		"github-actions-lint": "yamllint .github/workflows/*.yml",
-		"_config:convert": "json2ts -i configure/schema -o configure/type",
-		"_config:validate-common": "ajv --spec=draft7 -s configure/schema/common.json -d configure/common.json",
-		"_config:validate-js": "ajv --spec=draft7 -s configure/schema/js.json -d configure/js.json",
-		"_config:validate-referrer": "ajv --spec=draft7 -s configure/schema/referrer.json -d configure/referrer.json"
+		"_config-convert": "json2ts -i configure/schema -o configure/type",
+		"_config-validate:common": "ajv --spec=draft7 -s configure/schema/common.json -d configure/common.json",
+		"_config-validate:js": "ajv --spec=draft7 -s configure/schema/js.json -d configure/js.json",
+		"_config-validate:referrer": "ajv --spec=draft7 -s configure/schema/referrer.json -d configure/referrer.json"
 	},
 	"dependencies": {
 		"@log4js-node/smtp": "^2.0.8",
