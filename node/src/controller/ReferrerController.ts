@@ -32,13 +32,14 @@ export default class ReferrerController extends Controller implements Controller
 	 */
 	async execute(req: Request, res: Response): Promise<void> {
 		if (res.get('Access-Control-Allow-Origin') === undefined) {
-			this.logger.error(`Access-Control-Allow-Origin ヘッダが存在しない: ${req.get('User-Agent')}`);
+			this.logger.error(`Access-Control-Allow-Origin ヘッダが存在しない: ${req.get('User-Agent') ?? ''}`);
 			res.status(403).end();
 			return;
 		}
+
 		const contentType = req.get('Content-Type');
 		if (contentType !== 'application/json') {
-			this.logger.error(`Content-Type ヘッダ値 <${contentType}> が想定外: ${req.get('User-Agent')}`);
+			this.logger.error(`Content-Type ヘッダ値 <${String(contentType)}> が想定外: ${req.get('User-Agent') ?? ''}`);
 			res.status(403).end();
 			return;
 		}
@@ -48,7 +49,7 @@ export default class ReferrerController extends Controller implements Controller
 		const referrer = requestBody.referrer !== undefined ? String(requestBody.referrer) : undefined;
 
 		if (location === undefined || referrer === undefined) {
-			this.logger.error(`パラメーター location（${location}）, referrer${referrer}）のいずれかが未設定: ${req.get('User-Agent')}`);
+			this.logger.error(`パラメーター location（${String(location)}）, referrer${String(referrer)}）のいずれかが未設定: ${req.get('User-Agent') ?? ''}`);
 			res.status(403).end();
 			return;
 		}

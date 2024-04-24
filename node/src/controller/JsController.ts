@@ -32,13 +32,14 @@ export default class JsController extends Controller implements ControllerInterf
 	 */
 	async execute(req: Request, res: Response): Promise<void> {
 		if (res.get('Access-Control-Allow-Origin') === undefined) {
-			this.logger.error(`Access-Control-Allow-Origin ヘッダが存在しない: ${req.get('User-Agent')}`);
+			this.logger.error(`Access-Control-Allow-Origin ヘッダが存在しない: ${req.get('User-Agent') ?? ''}`);
 			res.status(403).end();
 			return;
 		}
+
 		const contentType = req.get('Content-Type');
 		if (contentType !== 'application/json') {
-			this.logger.error(`Content-Type ヘッダ値 <${contentType}> が想定外: ${req.get('User-Agent')}`);
+			this.logger.error(`Content-Type ヘッダ値 <${String(contentType)}> が想定外: ${req.get('User-Agent') ?? ''}`);
 			res.status(403).end();
 			return;
 		}
@@ -52,9 +53,9 @@ export default class JsController extends Controller implements ControllerInterf
 
 		if (location === undefined || message === undefined || filename === undefined || lineno === undefined || colno === undefined) {
 			this.logger.error(
-				`パラメーター location（${location}）, message（${message}）, filename（${filename}）, lineno（${lineno}）, colno（${colno}）のいずれかが未設定: ${req.get(
-					'User-Agent',
-				)}`,
+				`パラメーター location（${String(location)}）, message（${String(message)}）, filename（${String(filename)}）, lineno（${String(
+					lineno,
+				)}）, colno（${String(colno)}）のいずれかが未設定: ${req.get('User-Agent') ?? ''}`,
 			);
 			res.status(403).end();
 			return;
