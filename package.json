@@ -3,8 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"app": "nodemon --inspect node/dist/app.js",
-		"watch": "tsc -w -p node/tsconfig.json",
+		"app": "tsx --watch --tsconfig node/tsconfig.json node/src/app.ts",
 		"build": "tsc -p node/tsconfig.json",
 		"prelint": "npm run _config-convert",
 		"lint": "eslint node/src/**/*.ts",
@@ -36,9 +35,9 @@
 		"ajv-cli": "^5.0.0",
 		"eslint": "^8.57.0",
 		"json-schema-to-typescript": "^13.1.1",
-		"nodemon": "^3.0.2",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^3.1.1",
+		"tsx": "^4.13.1",
 		"typescript": "^5.0.4",
 		"yaml-lint": "^1.7.0"
 	}
