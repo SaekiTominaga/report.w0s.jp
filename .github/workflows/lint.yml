@@ -5,13 +5,13 @@ on:
       - main
     paths:
       - 'node/src/**/*.ts'
-      - '.eslintrc.json'
+      - 'eslint.config.js'
   push:
     branches:
       - main
     paths:
       - 'node/src/**/*.ts'
-      - '.eslintrc.json'
+      - 'eslint.config.js'
   workflow_dispatch:
 
 jobs:
