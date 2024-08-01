@@ -23,7 +23,7 @@ export default class ReferrerController extends Controller implements Controller
 		super();
 
 		this.#configCommon = configCommon;
-		this.#config = JSON.parse(fs.readFileSync('configure/referrer.json', 'utf8'));
+		this.#config = JSON.parse(fs.readFileSync('configure/referrer.json', 'utf8')) as Configure;
 	}
 
 	/**
@@ -44,9 +44,8 @@ export default class ReferrerController extends Controller implements Controller
 			return;
 		}
 
-		const requestBody = req.body;
-		const location = requestBody.location !== undefined ? String(requestBody.location) : undefined;
-		const referrer = requestBody.referrer !== undefined ? String(requestBody.referrer) : undefined;
+		const location = req.body.location as string | undefined;
+		const referrer = req.body.referrer as string | undefined;
 
 		if (location === undefined || referrer === undefined) {
 			this.logger.error(`パラメーター location（${String(location)}）, referrer${String(referrer)}）のいずれかが未設定: ${req.get('User-Agent') ?? ''}`);
@@ -55,7 +54,7 @@ export default class ReferrerController extends Controller implements Controller
 		}
 
 		/* エラー内容をDBに記録 */
-		const dao = new ReportReferrerDao(this.#configCommon.sqlite.db['report']);
+		const dao = new ReportReferrerDao(this.#configCommon.sqlite.db.report);
 		await dao.insert(location, referrer);
 
 		/* エラー内容を通知 */

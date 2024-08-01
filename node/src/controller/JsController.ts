@@ -23,7 +23,7 @@ export default class JsController extends Controller implements ControllerInterf
 		super();
 
 		this.#configCommon = configCommon;
-		this.#config = JSON.parse(fs.readFileSync('configure/js.json', 'utf8'));
+		this.#config = JSON.parse(fs.readFileSync('configure/js.json', 'utf8')) as Configure;
 	}
 
 	/**
@@ -44,12 +44,11 @@ export default class JsController extends Controller implements ControllerInterf
 			return;
 		}
 
-		const requestBody = req.body;
-		const location = requestBody.location !== undefined ? String(requestBody.location) : undefined;
-		const message = requestBody.message !== undefined ? String(requestBody.message) : undefined;
-		const filename = requestBody.filename !== undefined ? String(requestBody.filename) : undefined;
-		const lineno = requestBody.lineno !== undefined ? Number(requestBody.lineno) : undefined;
-		const colno = requestBody.colno !== undefined ? Number(requestBody.colno) : undefined;
+		const location = req.body.location as string | undefined;
+		const message = req.body.message as string | undefined;
+		const filename = req.body.filename as string | undefined;
+		const lineno = req.body.lineno !== undefined ? Number(req.body.lineno) : undefined;
+		const colno = req.body.colno !== undefined ? Number(req.body.colno) : undefined;
 
 		if (location === undefined || message === undefined || filename === undefined || lineno === undefined || colno === undefined) {
 			this.logger.error(
@@ -62,7 +61,7 @@ export default class JsController extends Controller implements ControllerInterf
 		}
 
 		/* エラー内容をDBに記録 */
-		const dao = new ReportJsDao(this.#configCommon.sqlite.db['report']);
+		const dao = new ReportJsDao(this.#configCommon.sqlite.db.report);
 		await dao.insert(req, location, message, filename, lineno, colno);
 
 		/* エラー内容を通知 */
