@@ -1,10 +1,9 @@
 // @ts-check
 
-import tseslint from 'typescript-eslint';
 import w0sConfig from '@w0s/eslint-config';
 
 /** @type {import("@typescript-eslint/utils/ts-eslint").FlatConfig.ConfigArray} */
-export default tseslint.config(
+export default [
 	...w0sConfig,
 	{
 		files: ['node/src/app.ts'],
@@ -13,9 +12,9 @@ export default tseslint.config(
 		},
 	},
 	{
-		files: ['node/src/*Interface.ts'],
+		files: ['node/src/controller/**/*.ts'],
 		rules: {
-			semi: 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off',
 		},
 	},
-);
+];

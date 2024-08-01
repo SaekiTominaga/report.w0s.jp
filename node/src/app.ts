@@ -3,9 +3,9 @@ import path from 'node:path';
 import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import Log4js from 'log4js';
+import type { ReportW0SJp as Configure } from '../../configure/type/common.js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
-import type { ReportW0SJp as Configure } from '../../configure/type/common.js';
 
 /* 設定ファイル読み込み */
 const config = JSON.parse((await fs.promises.readFile('configure/common.json')).toString()) as Configure;
@@ -40,8 +40,12 @@ app.use(
 		index: config.static.indexes,
 		setHeaders: (res, localPath) => {
 			const requestUrl = res.req.url; // リクエストパス e.g. ('/foo.html.br')
-			const requestUrlOrigin = requestUrl.endsWith(config.extension.brotli) ? requestUrl.substring(0, requestUrl.length - config.extension.brotli.length) : requestUrl; // 元ファイル（圧縮ファイルではない）のリクエストパス (e.g. '/foo.html')
-			const localPathOrigin = localPath.endsWith(config.extension.brotli) ? localPath.substring(0, localPath.length - config.extension.brotli.length) : localPath; // 元ファイルの絶対パス (e.g. '/var/www/public/foo.html')
+			const requestUrlOrigin = requestUrl.endsWith(config.extension.brotli)
+				? requestUrl.substring(0, requestUrl.length - config.extension.brotli.length)
+				: requestUrl; // 元ファイル（圧縮ファイルではない）のリクエストパス (e.g. '/foo.html')
+			const localPathOrigin = localPath.endsWith(config.extension.brotli)
+				? localPath.substring(0, localPath.length - config.extension.brotli.length)
+				: localPath; // 元ファイルの絶対パス (e.g. '/var/www/public/foo.html')
 			const extensionOrigin = path.extname(localPathOrigin); // 元ファイルの拡張子 (e.g. '.html')
 
 			/* Content-Type */
