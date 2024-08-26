@@ -31,7 +31,7 @@
 				"header": {
 					"type": "object",
 					"title": "レスポンスヘッダー",
-					"required": ["hsts", "csp"],
+					"required": ["hsts", "csp", "reporting_endpoints"],
 					"properties": {
 						"hsts": {
 							"type": "string",
@@ -39,7 +39,15 @@
 						},
 						"csp": {
 							"type": "string",
-							"title": "Content-Security-Policy (HTML 以外)"
+							"title": "Content-Security-Policy"
+						},
+						"reporting_endpoints": {
+							"type": "object",
+							"title": "Reporting-Endpoints",
+							"additionalProperties": {
+								"type": "string",
+								"title": "エンドポイントの URL"
+							}
 						}
 					},
 					"additionalProperties": false

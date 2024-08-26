@@ -29,6 +29,14 @@ app.use(
 		/* CSP */
 		res.setHeader('Content-Security-Policy', config.response.header.csp);
 
+		/* Report */
+		res.setHeader(
+			'Reporting-Endpoints',
+			Object.entries(config.response.header.reporting_endpoints)
+				.map((endpoint) => `${endpoint[0]}="${endpoint[1]}"`)
+				.join(','),
+		);
+
 		/* MIME スニッフィング抑止 */
 		res.setHeader('X-Content-Type-Options', 'nosniff');
 
