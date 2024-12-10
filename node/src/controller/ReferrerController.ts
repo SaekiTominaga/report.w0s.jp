@@ -53,8 +53,8 @@ export default class ReferrerController extends Controller implements Controller
 			ip: req.ip,
 		});
 
-		const mail = new MyMail();
-		await mail.sendHtml(process.env['JS_MAIL_TITLE'], html);
+		const myMail = new MyMail();
+		await myMail.sendHtml(process.env['JS_MAIL_TITLE'], html);
 
 		res.status(204).end();
 	}
