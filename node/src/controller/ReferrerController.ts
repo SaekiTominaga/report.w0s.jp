@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import type ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import Mail from '../util/Mail.js';
+import MyMail from '../util/Mail.js';
 
 /**
  * リファラーエラー
@@ -53,7 +53,7 @@ export default class ReferrerController extends Controller implements Controller
 			ip: req.ip,
 		});
 
-		const mail = new Mail();
+		const mail = new MyMail();
 		await mail.sendHtml(process.env['JS_MAIL_TITLE'], html);
 
 		res.status(204).end();
