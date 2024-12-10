@@ -52,7 +52,9 @@ export default class ReferrerController extends Controller implements Controller
 			ua: req.get('User-Agent') ?? null,
 			ip: req.ip,
 		});
-		await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);
+
+		const mail = new Mail();
+		await mail.sendHtml(process.env['JS_MAIL_TITLE'], html);
 
 		res.status(204).end();
 	}

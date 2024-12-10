@@ -62,7 +62,9 @@ export default class JsController extends Controller implements ControllerInterf
 			ua: req.get('User-Agent') ?? null,
 			ip: req.ip,
 		});
-		await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+
+		const mail = new Mail();
+		await mail.sendHtml(process.env['JS_MAIL_TITLE'], html);
 
 		res.status(204).end();
 	}
