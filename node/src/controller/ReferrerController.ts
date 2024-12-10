@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import type ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
-import MyMail from '../util/Mail.js';
+import Mail from '../util/Mail.js';
 
 /**
  * リファラーエラー
@@ -52,9 +52,7 @@ export default class ReferrerController extends Controller implements Controller
 			ua: req.get('User-Agent') ?? null,
 			ip: req.ip,
 		});
-
-		const myMail = new MyMail();
-		await myMail.sendHtml(process.env['JS_MAIL_TITLE'], html);
+		await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);
 
 		res.status(204).end();
 	}

@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import type ControllerInterface from '../ControllerInterface.js';
 import ReportJsDao from '../dao/ReportJsDao.js';
-import MyMail from '../util/Mail.js';
+import Mail from '../util/Mail.js';
 
 /**
  * JavaScript エラー
@@ -63,8 +63,7 @@ export default class JsController extends Controller implements ControllerInterf
 			ip: req.ip,
 		});
 
-		const myMail = new MyMail();
-		await myMail.sendHtml(process.env['JS_MAIL_TITLE'], html);
+		await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
 
 		res.status(204).end();
 	}
