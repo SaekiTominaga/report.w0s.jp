@@ -1,9 +1,9 @@
-/configure/*.json
-/configure/type/
+.env
+.env.*
 
 /log/
 
 /node/dist/
-/node/log4js*.json
+/node/log4js.*.json
 
 /node_modules/

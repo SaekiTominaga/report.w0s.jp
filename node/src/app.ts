@@ -1,23 +1,30 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import cors from 'cors';
+import * as dotenv from 'dotenv';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import Log4js from 'log4js';
-import type { ReportW0SJp as Configure } from '../../configure/type/common.js';
+import config from './express.config.js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
 
-/* 設定ファイル読み込み */
-const config = JSON.parse((await fs.promises.readFile('configure/common.json')).toString()) as Configure;
-
-/* Logger 設定 */
-Log4js.configure(config.logger.path);
-const logger = Log4js.getLogger();
-
 const app = express();
 
+const env = app.get('env') as Express.Env;
+
+dotenv.config({
+	path: env === 'production' ? '.env.production' : '.env.development',
+});
+
+/* Logger 設定 */
+const loggerFilePath = process.env['LOGGER'];
+if (loggerFilePath === undefined) {
+	throw new Error('Logger file path not defined');
+}
+Log4js.configure(loggerFilePath);
+const logger = Log4js.getLogger();
+
 app.set('trust proxy', true);
-app.set('views', config.views);
+app.set('views', process.env['VIEWS']);
 app.set('view engine', 'ejs');
 app.set('x-powered-by', false);
 
@@ -32,7 +39,7 @@ app.use(
 		/* Report */
 		res.setHeader(
 			'Reporting-Endpoints',
-			Object.entries(config.response.header.reporting_endpoints)
+			Object.entries(config.response.header.reportingEndpoints)
 				.map((endpoint) => `${endpoint[0]}="${endpoint[1]}"`)
 				.join(','),
 		);
@@ -44,7 +51,7 @@ app.use(
 	},
 	express.json(),
 	express.static(config.static.root, {
-		extensions: config.static.extensions?.map((ext) => /* 拡張子の . は不要 */ ext.substring(1)),
+		extensions: config.static.extensions.map((ext) => /* 拡張子の . は不要 */ ext.substring(1)),
 		index: config.static.indexes,
 		setHeaders: (res, localPath) => {
 			const requestUrl = res.req.url; // リクエストパス e.g. ('/foo.html.br')
@@ -52,10 +59,10 @@ app.use(
 
 			/* Content-Type */
 			const mimeType =
-				Object.entries(config.static.headers.mime_type.path)
+				Object.entries(config.static.headers.mimeType.path)
 					.find(([filePath]) => filePath === requestUrl)
 					?.at(1) ??
-				Object.entries(config.static.headers.mime_type.extension)
+				Object.entries(config.static.headers.mimeType.extension)
 					.find(([fileExtension]) => fileExtension === extensionOrigin)
 					?.at(1);
 			if (mimeType === undefined) {
@@ -64,32 +71,32 @@ app.use(
 			res.setHeader('Content-Type', mimeType ?? 'application/octet-stream');
 
 			/* Cache-Control */
-			if (config.static.headers.cache_control !== undefined) {
-				const cacheControl =
-					config.static.headers.cache_control.path.find((ccPath) => ccPath.paths.includes(requestUrl))?.value ??
-					config.static.headers.cache_control.extension.find((ccExt) => ccExt.extensions.includes(extensionOrigin))?.value ??
-					config.static.headers.cache_control.default;
+			const cacheControl =
+				config.static.headers.cacheControl.path.find((ccPath) => ccPath.paths.includes(requestUrl))?.value ??
+				config.static.headers.cacheControl.extension.find((ccExt) => ccExt.extensions.includes(extensionOrigin))?.value ??
+				config.static.headers.cacheControl.default;
 
-				res.setHeader('Cache-Control', cacheControl);
-			}
+			res.setHeader('Cache-Control', cacheControl);
 		},
 	}),
 );
+
+const corsAllowOrigins = process.env['CORS_ORIGINS']?.split(' ');
 
 /**
  * JavaScript エラー
  */
 const corsJsPreflightedRequestCallback = cors({
-	origin: config.cors.allow_origins,
+	origin: corsAllowOrigins,
 	methods: ['POST'],
 });
 const corsJsCallback = cors({
-	origin: config.cors.allow_origins,
+	origin: corsAllowOrigins,
 });
 app.options(['/js', '/js-sample'], corsJsPreflightedRequestCallback);
 app.post('/js', corsJsCallback, async (req, res, next) => {
 	try {
-		await new JsController(config).execute(req, res);
+		await new JsController().execute(req, res);
 	} catch (e) {
 		next(e);
 	}
@@ -102,16 +109,16 @@ app.post('/js-sample', corsJsCallback, (_req, res) => {
  * リファラーエラー
  */
 const corsReferrerPreflightedRequestCallback = cors({
-	origin: config.cors.allow_origins,
+	origin: corsAllowOrigins,
 	methods: ['POST'],
 });
 const corsReferrerCallback = cors({
-	origin: config.cors.allow_origins,
+	origin: corsAllowOrigins,
 });
 app.options(['/referrer', '/referrer-sample'], corsReferrerPreflightedRequestCallback);
 app.post('/referrer', corsReferrerCallback, async (req, res, next) => {
 	try {
-		await new ReferrerController(config).execute(req, res);
+		await new ReferrerController().execute(req, res);
 	} catch (e) {
 		next(e);
 	}
@@ -145,6 +152,10 @@ app.use((err: Error, req: Request, res: Response, _next: NextFunction /* eslint-
 /**
  * HTTP サーバー起動
  */
-app.listen(config.port, () => {
-	logger.info(`Example app listening at http://localhost:${String(config.port)}`);
+const port = process.env['PORT'];
+if (port === undefined) {
+	throw new Error('Port not defined');
+}
+app.listen(port, () => {
+	logger.info(`Example app listening at http://localhost:${port}`);
 });
