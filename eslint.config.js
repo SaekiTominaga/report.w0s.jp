@@ -6,6 +6,9 @@ import w0sConfig from '@w0s/eslint-config';
 export default [
 	...w0sConfig,
 	{
+		ignores: ['node/dist/**/*.js'],
+	},
+	{
 		files: ['node/src/app.ts'],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'off',
