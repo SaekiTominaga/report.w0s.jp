@@ -12,7 +12,7 @@ const app = express();
 const env = app.get('env') as Express.Env;
 
 dotenv.config({
-	path: env === 'production' ? '.env.production' : '.env',
+	path: env === 'production' ? '.env.production' : '.env.development',
 });
 
 /* Logger 設定 */
