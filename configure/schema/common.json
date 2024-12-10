@@ -3,25 +3,13 @@
 	"$id": "https://report.w0s.jp/common.json",
 	"type": "object",
 	"title": "report.w0s.jp",
-	"required": ["port", "extension", "response", "static", "cors", "views", "logger", "mail", "sqlite"],
+	"required": ["port", "response", "static", "cors", "views", "logger", "mail", "sqlite"],
 	"properties": {
 		"port": {
 			"type": "integer",
 			"minimum": 1,
 			"maximum": 65535,
 			"title": "HTTP サーバーのポート番号"
-		},
-		"extension": {
-			"type": "object",
-			"title": "ファイル拡張子",
-			"required": ["brotli"],
-			"properties": {
-				"brotli": {
-					"type": "string",
-					"title": "Brotli"
-				}
-			},
-			"additionalProperties": false
 		},
 		"response": {
 			"type": "object",

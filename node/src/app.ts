@@ -48,31 +48,25 @@ app.use(
 		index: config.static.indexes,
 		setHeaders: (res, localPath) => {
 			const requestUrl = res.req.url; // リクエストパス e.g. ('/foo.html.br')
-			const requestUrlOrigin = requestUrl.endsWith(config.extension.brotli)
-				? requestUrl.substring(0, requestUrl.length - config.extension.brotli.length)
-				: requestUrl; // 元ファイル（圧縮ファイルではない）のリクエストパス (e.g. '/foo.html')
-			const localPathOrigin = localPath.endsWith(config.extension.brotli)
-				? localPath.substring(0, localPath.length - config.extension.brotli.length)
-				: localPath; // 元ファイルの絶対パス (e.g. '/var/www/public/foo.html')
-			const extensionOrigin = path.extname(localPathOrigin); // 元ファイルの拡張子 (e.g. '.html')
+			const extensionOrigin = path.extname(localPath); // 元ファイルの拡張子 (e.g. '.html')
 
 			/* Content-Type */
 			const mimeType =
 				Object.entries(config.static.headers.mime_type.path)
-					.find(([filePath]) => filePath === requestUrlOrigin)
+					.find(([filePath]) => filePath === requestUrl)
 					?.at(1) ??
 				Object.entries(config.static.headers.mime_type.extension)
 					.find(([fileExtension]) => fileExtension === extensionOrigin)
 					?.at(1);
 			if (mimeType === undefined) {
-				logger.error(`MIME type is undefined: ${requestUrlOrigin}`);
+				logger.error(`MIME type is undefined: ${requestUrl}`);
 			}
 			res.setHeader('Content-Type', mimeType ?? 'application/octet-stream');
 
 			/* Cache-Control */
 			if (config.static.headers.cache_control !== undefined) {
 				const cacheControl =
-					config.static.headers.cache_control.path.find((ccPath) => ccPath.paths.includes(requestUrlOrigin))?.value ??
+					config.static.headers.cache_control.path.find((ccPath) => ccPath.paths.includes(requestUrl))?.value ??
 					config.static.headers.cache_control.extension.find((ccExt) => ccExt.extensions.includes(extensionOrigin))?.value ??
 					config.static.headers.cache_control.default;
 
