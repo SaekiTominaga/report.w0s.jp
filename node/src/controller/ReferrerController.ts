@@ -1,9 +1,9 @@
 import ejs from 'ejs';
-import nodemailer from 'nodemailer';
 import type { Request, Response } from 'express';
 import Controller from '../Controller.js';
 import type ControllerInterface from '../ControllerInterface.js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
+import Mail from '../util/Mail.js';
 
 /**
  * リファラーエラー
@@ -52,31 +52,8 @@ export default class ReferrerController extends Controller implements Controller
 			ua: req.get('User-Agent') ?? null,
 			ip: req.ip,
 		});
-		await ReferrerController.#notice(html);
+		await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);
 
 		res.status(204).end();
-	}
-
-	/**
-	 * エラー内容を通知
-	 *
-	 * @param html - メール本文の HTML
-	 */
-	static async #notice(html: string): Promise<void> {
-		const transporter = nodemailer.createTransport({
-			port: Number(process.env['MAIL_PORT']),
-			host: process.env['MAIL_SMTP'],
-			auth: {
-				user: process.env['MAIL_USER'],
-				pass: process.env['MAIL_PASSWORD'],
-			},
-		});
-
-		await transporter.sendMail({
-			from: process.env['MAIL_FROM'],
-			to: process.env['MAIL_TO'],
-			subject: process.env['JS_MAIL_TITLE'],
-			html: html,
-		});
 	}
 }
