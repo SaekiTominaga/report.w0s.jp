@@ -20,15 +20,14 @@ export default class JsController extends Controller implements ControllerInterf
 		const ua = req.header('User-Agent');
 		const ipAddress = ip.address();
 
-		/* エラー内容をDBに記録 */
 		const dbFilePath = process.env['SQLITE_REPORT'];
 		if (dbFilePath === undefined) {
 			throw new HTTPException(500, { message: 'DB file path not defined' });
 		}
 
 		const dao = new ReportJsDao(dbFilePath);
-		const inserted = await dao.insert({
-			pageUrl: location,
+
+		const existSameData = await dao.same({
 			message: message,
 			jsUrl: filename,
 			lineno: lineno,
@@ -37,8 +36,19 @@ export default class JsController extends Controller implements ControllerInterf
 			ip: ipAddress,
 		});
 
-		if (inserted) {
-			/* エラー内容を通知 */
+		if (!existSameData) {
+			/* DB に登録 */
+			await dao.insert({
+				pageUrl: location,
+				message: message,
+				jsUrl: filename,
+				lineno: lineno,
+				colno: colno,
+				ua: ua,
+				ip: ipAddress,
+			});
+
+			/* メール通知 */
 			const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/js_mail.ejs`, {
 				location: location,
 				message: message,
