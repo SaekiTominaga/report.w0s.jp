@@ -1,11 +1,12 @@
-import type { Request, Response } from 'express';
+import type { Context } from 'hono';
 
 export default interface ControllerInterface {
 	/**
 	 * Execute the process
 	 *
-	 * @param req - Request
-	 * @param res - Response
+	 * @param context - Context
+	 *
+	 * @returns Response
 	 */
-	execute(req: Request, res: Response): Promise<void>;
+	execute(context: Context): Promise<Response>;
 }

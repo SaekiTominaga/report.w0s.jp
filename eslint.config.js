@@ -17,7 +17,7 @@ export default [
 	{
 		files: ['node/src/controller/**/*.ts'],
 		rules: {
-			'@typescript-eslint/no-unsafe-member-access': 'off',
+			'class-methods-use-this': 'off',
 		},
 	},
 ];
