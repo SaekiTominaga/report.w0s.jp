@@ -89,7 +89,7 @@ app.use(
 /* CORS */
 const corsAllowOrigins = process.env['CORS_ORIGINS']?.split(' ');
 app.use(
-	'/api/*',
+	'/report/*',
 	cors({
 		origin: corsAllowOrigins ?? '*',
 		allowMethods: ['POST'],
@@ -97,12 +97,12 @@ app.use(
 );
 
 /* JavaScript error */
-app.post('/api/js', jsValidator, async (context) => await new JsController().execute(context));
-app.post('/api/js-sample', jsValidator, () => new Response(null, { status: 204 }));
+app.post('/report/js', jsValidator, async (context) => await new JsController().execute(context));
+app.post('/report/js-sample', jsValidator, () => new Response(null, { status: 204 }));
 
 /* Referrer error */
-app.post('/api/referrer', referrerValidator, async (context) => await new ReferrerController().execute(context));
-app.post('/api/referrer-sample', referrerValidator, () => new Response(null, { status: 204 }));
+app.post('/report/referrer', referrerValidator, async (context) => await new ReferrerController().execute(context));
+app.post('/report/referrer-sample', referrerValidator, () => new Response(null, { status: 204 }));
 
 app.notFound((context) =>
 	context.html(
