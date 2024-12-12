@@ -10,19 +10,9 @@ export default {
 	},
 	static: {
 		root: 'public',
-		extensions: ['.html'],
-		indexes: ['index.html'],
+		index: 'index.html',
+		extension: '.html', // URL 上で省略できる拡張子
 		headers: {
-			mimeType: {
-				path: {
-					'/favicon.ico': 'image/svg+xml;charset=utf-8',
-				},
-				extension: {
-					'.png': 'image/png',
-					'.html': 'text/html;charset=utf-8',
-					'.txt': 'text/plain;charset=utf-8',
-				},
-			},
 			cacheControl: {
 				default: 'max-age=600',
 				path: [

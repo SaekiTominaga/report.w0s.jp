@@ -1,21 +1,23 @@
+import fs from 'node:fs';
 import path from 'node:path';
-import cors from 'cors';
 import * as dotenv from 'dotenv';
-import express, { type NextFunction, type Request, type Response } from 'express';
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { HTTPException } from 'hono/http-exception';
+import { serve } from '@hono/node-server';
+import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
-import config from './express.config.js';
+import config from './hono.config.js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
-
-const app = express();
-
-const env = app.get('env') as Express.Env;
+import jsValidator from './validator/js.js';
+import referrerValidator from './validator/referrer.js';
 
 dotenv.config({
-	path: env === 'production' ? '.env.production' : '.env.development',
+	path: process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development',
 });
 
-/* Logger 設定 */
+/* Logger */
 const loggerFilePath = process.env['LOGGER'];
 if (loggerFilePath === undefined) {
 	throw new Error('Logger file path not defined');
@@ -23,139 +25,125 @@ if (loggerFilePath === undefined) {
 Log4js.configure(loggerFilePath);
 const logger = Log4js.getLogger();
 
-app.set('trust proxy', true);
-app.set('views', process.env['VIEWS']);
-app.set('view engine', 'ejs');
-app.set('x-powered-by', false);
+/* Hono */
+const app = new Hono();
+
+app.use(async (context, next) => {
+	const { headers } = context.res;
+
+	/* HSTS */
+	headers.set('Strict-Transport-Security', config.response.header.hsts);
+
+	/* CSP */
+	headers.set('Content-Security-Policy', config.response.header.csp);
+
+	/* Report */
+	headers.set(
+		'Reporting-Endpoints',
+		Object.entries(config.response.header.reportingEndpoints)
+			.map((endpoint) => `${endpoint[0]}="${endpoint[1]}"`)
+			.join(','),
+	);
+
+	/* MIME スニッフィング抑止 */
+	headers.set('X-Content-Type-Options', 'nosniff');
+
+	await next();
+});
+
+app.get('/favicon.ico', async (context, next) => {
+	const file = await fs.promises.readFile(`${config.static.root}/favicon.ico`);
+
+	context.res.headers.set('Content-Type', 'image/svg+xml;charset=utf-8');
+	context.body(file);
+
+	await next();
+});
 
 app.use(
-	(_req, res, next) => {
-		/* HSTS */
-		res.setHeader('Strict-Transport-Security', config.response.header.hsts);
-
-		/* CSP */
-		res.setHeader('Content-Security-Policy', config.response.header.csp);
-
-		/* Report */
-		res.setHeader(
-			'Reporting-Endpoints',
-			Object.entries(config.response.header.reportingEndpoints)
-				.map((endpoint) => `${endpoint[0]}="${endpoint[1]}"`)
-				.join(','),
-		);
-
-		/* MIME スニッフィング抑止 */
-		res.setHeader('X-Content-Type-Options', 'nosniff');
-
-		next();
-	},
-	express.json(),
-	express.static(config.static.root, {
-		extensions: config.static.extensions.map((ext) => /* 拡張子の . は不要 */ ext.substring(1)),
-		index: config.static.indexes,
-		setHeaders: (res, localPath) => {
-			const requestUrl = res.req.url; // リクエストパス e.g. ('/foo.html.br')
-			const extensionOrigin = path.extname(localPath); // 元ファイルの拡張子 (e.g. '.html')
-
-			/* Content-Type */
-			const mimeType =
-				Object.entries(config.static.headers.mimeType.path)
-					.find(([filePath]) => filePath === requestUrl)
-					?.at(1) ??
-				Object.entries(config.static.headers.mimeType.extension)
-					.find(([fileExtension]) => fileExtension === extensionOrigin)
-					?.at(1);
-			if (mimeType === undefined) {
-				logger.error(`MIME type is undefined: ${requestUrl}`);
+	serveStatic({
+		root: config.static.root,
+		index: config.static.index,
+		precompressed: false,
+		rewriteRequestPath: (urlPath) => {
+			if (urlPath.endsWith('/') || urlPath.includes('.')) {
+				return urlPath;
 			}
-			res.setHeader('Content-Type', mimeType ?? 'application/octet-stream');
+
+			return `${urlPath}${config.static.extension}`;
+		},
+		onFound: (localPath, context) => {
+			const urlPath = path.normalize(localPath).substring(path.normalize(config.static.root).length).replaceAll(path.sep, '/'); // URL のパス部分 e.g. ('/foo.html')
+			const urlExtension = path.extname(urlPath); // URL の拡張子部分 (e.g. '.html')
 
 			/* Cache-Control */
 			const cacheControl =
-				config.static.headers.cacheControl.path.find((ccPath) => ccPath.paths.includes(requestUrl))?.value ??
-				config.static.headers.cacheControl.extension.find((ccExt) => ccExt.extensions.includes(extensionOrigin))?.value ??
+				config.static.headers.cacheControl.path.find((ccPath) => ccPath.paths.includes(urlPath))?.value ??
+				config.static.headers.cacheControl.extension.find((ccExt) => ccExt.extensions.includes(urlExtension))?.value ??
 				config.static.headers.cacheControl.default;
-
-			res.setHeader('Cache-Control', cacheControl);
+			context.header('Cache-Control', cacheControl);
 		},
 	}),
 );
 
+/* CORS */
 const corsAllowOrigins = process.env['CORS_ORIGINS']?.split(' ');
+app.use(
+	'/api/*',
+	cors({
+		origin: corsAllowOrigins ?? '*',
+		allowMethods: ['POST'],
+	}),
+);
 
-/**
- * JavaScript エラー
- */
-const corsJsPreflightedRequestCallback = cors({
-	origin: corsAllowOrigins,
-	methods: ['POST'],
-});
-const corsJsCallback = cors({
-	origin: corsAllowOrigins,
-});
-app.options(['/js', '/js-sample'], corsJsPreflightedRequestCallback);
-app.post('/js', corsJsCallback, async (req, res, next) => {
-	try {
-		await new JsController().execute(req, res);
-	} catch (e) {
-		next(e);
-	}
-});
-app.post('/js-sample', corsJsCallback, (_req, res) => {
-	res.status(204).end();
-});
+/* JavaScript error */
+app.post('/api/js', jsValidator, async (context) => await new JsController().execute(context));
+app.post('/api/js-sample', jsValidator, () => new Response(null, { status: 204 }));
 
-/**
- * リファラーエラー
- */
-const corsReferrerPreflightedRequestCallback = cors({
-	origin: corsAllowOrigins,
-	methods: ['POST'],
-});
-const corsReferrerCallback = cors({
-	origin: corsAllowOrigins,
-});
-app.options(['/referrer', '/referrer-sample'], corsReferrerPreflightedRequestCallback);
-app.post('/referrer', corsReferrerCallback, async (req, res, next) => {
-	try {
-		await new ReferrerController().execute(req, res);
-	} catch (e) {
-		next(e);
-	}
-});
-app.post('/referrer-sample', corsReferrerCallback, (_req, res) => {
-	res.status(204).end();
-});
+/* Referrer error */
+app.post('/api/referrer', referrerValidator, async (context) => await new ReferrerController().execute(context));
+app.post('/api/referrer-sample', referrerValidator, () => new Response(null, { status: 204 }));
 
-/**
- * エラー処理
- */
-app.use((req, res): void => {
-	logger.warn(`404 Not Found: ${req.method} ${req.url}`);
-
-	res.status(404).send(`<!DOCTYPE html>
+app.notFound((context) =>
+	context.html(
+		`<!DOCTYPE html>
 <html lang=en>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>report.w0s.jp</title>
-<h1>404 Not Found</h1>`);
-});
-app.use((err: Error, req: Request, res: Response, _next: NextFunction /* eslint-disable-line @typescript-eslint/no-unused-vars */): void => {
-	logger.fatal(`${req.method} ${req.url}`, err.stack);
+<h1>404 Not Found</h1>`,
+		404,
+	),
+);
+app.onError((err, context) => {
+	const MESSAGE_5XX = 'Server error has occurred';
 
-	res.status(500).send(`<!DOCTYPE html>
-<html lang=en>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<title>report.w0s.jp</title>
-<h1>500 Internal Server Error</h1>`);
+	if (err instanceof HTTPException) {
+		const { status, message } = err;
+
+		if (status >= 400 && status < 500) {
+			logger.info(message, context.req.header('User-Agent'));
+		} else {
+			if (message !== '') {
+				logger.error(message);
+			}
+			err.message = MESSAGE_5XX;
+		}
+
+		return err.getResponse();
+	}
+
+	logger.fatal(err.message);
+	return context.text(MESSAGE_5XX, 500);
 });
 
-/**
- * HTTP サーバー起動
- */
+/* HTTP Server */
 const port = process.env['PORT'];
 if (port === undefined) {
 	throw new Error('Port not defined');
 }
-app.listen(port, () => {
-	logger.info(`Example app listening at http://localhost:${port}`);
+logger.info(`Server is running on http://localhost:${port}`);
+
+serve({
+	fetch: app.fetch,
+	port: Number(port),
 });

@@ -5,12 +5,13 @@ import ReportDao from './ReportDao.js';
  */
 export default class ReportReferrerDao extends ReportDao {
 	/**
-	 * リファラーエラー内容を DB に記録
+	 * エラー内容を DB に記録
 	 *
-	 * @param location - ページ URL
-	 * @param referrer - リファラー
+	 * @param data - 登録データ
+	 * @param data.location - ページ URL
+	 * @param data.referrer - リファラー
 	 */
-	async insert(location: string, referrer: string): Promise<void> {
+	async insert(data: { location: string; referrer: string }): Promise<void> {
 		const dbh = await this.getDbh();
 
 		await dbh.exec('BEGIN');
@@ -23,8 +24,8 @@ export default class ReportReferrerDao extends ReportDao {
 					(:location, :referrer, :insert_date)
 			`);
 			await insertDataSth.run({
-				':location': location,
-				':referrer': referrer,
+				':location': data.location,
+				':referrer': data.referrer,
 				':insert_date': Math.round(Date.now() / 1000),
 			});
 			await insertDataSth.finalize();
