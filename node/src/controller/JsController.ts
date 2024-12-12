@@ -27,28 +27,30 @@ export default class JsController extends Controller implements ControllerInterf
 		}
 
 		const dao = new ReportJsDao(dbFilePath);
-		await dao.insert({
-			location: location,
+		const inserted = await dao.insert({
+			pageUrl: location,
 			message: message,
-			filename: filename,
+			jsUrl: filename,
 			lineno: lineno,
 			colno: colno,
 			ua: ua,
 			ip: ipAddress,
 		});
 
-		/* エラー内容を通知 */
-		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/js_mail.ejs`, {
-			location: location,
-			message: message,
-			filename: filename,
-			lineno: lineno,
-			colno: colno,
-			ua: ua,
-			ip: ipAddress,
-		});
+		if (inserted) {
+			/* エラー内容を通知 */
+			const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/js_mail.ejs`, {
+				location: location,
+				message: message,
+				filename: filename,
+				lineno: lineno,
+				colno: colno,
+				ua: ua,
+				ip: ipAddress,
+			});
 
-		await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+			await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+		}
 
 		return new Response(null, {
 			status: 204,
