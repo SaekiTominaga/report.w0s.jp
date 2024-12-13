@@ -20,35 +20,47 @@ export default class JsController extends Controller implements ControllerInterf
 		const ua = req.header('User-Agent');
 		const ipAddress = ip.address();
 
-		/* エラー内容をDBに記録 */
 		const dbFilePath = process.env['SQLITE_REPORT'];
 		if (dbFilePath === undefined) {
 			throw new HTTPException(500, { message: 'DB file path not defined' });
 		}
 
 		const dao = new ReportJsDao(dbFilePath);
-		await dao.insert({
-			location: location,
+
+		const existSameData = await dao.same({
 			message: message,
-			filename: filename,
+			jsUrl: filename,
 			lineno: lineno,
 			colno: colno,
 			ua: ua,
 			ip: ipAddress,
 		});
 
-		/* エラー内容を通知 */
-		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/js_mail.ejs`, {
-			location: location,
-			message: message,
-			filename: filename,
-			lineno: lineno,
-			colno: colno,
-			ua: ua,
-			ip: ipAddress,
-		});
+		if (!existSameData) {
+			/* DB に登録 */
+			await dao.insert({
+				pageUrl: location,
+				message: message,
+				jsUrl: filename,
+				lineno: lineno,
+				colno: colno,
+				ua: ua,
+				ip: ipAddress,
+			});
 
-		await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+			/* メール通知 */
+			const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/js_mail.ejs`, {
+				location: location,
+				message: message,
+				filename: filename,
+				lineno: lineno,
+				colno: colno,
+				ua: ua,
+				ip: ipAddress,
+			});
+
+			await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+		}
 
 		return new Response(null, {
 			status: 204,
