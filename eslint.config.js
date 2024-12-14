@@ -9,12 +9,6 @@ export default [
 		ignores: ['node/dist/**/*.js'],
 	},
 	{
-		files: ['node/src/app.ts'],
-		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
-		},
-	},
-	{
 		files: ['node/src/controller/**/*.ts'],
 		rules: {
 			'class-methods-use-this': 'off',
