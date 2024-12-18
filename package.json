@@ -6,7 +6,7 @@
 		"build": "tsc -p node/tsconfig.json",
 		"lint": "eslint node/src/**/*.ts",
 		"format": "prettier -w .",
-		"github-actions-lint": "yamllint .github/workflows/*.yml"
+		"yaml-lint": "yamllint .github/workflows/*.yml"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
