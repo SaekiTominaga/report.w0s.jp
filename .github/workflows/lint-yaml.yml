@@ -1,4 +1,5 @@
-name: github-actions-lint
+name: Linting YAML files
+
 on:
   pull_request:
     branches:
@@ -16,4 +17,4 @@ jobs:
         with:
           node-version: '20'
       - run: npm ci
-      - run: npm run github-actions-lint
+      - run: npm run yaml-lint
