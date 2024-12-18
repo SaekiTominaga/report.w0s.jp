@@ -7,7 +7,7 @@ import { HTTPException } from 'hono/http-exception';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
-import config from './hono.config.js';
+import config from './config/hono.js';
 import JsController from './controller/JsController.js';
 import ReferrerController from './controller/ReferrerController.js';
 import jsValidator from './validator/js.js';
