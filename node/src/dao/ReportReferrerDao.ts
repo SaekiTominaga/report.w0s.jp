@@ -33,7 +33,7 @@ export default class ReportReferrerDao extends ReportDao {
 			':page_url': data.pageUrl,
 			':referrer': data.referrer,
 		});
-		const row: Select | undefined = await sth.get();
+		const row = await sth.get<Select>();
 		await sth.finalize();
 
 		if (row === undefined) {
