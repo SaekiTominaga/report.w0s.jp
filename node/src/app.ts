@@ -27,6 +27,7 @@ const logger = Log4js.getLogger();
 
 /* Hono */
 const app = new Hono();
+export default app;
 
 app.use(async (context, next) => {
 	const { headers } = context.res;
@@ -137,13 +138,15 @@ app.onError((err, context) => {
 });
 
 /* HTTP Server */
-const port = process.env['PORT'];
-if (port === undefined) {
-	throw new Error('Port not defined');
-}
-logger.info(`Server is running on http://localhost:${port}`);
+if (process.env['TEST'] !== 'test') {
+	const port = process.env['PORT'];
+	if (port === undefined) {
+		throw new Error('Port not defined');
+	}
+	logger.info(`Server is running on http://localhost:${port}`);
 
-serve({
-	fetch: app.fetch,
-	port: Number(port),
-});
+	serve({
+		fetch: app.fetch,
+		port: Number(port),
+	});
+}
