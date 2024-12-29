@@ -1,3 +1,4 @@
+import type { Statement } from 'sqlite';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -24,28 +25,52 @@ export default class ReportJsDao extends ReportDao {
 
 		const dbh = await this.getDbh();
 
-		const sth = await dbh.prepare(`
-			SELECT
-				COUNT(insert_date) AS count
-			FROM
-				d_js
-			WHERE
-				message = :message AND
-				js_url = :js_url AND
-				lineno = :lineno AND
-				colno = :colno AND
-				ua = :ua AND
-				ip = :ip
-		`);
-		await sth.bind({
-			':message': data.message,
-			':js_url': data.jsUrl,
-			':lineno': data.lineno,
-			':colno': data.colno,
-			':ua': data.ua ?? null,
-			':ip': data.ip,
-		});
-		const row: Select | undefined = await sth.get();
+		let sth: Statement;
+		if (data.ua !== undefined) {
+			sth = await dbh.prepare(`
+				SELECT
+					COUNT(insert_date) AS count
+				FROM
+					d_js
+				WHERE
+					message = :message AND
+					js_url = :js_url AND
+					lineno = :lineno AND
+					colno = :colno AND
+					ua = :ua AND
+					ip = :ip
+			`);
+			await sth.bind({
+				':message': data.message,
+				':js_url': data.jsUrl,
+				':lineno': data.lineno,
+				':colno': data.colno,
+				':ua': data.ua,
+				':ip': data.ip,
+			});
+		} else {
+			sth = await dbh.prepare(`
+				SELECT
+					COUNT(insert_date) AS count
+				FROM
+					d_js
+				WHERE
+					message = :message AND
+					js_url = :js_url AND
+					lineno = :lineno AND
+					colno = :colno AND
+					ua IS NULL AND
+					ip = :ip
+			`);
+			await sth.bind({
+				':message': data.message,
+				':js_url': data.jsUrl,
+				':lineno': data.lineno,
+				':colno': data.colno,
+				':ip': data.ip,
+			});
+		}
+		const row = await sth.get<Select>();
 		await sth.finalize();
 
 		if (row === undefined) {
