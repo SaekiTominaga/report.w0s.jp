@@ -1,21 +1,22 @@
 import ejs from 'ejs';
-import ip from 'ip';
-import type { Context } from 'hono';
+import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import Controller from '../Controller.js';
-import type ControllerInterface from '../ControllerInterface.js';
+import ip from 'ip';
+import Log4js from 'log4js';
 import ReportJsDao from '../dao/ReportJsDao.js';
 import Mail from '../util/Mail.js';
-import type { RequestBody } from '../validator/js.js';
+import validator from '../validator/js.js';
 
 /**
  * JavaScript エラー
  */
-export default class JsController extends Controller implements ControllerInterface {
-	async execute(context: Context): Promise<Response> {
+const logger = Log4js.getLogger('js');
+
+const app = new Hono()
+	.post('/js', validator, async (context) => {
 		const { req } = context;
 
-		const { location, message, filename, lineno, colno }: RequestBody = req.valid('json' as never);
+		const { location, message, filename, lineno, colno } = req.valid('json');
 
 		const ua = req.header('User-Agent');
 		const ipAddress = ip.address();
@@ -60,10 +61,14 @@ export default class JsController extends Controller implements ControllerInterf
 			});
 
 			await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);
+		} else {
+			logger.info('重複データにつき DB 登録スルー');
 		}
 
 		return new Response(null, {
 			status: 204,
 		});
-	}
-}
+	})
+	.post('/js-sample', validator, () => new Response(null, { status: 204 }));
+
+export default app;

@@ -1,21 +1,22 @@
 import ejs from 'ejs';
-import ip from 'ip';
-import type { Context } from 'hono';
+import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import Controller from '../Controller.js';
-import type ControllerInterface from '../ControllerInterface.js';
+import ip from 'ip';
+import Log4js from 'log4js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
 import Mail from '../util/Mail.js';
-import type { RequestBody } from '../validator/referrer.js';
+import validator from '../validator/referrer.js';
 
 /**
  * リファラーエラー
  */
-export default class ReferrerController extends Controller implements ControllerInterface {
-	async execute(context: Context): Promise<Response> {
+const logger = Log4js.getLogger('referrer');
+
+const app = new Hono()
+	.post('/referrer', validator, async (context) => {
 		const { req } = context;
 
-		const { location, referrer }: RequestBody = req.valid('json' as never);
+		const { location, referrer } = req.valid('json');
 
 		const ua = req.header('User-Agent');
 		const ipAddress = ip.address();
@@ -48,10 +49,14 @@ export default class ReferrerController extends Controller implements Controller
 			});
 
 			await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);
+		} else {
+			logger.info('重複データにつき DB 登録スルー');
 		}
 
 		return new Response(null, {
 			status: 204,
 		});
-	}
-}
+	})
+	.post('/referrer-sample', validator, () => new Response(null, { status: 204 }));
+
+export default app;
