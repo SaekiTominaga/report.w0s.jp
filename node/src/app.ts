@@ -8,10 +8,8 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
 import config from './config/hono.js';
-import JsController from './controller/JsController.js';
-import ReferrerController from './controller/ReferrerController.js';
-import jsValidator from './validator/js.js';
-import referrerValidator from './validator/referrer.js';
+import js from './controller/js.js';
+import referrer from './controller/referrer.js';
 
 dotenv.config({
 	path: process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development',
@@ -27,7 +25,6 @@ const logger = Log4js.getLogger();
 
 /* Hono */
 const app = new Hono();
-export default app;
 
 app.use(async (context, next) => {
 	const { headers } = context.res;
@@ -97,14 +94,11 @@ app.use(
 	}),
 );
 
-/* JavaScript error */
-app.post('/report/js', jsValidator, async (context) => await new JsController().execute(context));
-app.post('/report/js-sample', jsValidator, () => new Response(null, { status: 204 }));
+/* Routes */
+app.route('/report/', js);
+app.route('/report/', referrer);
 
-/* Referrer error */
-app.post('/report/referrer', referrerValidator, async (context) => await new ReferrerController().execute(context));
-app.post('/report/referrer-sample', referrerValidator, () => new Response(null, { status: 204 }));
-
+/* Error pages */
 app.notFound((context) =>
 	context.html(
 		`<!DOCTYPE html>
@@ -150,3 +144,5 @@ if (process.env['TEST'] !== 'test') {
 		port: Number(port),
 	});
 }
+
+export default app;

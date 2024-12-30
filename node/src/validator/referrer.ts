@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
-export interface RequestBody {
+interface RequestBody {
 	location: string;
 	referrer: string;
 }
