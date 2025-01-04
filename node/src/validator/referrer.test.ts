@@ -2,10 +2,7 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 
-const origin = process.env['CORS_ORIGINS']?.split(' ').at(0);
-if (origin === undefined) {
-	throw new Error('Origin for CORS is not set');
-}
+const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
 await test('cors', async () => {
 	const res = await app.request('/report/referrer', {
