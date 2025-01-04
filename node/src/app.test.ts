@@ -26,17 +26,29 @@ await test('favicon.ico', async () => {
 	assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
 });
 
-await test('404', async () => {
-	const res = await app.request('/foo');
+await test('404', async (t) => {
+	await t.test('normal', async () => {
+		const res = await app.request('/foo');
 
-	assert.equal(res.status, 404);
-	assert.equal(res.headers.get('Content-Type'), 'text/html; charset=UTF-8');
-	assert.equal(
-		await res.text(),
-		`<!DOCTYPE html>
+		assert.equal(res.status, 404);
+		assert.equal(res.headers.get('Content-Type'), 'text/html; charset=UTF-8');
+		assert.equal(
+			await res.text(),
+			`<!DOCTYPE html>
 <html lang=en>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>report.w0s.jp</title>
 <h1>404 Not Found</h1>`,
-	);
+		);
+	});
+
+	await t.test('API', async () => {
+		const res = await app.request('/report/', {
+			method: 'post',
+		});
+
+		assert.equal(res.status, 404);
+		assert.equal(res.headers.get('Content-Type'), 'application/json');
+		assert.deepStrictEqual(await res.json(), { message: '404 Not Found' });
+	});
 });

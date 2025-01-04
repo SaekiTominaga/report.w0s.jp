@@ -2,10 +2,7 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 
-const origin = process.env['CORS_ORIGINS']?.split(' ').at(0);
-if (origin === undefined) {
-	throw new Error('Origin for CORS is not set');
-}
+const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
 await test('cors', async () => {
 	const res = await app.request('/report/js', {
@@ -13,8 +10,7 @@ await test('cors', async () => {
 	});
 
 	assert.equal(res.status, 403);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), '`Access-Control-Allow-Origin` header does not exist');
+	assert.equal((await res.json()).message, '`Access-Control-Allow-Origin` header does not exist');
 });
 
 await test('location undefined', async () => {
@@ -24,8 +20,7 @@ await test('location undefined', async () => {
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'The `location` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `location` parameter is invalid');
 });
 
 await test('message undefined', async () => {
@@ -36,8 +31,7 @@ await test('message undefined', async () => {
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'The `message` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `message` parameter is invalid');
 });
 
 await test('filename undefined', async () => {
@@ -48,8 +42,7 @@ await test('filename undefined', async () => {
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'The `filename` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `filename` parameter is invalid');
 });
 
 await test('lineno undefined', async () => {
@@ -60,8 +53,7 @@ await test('lineno undefined', async () => {
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'The `lineno` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `lineno` parameter is invalid');
 });
 
 await test('colno undefined', async () => {
@@ -72,6 +64,5 @@ await test('colno undefined', async () => {
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'The `colno` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `colno` parameter is invalid');
 });

@@ -9,9 +9,9 @@ export default [
 		ignores: ['node/dist/**/*.js'],
 	},
 	{
-		files: ['node/src/controller/**/*.ts'],
+		files: ['node/src/validator/*.test.ts'],
 		rules: {
-			'class-methods-use-this': 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off',
 		},
 	},
 ];
