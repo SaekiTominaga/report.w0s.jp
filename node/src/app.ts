@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as dotenv from 'dotenv';
-import { Hono, type Context } from 'hono';
+import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status.js';
@@ -11,6 +11,7 @@ import Log4js from 'log4js';
 import config from './config/hono.js';
 import js from './controller/js.js';
 import referrer from './controller/referrer.js';
+import { isApi } from './util/request.js';
 
 dotenv.config({
 	path: process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development',
@@ -99,11 +100,10 @@ app.route(`/${config.api.dir}/`, js);
 app.route(`/${config.api.dir}/`, referrer);
 
 /* Error pages */
-const isApiUrl = (context: Context) => context.req.path.startsWith(`/${config.api.dir}/`) && config.api.allowMethods.includes(context.req.method);
 app.notFound((context) => {
 	const TITLE = '404 Not Found';
 
-	if (isApiUrl(context)) {
+	if (isApi(context)) {
 		return context.json({ message: TITLE }, 404);
 	}
 
@@ -137,7 +137,7 @@ app.onError((err, context) => {
 		logger.fatal(err.message);
 	}
 
-	if (isApiUrl(context)) {
+	if (isApi(context)) {
 		return context.json({ message: message ?? title }, status);
 	}
 
