@@ -30,4 +30,8 @@ export default {
 			},
 		},
 	},
+	api: {
+		dir: 'report', // API を示すディレクトリ
+		allowMethods: ['POST'],
+	},
 };

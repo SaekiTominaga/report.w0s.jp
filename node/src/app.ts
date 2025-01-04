@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as dotenv from 'dotenv';
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
+import type { ContentfulStatusCode } from 'hono/utils/http-status.js';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
@@ -39,7 +40,7 @@ app.use(async (context, next) => {
 	headers.set(
 		'Reporting-Endpoints',
 		Object.entries(config.response.header.reportingEndpoints)
-			.map((endpoint) => `${endpoint[0]}="${endpoint[1]}"`)
+			.map(([key, value]) => `${key}="${value}"`)
 			.join(','),
 	);
 
@@ -85,50 +86,69 @@ app.use(
 );
 
 /* CORS */
-const corsAllowOrigins = process.env['CORS_ORIGINS']?.split(' ');
 app.use(
-	'/report/*',
+	`/${config.api.dir}/*`,
 	cors({
-		origin: corsAllowOrigins ?? '*',
-		allowMethods: ['POST'],
+		origin: process.env['CORS_ORIGINS']?.split(' ') ?? '*',
+		allowMethods: config.api.allowMethods,
 	}),
 );
 
 /* Routes */
-app.route('/report/', js);
-app.route('/report/', referrer);
+app.route(`/${config.api.dir}/`, js);
+app.route(`/${config.api.dir}/`, referrer);
 
 /* Error pages */
-app.notFound((context) =>
-	context.html(
+const isApiUrl = (context: Context) => context.req.path.startsWith(`/${config.api.dir}/`) && config.api.allowMethods.includes(context.req.method);
+app.notFound((context) => {
+	const TITLE = '404 Not Found';
+
+	if (isApiUrl(context)) {
+		return context.json({ message: TITLE }, 404);
+	}
+
+	return context.html(
 		`<!DOCTYPE html>
 <html lang=en>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <title>report.w0s.jp</title>
-<h1>404 Not Found</h1>`,
+<h1>${TITLE}</h1>`,
 		404,
-	),
-);
+	);
+});
 app.onError((err, context) => {
-	const MESSAGE_5XX = 'Server error has occurred';
+	const TITLE_4XX = 'Client error';
+	const TITLE_5XX = 'Server error';
 
+	let status: ContentfulStatusCode = 500;
+	let title = TITLE_5XX;
+	let message: string | undefined;
 	if (err instanceof HTTPException) {
-		const { status, message } = err;
+		status = err.status;
+		message = err.message;
 
-		if (status >= 400 && status < 500) {
-			logger.info(message, context.req.header('User-Agent'));
+		if (err.status >= 400 && err.status < 500) {
+			logger.info(err.message, context.req.header('User-Agent'));
+			title = TITLE_4XX;
 		} else {
-			if (message !== '') {
-				logger.error(message);
-			}
-			err.message = MESSAGE_5XX;
+			logger.error(err.message);
 		}
-
-		return err.getResponse();
+	} else {
+		logger.fatal(err.message);
 	}
 
-	logger.fatal(err.message);
-	return context.text(MESSAGE_5XX, 500);
+	if (isApiUrl(context)) {
+		return context.json({ message: message ?? title }, status);
+	}
+
+	return context.html(
+		`<!DOCTYPE html>
+<html lang=en>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>report.w0s.jp</title>
+<h1>${title}</h1>`,
+		status,
+	);
 });
 
 /* HTTP Server */

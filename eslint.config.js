@@ -8,4 +8,10 @@ export default [
 	{
 		ignores: ['node/dist/**/*.js'],
 	},
+	{
+		files: ['node/src/validator/*.test.ts'],
+		rules: {
+			'@typescript-eslint/no-unsafe-member-access': 'off',
+		},
+	},
 ];
