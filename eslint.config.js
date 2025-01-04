@@ -8,10 +8,4 @@ export default [
 	{
 		ignores: ['node/dist/**/*.js'],
 	},
-	{
-		files: ['node/src/controller/**/*.ts'],
-		rules: {
-			'class-methods-use-this': 'off',
-		},
-	},
 ];
