@@ -25,7 +25,7 @@ await test('location undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `location`');
+	assert.equal(await res.text(), 'The `location` parameter is invalid');
 });
 
 await test('referrer undefined', async () => {
@@ -37,5 +37,5 @@ await test('referrer undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `referrer`');
+	assert.equal(await res.text(), 'The `referrer` parameter is invalid');
 });

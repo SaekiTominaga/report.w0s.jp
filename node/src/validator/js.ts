@@ -17,19 +17,19 @@ export default validator('json', (value: Record<string, unknown>, context): Requ
 	const { location, message, filename, lineno, colno } = value;
 
 	if (typeof location !== 'string') {
-		throw new HTTPException(400, { message: 'Invalid paramater: `location`' });
+		throw new HTTPException(400, { message: 'The `location` parameter is invalid' });
 	}
 	if (typeof message !== 'string') {
-		throw new HTTPException(400, { message: 'Invalid paramater: `message`' });
+		throw new HTTPException(400, { message: 'The `message` parameter is invalid' });
 	}
 	if (typeof filename !== 'string') {
-		throw new HTTPException(400, { message: 'Invalid paramater: `filename`' });
+		throw new HTTPException(400, { message: 'The `filename` parameter is invalid' });
 	}
 	if (typeof lineno !== 'string' && typeof lineno !== 'number') {
-		throw new HTTPException(400, { message: 'Invalid paramater: `lineno`' });
+		throw new HTTPException(400, { message: 'The `lineno` parameter is invalid' });
 	}
 	if (typeof colno !== 'string' && typeof colno !== 'number') {
-		throw new HTTPException(400, { message: 'Invalid paramater: `colno`' });
+		throw new HTTPException(400, { message: 'The `colno` parameter is invalid' });
 	}
 
 	return {

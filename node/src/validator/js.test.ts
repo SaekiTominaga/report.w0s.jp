@@ -25,7 +25,7 @@ await test('location undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `location`');
+	assert.equal(await res.text(), 'The `location` parameter is invalid');
 });
 
 await test('message undefined', async () => {
@@ -37,7 +37,7 @@ await test('message undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `message`');
+	assert.equal(await res.text(), 'The `message` parameter is invalid');
 });
 
 await test('filename undefined', async () => {
@@ -49,7 +49,7 @@ await test('filename undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `filename`');
+	assert.equal(await res.text(), 'The `filename` parameter is invalid');
 });
 
 await test('lineno undefined', async () => {
@@ -61,7 +61,7 @@ await test('lineno undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `lineno`');
+	assert.equal(await res.text(), 'The `lineno` parameter is invalid');
 });
 
 await test('colno undefined', async () => {
@@ -73,5 +73,5 @@ await test('colno undefined', async () => {
 
 	assert.equal(res.status, 400);
 	assert.equal(res.headers.get('Content-Type'), 'text/plain;charset=UTF-8');
-	assert.equal(await res.text(), 'Invalid paramater: `colno`');
+	assert.equal(await res.text(), 'The `colno` parameter is invalid');
 });
