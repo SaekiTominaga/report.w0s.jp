@@ -35,7 +35,12 @@ app.use(async (context, next) => {
 	headers.set('Strict-Transport-Security', config.response.header.hsts);
 
 	/* CSP */
-	headers.set('Content-Security-Policy', config.response.header.csp);
+	headers.set(
+		'Content-Security-Policy',
+		Object.entries(config.response.header.csp)
+			.map(([key, values]) => `${key} ${values.join(' ')}`)
+			.join(';'),
+	);
 
 	/* Report */
 	headers.set(
