@@ -29,16 +29,19 @@ const logger = Log4js.getLogger();
 const app = new Hono();
 
 app.use(async (context, next) => {
-	const { headers } = context.res;
-
 	/* HSTS */
-	headers.set('Strict-Transport-Security', config.response.header.hsts);
+	context.header('Strict-Transport-Security', config.response.header.hsts);
 
 	/* CSP */
-	headers.set('Content-Security-Policy', config.response.header.csp);
+	context.header(
+		'Content-Security-Policy',
+		Object.entries(config.response.header.csp)
+			.map(([key, values]) => `${key} ${values.join(' ')}`)
+			.join(';'),
+	);
 
 	/* Report */
-	headers.set(
+	context.header(
 		'Reporting-Endpoints',
 		Object.entries(config.response.header.reportingEndpoints)
 			.map(([key, value]) => `${key}="${value}"`)
@@ -46,15 +49,17 @@ app.use(async (context, next) => {
 	);
 
 	/* MIME スニッフィング抑止 */
-	headers.set('X-Content-Type-Options', 'nosniff');
+	context.header('X-Content-Type-Options', 'nosniff');
 
 	await next();
 });
 
 app.get('/favicon.ico', async (context, next) => {
+	const { res } = context;
+
 	const file = await fs.promises.readFile(`${config.static.root}/favicon.ico`);
 
-	context.res.headers.set('Content-Type', 'image/svg+xml;charset=utf-8');
+	res.headers.set('Content-Type', 'image/svg+xml;charset=utf-8'); // `context.header` だと実際には問題ないが、test で落ちる
 	context.body(file);
 
 	await next();
@@ -128,7 +133,7 @@ app.onError((err, context) => {
 		message = err.message;
 
 		if (err.status >= 400 && err.status < 500) {
-			logger.info(err.message, context.req.header('User-Agent'));
+			logger.info(err.status, err.message, context.req.header('User-Agent'));
 			title = TITLE_4XX;
 		} else {
 			logger.error(err.message);

@@ -2,20 +2,20 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from './app.js';
 
+await test('headers', async () => {
+	const res = await app.request('/');
+
+	assert.equal(res.headers.get('Strict-Transport-Security'), 'max-age=31536000');
+	assert.equal(res.headers.get('Content-Security-Policy'), "frame-ancestors 'self';report-uri https://w0sjp.report-uri.com/r/d/csp/enforce;report-to default");
+	assert.equal(res.headers.get('Reporting-Endpoints'), 'default="https://w0sjp.report-uri.com/a/d/g"');
+	assert.equal(res.headers.get('X-Content-Type-Options'), 'nosniff');
+});
+
 await test('Top page', async () => {
 	const res = await app.request('/');
 
 	assert.equal(res.status, 200);
 	assert.equal(res.headers.get('Content-Type'), 'text/html; charset=utf-8');
-	assert.equal(res.headers.get('Cache-Control'), 'max-age=600');
-});
-
-await test('Cache-Control: extension', async () => {
-	const res = await app.request('/apple-touch-icon.png');
-
-	assert.equal(res.status, 200);
-	assert.equal(res.headers.get('Content-Type'), 'image/png');
-	assert.equal(res.headers.get('Cache-Control'), 'max-age=3600');
 });
 
 await test('favicon.ico', async () => {
@@ -23,7 +23,31 @@ await test('favicon.ico', async () => {
 
 	assert.equal(res.status, 200);
 	assert.equal(res.headers.get('Content-Type'), 'image/svg+xml;charset=utf-8');
-	assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
+});
+
+await test('serveStatic', async (t) => {
+	await t.test('Cache-Control: path', async () => {
+		const res = await app.request('/favicon.ico');
+
+		assert.equal(res.status, 200);
+		assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
+	});
+
+	await t.test('Cache-Control: extension', async () => {
+		const res = await app.request('/apple-touch-icon.png');
+
+		assert.equal(res.status, 200);
+		assert.equal(res.headers.get('Content-Type'), 'image/png');
+		assert.equal(res.headers.get('Cache-Control'), 'max-age=3600');
+	});
+
+	await t.test('Cache-Control: default', async () => {
+		const res = await app.request('/robots.txt');
+
+		assert.equal(res.status, 200);
+		assert.equal(res.headers.get('Content-Type'), 'text/plain; charset=utf-8');
+		assert.equal(res.headers.get('Cache-Control'), 'max-age=600');
+	});
 });
 
 await test('404', async (t) => {
