@@ -5,6 +5,6 @@ import { json as jsonValidator } from '../validator/referrer.js';
 /**
  * リファラーエラー（サンプル）
  */
-const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, () => new Response(null, { status: 204 }));
+const app = new Hono().post('/', corsMiddleware, jsonValidator, () => new Response(null, { status: 204 }));
 
 export default app;

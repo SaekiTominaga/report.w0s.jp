@@ -13,7 +13,7 @@ import { json as jsonValidator } from '../validator/referrer.js';
  */
 const logger = Log4js.getLogger('referrer');
 
-const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, async (context) => {
+const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { location, referrer } = req.valid('json');
