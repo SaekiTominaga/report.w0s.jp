@@ -1,0 +1,99 @@
+import { prepareWhereEqual } from '../util/sql.js';
+import ReportDao from './ReportDao.js';
+
+/**
+ * CSP エラー
+ */
+export default class ReportJsDao extends ReportDao {
+	/**
+	 * 同一内容のエラーが既に登録されているかどうか
+	 *
+	 * @param data - 登録データ
+	 *
+	 * @returns 既に登録されていれば true
+	 */
+	async same(data: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>): Promise<boolean> {
+		interface Select {
+			count: number;
+		}
+
+		const { sqlWhere, bind } = prepareWhereEqual({
+			document_uri: data.documentUri,
+			referrer: data.referrer,
+			blocked_uri: data.blockedUri,
+			effective_directive: data.effectiveDirective,
+			original_policy: data.originalPolicy,
+			disposition: data.disposition,
+			status_code: data.statusCode,
+			sample: data.sample,
+			source_file: data.sourceFile,
+			line_number: data.lineNumber,
+			column_number: data.columnNumber,
+			ua: data.ua,
+			ip: data.ip,
+		});
+
+		const dbh = await this.getDbh();
+
+		const sth = await dbh.prepare(`
+			SELECT
+				COUNT(registered_at) AS count
+			FROM
+				d_csp
+			WHERE
+				${sqlWhere}
+		`);
+		await sth.bind(bind);
+
+		const row = await sth.get<Select>();
+		await sth.finalize();
+
+		if (row === undefined) {
+			return false;
+		}
+
+		return row.count >= 1;
+	}
+
+	/**
+	 * エラー内容を DB に登録
+	 *
+	 * @param data - 登録データ
+	 */
+	async insert(data: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>): Promise<void> {
+		const dbh = await this.getDbh();
+
+		await dbh.exec('BEGIN');
+		try {
+			const sth = await dbh.prepare(`
+				INSERT INTO
+					d_csp
+					( document_uri,  referrer,  blocked_uri,  effective_directive,  original_policy,  disposition,  status_code,  sample,  source_file,  line_number,  column_number,  ua,  ip,  registered_at)
+				VALUES
+					(:document_uri, :referrer, :blocked_uri, :effective_directive, :original_policy, :disposition, :status_code, :sample, :source_file, :line_number, :column_number, :ua, :ip, :registered_at)
+			`);
+			await sth.run({
+				':document_uri': data.documentUri,
+				':referrer': data.referrer,
+				':blocked_uri': data.blockedUri,
+				':effective_directive': data.effectiveDirective,
+				':original_policy': data.originalPolicy,
+				':disposition': data.disposition,
+				':status_code': data.statusCode,
+				':sample': data.sample ?? null,
+				':source_file': data.sourceFile ?? null,
+				':line_number': data.lineNumber ?? null,
+				':column_number': data.columnNumber ?? null,
+				':ua': data.ua ?? null,
+				':ip': data.ip,
+				':registered_at': Math.round(Date.now() / 1000),
+			});
+			await sth.finalize();
+
+			await dbh.exec('COMMIT');
+		} catch (e) {
+			await dbh.exec('ROLLBACK');
+			throw e;
+		}
+	}
+}
