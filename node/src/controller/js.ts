@@ -6,14 +6,14 @@ import Log4js from 'log4js';
 import ReportJsDao from '../dao/ReportJsDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
 import Mail from '../util/Mail.js';
-import validator from '../validator/js.js';
+import { json as jsonValidator } from '../validator/js.js';
 
 /**
  * JavaScript エラー
  */
 const logger = Log4js.getLogger('js');
 
-const app = new Hono().post('/', corsMiddleware).post('/', validator, async (context) => {
+const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { location, message, filename, lineno, colno } = req.valid('json');

@@ -6,14 +6,14 @@ import Log4js from 'log4js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
 import Mail from '../util/Mail.js';
-import validator from '../validator/referrer.js';
+import { json as jsonValidator } from '../validator/referrer.js';
 
 /**
  * リファラーエラー
  */
 const logger = Log4js.getLogger('referrer');
 
-const app = new Hono().post('/', corsMiddleware).post('/', validator, async (context) => {
+const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { location, referrer } = req.valid('json');

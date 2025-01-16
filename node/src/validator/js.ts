@@ -1,7 +1,7 @@
 import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
-interface RequestBody {
+interface RequestJson {
 	location: string;
 	message: string;
 	filename: string;
@@ -9,7 +9,7 @@ interface RequestBody {
 	colno: number;
 }
 
-export default validator('json', (value: Record<string, unknown>): RequestBody => {
+export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
 	const { location, message, filename, lineno, colno } = value;
 
 	if (typeof location !== 'string') {

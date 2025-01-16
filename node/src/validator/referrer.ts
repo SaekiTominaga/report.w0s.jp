@@ -1,12 +1,12 @@
 import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
-interface RequestBody {
+interface RequestJson {
 	location: string;
 	referrer: string;
 }
 
-export default validator('json', (value: Record<string, unknown>): RequestBody => {
+export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
 	const { location, referrer } = value;
 
 	if (typeof location !== 'string') {

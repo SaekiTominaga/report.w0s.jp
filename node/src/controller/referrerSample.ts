@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { cors as corsMiddleware } from '../middleware/cors.js';
-import validator from '../validator/referrer.js';
+import { json as jsonValidator } from '../validator/referrer.js';
 
 /**
  * リファラーエラー（サンプル）
  */
-const app = new Hono().post('/', corsMiddleware).post('/', validator, () => new Response(null, { status: 204 }));
+const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, () => new Response(null, { status: 204 }));
 
 export default app;
