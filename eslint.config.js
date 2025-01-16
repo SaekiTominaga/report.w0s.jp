@@ -9,7 +9,7 @@ export default [
 		ignores: ['node/dist/**/*.js'],
 	},
 	{
-		files: ['node/src/validator/*.test.ts'],
+		files: ['node/src/**/*.test.ts'],
 		rules: {
 			'@typescript-eslint/no-unsafe-member-access': 'off',
 		},

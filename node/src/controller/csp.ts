@@ -4,6 +4,7 @@ import { HTTPException } from 'hono/http-exception';
 import ip from 'ip';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
+import { cors as corsMiddleware } from '../middleware/cors.js';
 import Mail from '../util/Mail.js';
 import { headerValidator } from '../validator/csp.js';
 
@@ -31,7 +32,7 @@ interface CSPReport {
  */
 const logger = Log4js.getLogger('csp');
 
-const app = new Hono().post('/', headerValidator, async (context) => {
+const app = new Hono().post('/', corsMiddleware).post('/', headerValidator, async (context) => {
 	const { req } = context;
 
 	const { 'csp-report': cspReport } = await req.json<CSPReport>();

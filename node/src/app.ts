@@ -11,7 +11,9 @@ import Log4js from 'log4js';
 import config from './config/hono.js';
 import csp from './controller/csp.js';
 import js from './controller/js.js';
+import jsSample from './controller/jsSample.js';
 import referrer from './controller/referrer.js';
+import referrerSample from './controller/referrerSample.js';
 import { isApi } from './util/request.js';
 
 dotenv.config({
@@ -103,8 +105,10 @@ app.use(
 
 /* Routes */
 app.route(`/${config.api.dir}/csp`, csp);
-app.route(`/${config.api.dir}/`, js);
-app.route(`/${config.api.dir}/`, referrer);
+app.route(`/${config.api.dir}/js`, js);
+app.route(`/${config.api.dir}/js-sample`, jsSample);
+app.route(`/${config.api.dir}/referrer`, referrer);
+app.route(`/${config.api.dir}/referrer-sample`, referrerSample);
 
 /* Error pages */
 app.notFound((context) => {

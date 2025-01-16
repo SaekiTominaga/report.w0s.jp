@@ -5,7 +5,7 @@ import app from '../app.js';
 const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
 await test('cors', async () => {
-	const res = await app.request('/report/js', {
+	const res = await app.request('/report/referrer-sample', {
 		method: 'post',
 	});
 
@@ -14,10 +14,10 @@ await test('cors', async () => {
 });
 
 await test('success', async () => {
-	const res = await app.request('/report/js', {
+	const res = await app.request('/report/referrer-sample', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', message: 'xxx', filename: 'xxx', lineno: 1, colno: 1 }),
+		body: JSON.stringify({ location: 'xxx', referrer: 'xxx' }),
 	});
 
 	assert.equal(res.status, 204);

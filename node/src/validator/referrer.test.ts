@@ -4,15 +4,6 @@ import app from '../app.js';
 
 const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
-await test('cors', async () => {
-	const res = await app.request('/report/referrer', {
-		method: 'post',
-	});
-
-	assert.equal(res.status, 403);
-	assert.equal((await res.json()).message, '`Access-Control-Allow-Origin` header does not exist');
-});
-
 await test('location undefined', async () => {
 	const res = await app.request('/report/referrer', {
 		method: 'post',

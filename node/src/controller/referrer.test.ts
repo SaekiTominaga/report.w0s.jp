@@ -4,20 +4,17 @@ import app from '../app.js';
 
 const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
-await test('success', async () => {
+await test('cors', async () => {
 	const res = await app.request('/report/referrer', {
 		method: 'post',
-		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', referrer: 'xxx' }),
 	});
 
-	assert.equal(res.status, 204);
-	assert.equal(res.headers.get('Content-Type'), null);
-	assert.equal(await res.text(), '');
+	assert.equal(res.status, 403);
+	assert.equal((await res.json()).message, 'Access from an unauthorized origin');
 });
 
-await test('sample', async () => {
-	const res = await app.request('/report/referrer-sample', {
+await test('success', async () => {
+	const res = await app.request('/report/referrer', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
 		body: JSON.stringify({ location: 'xxx', referrer: 'xxx' }),
