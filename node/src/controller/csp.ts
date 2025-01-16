@@ -6,7 +6,7 @@ import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
 import Mail from '../util/Mail.js';
-import { headerValidator } from '../validator/csp.js';
+import { header as headerValidator } from '../validator/csp.js';
 
 interface CSPReport {
 	/* https://w3c.github.io/webappsec-csp/#deprecated-serialize-violation */
