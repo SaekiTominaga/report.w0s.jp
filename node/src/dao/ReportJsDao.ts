@@ -1,4 +1,4 @@
-import type { Statement } from 'sqlite';
+import { prepareWhereEqual } from '../util/sql.js';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -9,67 +9,35 @@ export default class ReportJsDao extends ReportDao {
 	 * 同一内容のエラーが既に登録されているかどうか
 	 *
 	 * @param data - 登録データ
-	 * @param data.message - エラーメッセージ
-	 * @param data.jsUrl - JS ファイルの URL
-	 * @param data.lineno - 発生箇所の行数
-	 * @param data.colno - 発生箇所の列数
-	 * @param data.ua - UA 文字列
-	 * @param data.ip - IP アドレス
 	 *
 	 * @returns 既に登録されていれば true
 	 */
-	async same(data: { message: string; jsUrl: string; lineno: number; colno: number; ua: string | undefined; ip: string }): Promise<boolean> {
+	async same(data: Readonly<Omit<ReportDB.JS, 'registeredAt'>>): Promise<boolean> {
 		interface Select {
 			count: number;
 		}
 
+		const { sqlWhere, bind } = prepareWhereEqual({
+			message: data.message,
+			js_url: data.jsURL,
+			lineno: data.lineNumber,
+			colno: data.columnNumber,
+			ua: data.ua,
+			ip: data.ip,
+		});
+
 		const dbh = await this.getDbh();
 
-		let sth: Statement;
-		if (data.ua !== undefined) {
-			sth = await dbh.prepare(`
-				SELECT
-					COUNT(insert_date) AS count
-				FROM
-					d_js
-				WHERE
-					message = :message AND
-					js_url = :js_url AND
-					lineno = :lineno AND
-					colno = :colno AND
-					ua = :ua AND
-					ip = :ip
-			`);
-			await sth.bind({
-				':message': data.message,
-				':js_url': data.jsUrl,
-				':lineno': data.lineno,
-				':colno': data.colno,
-				':ua': data.ua,
-				':ip': data.ip,
-			});
-		} else {
-			sth = await dbh.prepare(`
-				SELECT
-					COUNT(insert_date) AS count
-				FROM
-					d_js
-				WHERE
-					message = :message AND
-					js_url = :js_url AND
-					lineno = :lineno AND
-					colno = :colno AND
-					ua IS NULL AND
-					ip = :ip
-			`);
-			await sth.bind({
-				':message': data.message,
-				':js_url': data.jsUrl,
-				':lineno': data.lineno,
-				':colno': data.colno,
-				':ip': data.ip,
-			});
-		}
+		const sth = await dbh.prepare(`
+			SELECT
+				COUNT(insert_date) AS count
+			FROM
+				d_js
+			WHERE
+				${sqlWhere}
+		`);
+		await sth.bind(bind);
+
 		const row = await sth.get<Select>();
 		await sth.finalize();
 
@@ -84,15 +52,8 @@ export default class ReportJsDao extends ReportDao {
 	 * エラー内容を DB に登録
 	 *
 	 * @param data - 登録データ
-	 * @param data.pageUrl - ページ URL
-	 * @param data.message - エラーメッセージ
-	 * @param data.jsUrl - JS ファイルの URL
-	 * @param data.lineno - 発生箇所の行数
-	 * @param data.colno - 発生箇所の列数
-	 * @param data.ua - UA 文字列
-	 * @param data.ip - IP アドレス
 	 */
-	async insert(data: { pageUrl: string; message: string; jsUrl: string; lineno: number; colno: number; ua: string | undefined; ip: string }): Promise<void> {
+	async insert(data: Readonly<Omit<ReportDB.JS, 'registeredAt'>>): Promise<void> {
 		const dbh = await this.getDbh();
 
 		await dbh.exec('BEGIN');
@@ -100,19 +61,19 @@ export default class ReportJsDao extends ReportDao {
 			const insertDataSth = await dbh.prepare(`
 				INSERT INTO
 					d_js
-					(page_url, message, js_url, lineno, colno, ua, ip, insert_date)
+					( page_url,  message,  js_url,  lineno,       colno,          ua,  ip,  insert_date)
 				VALUES
-					(:page_url, :message, :js_url, :lineno, :colno, :ua, :ip, :insert_date)
+					(:page_url, :message, :js_url, :line_number, :column_number, :ua, :ip, :registered_at)
 			`);
 			await insertDataSth.run({
-				':page_url': data.pageUrl,
+				':page_url': data.pageURL,
 				':message': data.message,
-				':js_url': data.jsUrl,
-				':lineno': data.lineno,
-				':colno': data.colno,
+				':js_url': data.jsURL,
+				':line_number': data.lineNumber,
+				':column_number': data.columnNumber,
 				':ua': data.ua ?? null,
 				':ip': data.ip,
-				':insert_date': Math.round(Date.now() / 1000),
+				':registered_at': Math.round(Date.now() / 1000),
 			});
 			await insertDataSth.finalize();
 

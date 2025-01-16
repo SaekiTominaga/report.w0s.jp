@@ -15,4 +15,21 @@ declare namespace ReportDB {
 		ip: string;
 		registeredAt: Date;
 	}
+
+	interface JS {
+		pageURL: string;
+		message: string;
+		jsURL: string;
+		lineNumber: number;
+		columnNumber: number;
+		ua: string | undefined;
+		ip: string;
+		registeredAt: Date;
+	}
+
+	interface Referrer {
+		pageURL: string;
+		referrer: string;
+		registeredAt: Date;
+	}
 }

@@ -29,10 +29,11 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const dao = new ReportJsDao(dbFilePath);
 
 	const existSameData = await dao.same({
+		pageURL: location,
 		message: message,
-		jsUrl: filename,
-		lineno: lineno,
-		colno: colno,
+		jsURL: filename,
+		lineNumber: lineno,
+		columnNumber: colno,
 		ua: ua,
 		ip: ipAddress,
 	});
@@ -40,11 +41,11 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			pageUrl: location,
+			pageURL: location,
 			message: message,
-			jsUrl: filename,
-			lineno: lineno,
-			colno: colno,
+			jsURL: filename,
+			lineNumber: lineno,
+			columnNumber: colno,
 			ua: ua,
 			ip: ipAddress,
 		});
