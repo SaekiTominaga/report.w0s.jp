@@ -4,38 +4,61 @@ import app from '../app.js';
 
 const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
 
-await test('cors', async () => {
-	const res = await app.request('/report/csp', {
-		method: 'post',
+await test('success', async (t) => {
+	await t.test('Reporting API v1', async () => {
+		const res = await app.request('/report/csp', {
+			method: 'post',
+			headers: new Headers({ Origin: origin, 'Content-Type': 'application/reports+json' }),
+			body: JSON.stringify({
+				age: 1,
+				body: {
+					documentURL: 'documentURL',
+					referrer: 'referrer',
+					blockedURL: 'blockedURL',
+					effectiveDirective: 'effectiveDirective',
+					originalPolicy: 'originalPolicy',
+					sourceFile: 'sourceFile',
+					sample: 'sample',
+					disposition: 'disposition',
+					statusCode: 1,
+					lineNumber: 2,
+					columnNumber: 3,
+				},
+				type: 'cors',
+				url: 'https://example.com/',
+				user_agent: 'Mozilla/5.0...',
+			}),
+		});
+
+		assert.equal(res.status, 204);
+		assert.equal(res.headers.get('Content-Type'), null);
+		assert.equal(await res.text(), '');
 	});
 
-	assert.equal(res.status, 403);
-	assert.equal((await res.json()).message, 'Access from an unauthorized origin');
-});
+	await t.test('report-uri', async () => {
+		const res = await app.request('/report/csp', {
+			method: 'post',
+			headers: new Headers({ Origin: origin, 'Content-Type': 'application/csp-report' }),
+			body: JSON.stringify({
+				'csp-report': {
+					'document-uri': 'document-uri',
+					referrer: 'referrer',
+					'blocked-uri': 'blocked-uri',
+					'effective-directive': 'effective-directive',
+					'violated-directive': 'violated-directive',
+					'original-policy': 'original-policy',
+					disposition: 'disposition',
+					'status-code': 1,
+					'script-sample': 'script-sample',
+					'source-file': 'source-file',
+					'line-number': 2,
+					'column-number': 3,
+				},
+			}),
+		});
 
-await test('success', async () => {
-	const res = await app.request('/report/csp', {
-		method: 'post',
-		headers: new Headers({ Origin: origin, 'Content-Type': 'application/csp-report' }),
-		body: JSON.stringify({
-			'csp-report': {
-				'document-uri': 'document-uri',
-				referrer: 'referrer',
-				'blocked-uri': 'blocked-uri',
-				'effective-directive': 'effective-directive',
-				'violated-directive': 'violated-directive',
-				'original-policy': 'original-policy',
-				disposition: 'disposition',
-				'status-code': 1,
-				'script-sample': 'script-sample',
-				'source-file': 'source-file',
-				'line-number': 2,
-				'column-number': 3,
-			},
-		}),
+		assert.equal(res.status, 204);
+		assert.equal(res.headers.get('Content-Type'), null);
+		assert.equal(await res.text(), '');
 	});
-
-	assert.equal(res.status, 204);
-	assert.equal(res.headers.get('Content-Type'), null);
-	assert.equal(await res.text(), '');
 });

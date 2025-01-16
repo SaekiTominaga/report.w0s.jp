@@ -18,15 +18,15 @@ export default class ReportJsDao extends ReportDao {
 		}
 
 		const { sqlWhere, bind } = prepareWhereEqual({
-			document_uri: data.documentUri,
+			document_url: data.documentURL,
 			referrer: data.referrer,
-			blocked_uri: data.blockedUri,
+			blocked_url: data.blockedURL,
 			effective_directive: data.effectiveDirective,
 			original_policy: data.originalPolicy,
+			source_file: data.sourceFile,
+			sample: data.sample,
 			disposition: data.disposition,
 			status_code: data.statusCode,
-			sample: data.sample,
-			source_file: data.sourceFile,
 			line_number: data.lineNumber,
 			column_number: data.columnNumber,
 			ua: data.ua,
@@ -68,14 +68,14 @@ export default class ReportJsDao extends ReportDao {
 			const sth = await dbh.prepare(`
 				INSERT INTO
 					d_csp
-					( document_uri,  referrer,  blocked_uri,  effective_directive,  original_policy,  disposition,  status_code,  sample,  source_file,  line_number,  column_number,  ua,  ip,  registered_at)
+					( document_url,  referrer,  blocked_url,  effective_directive,  original_policy,  source_file,  sample,  disposition,  status_code,  line_number,  column_number,  ua,  ip,  registered_at)
 				VALUES
-					(:document_uri, :referrer, :blocked_uri, :effective_directive, :original_policy, :disposition, :status_code, :sample, :source_file, :line_number, :column_number, :ua, :ip, :registered_at)
+					(:document_url, :referrer, :blocked_url, :effective_directive, :original_policy, :source_file, :sample, :disposition, :status_code, :line_number, :column_number, :ua, :ip, :registered_at)
 			`);
 			await sth.run({
-				':document_uri': data.documentUri,
+				':document_url': data.documentURL,
 				':referrer': data.referrer,
-				':blocked_uri': data.blockedUri,
+				':blocked_url': data.blockedURL,
 				':effective_directive': data.effectiveDirective,
 				':original_policy': data.originalPolicy,
 				':disposition': data.disposition,

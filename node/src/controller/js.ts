@@ -13,7 +13,7 @@ import { json as jsonValidator } from '../validator/js.js';
  */
 const logger = Log4js.getLogger('js');
 
-const app = new Hono().post('/', corsMiddleware).post('/', jsonValidator, async (context) => {
+const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { location, message, filename, lineno, colno } = req.valid('json');

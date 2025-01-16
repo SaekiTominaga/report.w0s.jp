@@ -1,14 +1,14 @@
 declare namespace ReportDB {
 	interface CSP {
-		documentUri: string;
-		referrer: string;
-		blockedUri: string;
+		documentURL: string;
+		referrer: string | undefined;
+		blockedURL: string | undefined;
 		effectiveDirective: string;
 		originalPolicy: string;
+		sourceFile: string | undefined;
+		sample: string | undefined;
 		disposition: string;
 		statusCode: number;
-		sample: string | undefined;
-		sourceFile: string | undefined;
 		lineNumber: number | undefined;
 		columnNumber: number | undefined;
 		ua: string | undefined;

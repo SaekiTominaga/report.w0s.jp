@@ -3,9 +3,9 @@ export default {
 		header: {
 			hsts: 'max-age=31536000',
 			csp: {
-				'default-src': ["'self'"],
 				'frame-ancestors': ["'self'"],
 				'report-uri': ['/report/csp'],
+				'report-to': ['default'],
 			},
 			reportingEndpoints: {
 				default: '/report/csp',

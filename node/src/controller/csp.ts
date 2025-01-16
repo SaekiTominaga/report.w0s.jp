@@ -4,23 +4,45 @@ import { HTTPException } from 'hono/http-exception';
 import ip from 'ip';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
-import { cors as corsMiddleware } from '../middleware/cors.js';
 import Mail from '../util/Mail.js';
 import { header as headerValidator } from '../validator/csp.js';
 
-interface CSPReport {
+interface ReportingApiV1Body {
+	/* https://w3c.github.io/webappsec-csp/#reporting */
+	documentURL: string;
+	referrer?: string;
+	blockedURL?: string;
+	effectiveDirective: string;
+	originalPolicy: string;
+	sourceFile?: string;
+	sample?: string;
+	disposition: 'enforce' | 'report';
+	statusCode: number;
+	lineNumber?: number;
+	columnNumber?: number;
+}
+
+interface ReportingApiV1 {
+	/* https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#violation_reporting */
+	age: number;
+	body: ReportingApiV1Body;
+	type: string;
+	url: string;
+	user_agent: string;
+}
+
+interface ReportUri {
 	/* https://w3c.github.io/webappsec-csp/#deprecated-serialize-violation */
 	'csp-report': {
 		'document-uri': string; // 違反が発生したドキュメントの URI
-		referrer: string; // 違反が発生した文書の参照元
-		'blocked-uri': string; // ブロックされたリソースの URI
+		referrer?: string; // 違反が発生した文書の参照元
+		'blocked-uri'?: string; // ブロックされたリソースの URI
 		'effective-directive': string; // 違反が発生したディレクティブ
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
-		disposition: string; // `enforce` or `report`
+		disposition: 'enforce' | 'report';
 		'status-code': number;
-		sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字（仕様上は `blocked-uri` が `inline` 以外は空の値になるはずだが、実際はキー自体が送信されない）
-		'script-sample'?: string; // `sample` の `report-uri` における名称
+		'script-sample'?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 		'source-file'?: string;
 		'line-number'?: number;
 		'column-number'?: number;
@@ -32,18 +54,52 @@ interface CSPReport {
  */
 const logger = Log4js.getLogger('csp');
 
-const app = new Hono().post('/', corsMiddleware).post('/', headerValidator, async (context) => {
+const app = new Hono().post('/', headerValidator, async (context) => {
 	const { req } = context;
 
-	const { 'csp-report': cspReport } = await req.json<CSPReport>();
-	if (cspReport.sample === undefined && cspReport['script-sample'] !== undefined) {
-		/* 古い挙動を最新仕様に合わせる */
-		cspReport.sample = cspReport['script-sample'];
-	}
-	logger.debug(cspReport);
-
-	const ua = req.header('User-Agent');
+	let reportingBody: ReportingApiV1Body;
+	let ua: string | undefined;
 	const ipAddress = ip.address();
+
+	const { contentType } = req.valid('header');
+	if (contentType === 'application/reports+json') {
+		const { body, user_agent: userAgent } = await req.json<ReportingApiV1>();
+		logger.debug(body);
+
+		reportingBody = body;
+		ua = userAgent;
+	} else {
+		const { 'csp-report': cspReport } = await req.json<ReportUri>();
+		logger.debug(cspReport);
+
+		reportingBody = {
+			documentURL: cspReport['document-uri'],
+			effectiveDirective: cspReport['effective-directive'],
+			originalPolicy: cspReport['original-policy'],
+			disposition: cspReport.disposition,
+			statusCode: cspReport['status-code'],
+		};
+		if (cspReport.referrer !== undefined) {
+			reportingBody.referrer = cspReport.referrer;
+		}
+		if (cspReport['blocked-uri'] !== undefined) {
+			reportingBody.blockedURL = cspReport['blocked-uri'];
+		}
+		if (cspReport['source-file'] !== undefined) {
+			reportingBody.sourceFile = cspReport['source-file'];
+		}
+		if (cspReport['script-sample'] !== undefined) {
+			reportingBody.sample = cspReport['script-sample'];
+		}
+		if (cspReport['line-number'] !== undefined) {
+			reportingBody.lineNumber = cspReport['line-number'];
+		}
+		if (cspReport['column-number'] !== undefined) {
+			reportingBody.columnNumber = cspReport['column-number'];
+		}
+
+		ua = req.header('User-Agent');
+	}
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
@@ -53,34 +109,34 @@ const app = new Hono().post('/', corsMiddleware).post('/', headerValidator, asyn
 	const dao = new ReportCspDao(dbFilePath);
 
 	const existSameData = await dao.same({
-		documentUri: cspReport['document-uri'],
-		referrer: cspReport.referrer,
-		blockedUri: cspReport['blocked-uri'],
-		effectiveDirective: cspReport['effective-directive'],
-		originalPolicy: cspReport['original-policy'],
-		disposition: cspReport.disposition,
-		statusCode: cspReport['status-code'],
-		sample: cspReport.sample,
-		sourceFile: cspReport['source-file'],
-		lineNumber: cspReport['line-number'],
-		columnNumber: cspReport['column-number'],
+		documentURL: reportingBody.documentURL,
+		referrer: reportingBody.referrer,
+		blockedURL: reportingBody.blockedURL,
+		effectiveDirective: reportingBody.effectiveDirective,
+		originalPolicy: reportingBody.originalPolicy,
+		sourceFile: reportingBody.sourceFile,
+		sample: reportingBody.sample,
+		disposition: reportingBody.disposition,
+		statusCode: reportingBody.statusCode,
+		lineNumber: reportingBody.lineNumber,
+		columnNumber: reportingBody.columnNumber,
 		ua: ua,
 		ip: ipAddress,
 	});
 
 	/* DB に登録 */
 	await dao.insert({
-		documentUri: cspReport['document-uri'],
-		referrer: cspReport.referrer,
-		blockedUri: cspReport['blocked-uri'],
-		effectiveDirective: cspReport['effective-directive'],
-		originalPolicy: cspReport['original-policy'],
-		disposition: cspReport.disposition,
-		statusCode: cspReport['status-code'],
-		sample: cspReport.sample,
-		sourceFile: cspReport['source-file'],
-		lineNumber: cspReport['line-number'],
-		columnNumber: cspReport['column-number'],
+		documentURL: reportingBody.documentURL,
+		referrer: reportingBody.referrer,
+		blockedURL: reportingBody.blockedURL,
+		effectiveDirective: reportingBody.effectiveDirective,
+		originalPolicy: reportingBody.originalPolicy,
+		sourceFile: reportingBody.sourceFile,
+		sample: reportingBody.sample,
+		disposition: reportingBody.disposition,
+		statusCode: reportingBody.statusCode,
+		lineNumber: reportingBody.lineNumber,
+		columnNumber: reportingBody.columnNumber,
 		ua: ua,
 		ip: ipAddress,
 	});
@@ -88,17 +144,17 @@ const app = new Hono().post('/', corsMiddleware).post('/', headerValidator, asyn
 	if (!existSameData) {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/csp_mail.ejs`, {
-			documentUri: cspReport['document-uri'],
-			referrer: cspReport.referrer,
-			blockedUri: cspReport['blocked-uri'],
-			effectiveDirective: cspReport['effective-directive'],
-			originalPolicy: cspReport['original-policy'],
-			disposition: cspReport.disposition,
-			statusCode: cspReport['status-code'],
-			sample: cspReport.sample,
-			sourceFile: cspReport['source-file'],
-			lineNumber: cspReport['line-number'],
-			columnNumber: cspReport['column-number'],
+			documentURL: reportingBody.documentURL,
+			referrer: reportingBody.referrer,
+			blockedURL: reportingBody.blockedURL,
+			effectiveDirective: reportingBody.effectiveDirective,
+			originalPolicy: reportingBody.originalPolicy,
+			sourceFile: reportingBody.sourceFile,
+			sample: reportingBody.sample,
+			disposition: reportingBody.disposition,
+			statusCode: reportingBody.statusCode,
+			lineNumber: reportingBody.lineNumber,
+			columnNumber: reportingBody.columnNumber,
 			ua: ua,
 			ip: ipAddress,
 		});
