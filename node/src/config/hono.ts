@@ -3,12 +3,12 @@ export default {
 		header: {
 			hsts: 'max-age=31536000',
 			csp: {
+				'default-src': ["'self'"],
 				'frame-ancestors': ["'self'"],
-				'report-uri': ['https://w0sjp.report-uri.com/r/d/csp/enforce'],
-				'report-to': ['default'],
+				'report-uri': ['/report/csp'],
 			},
 			reportingEndpoints: {
-				default: 'https://w0sjp.report-uri.com/a/d/g',
+				default: '/report/csp',
 			},
 		},
 	},

@@ -9,6 +9,7 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
 import config from './config/hono.js';
+import csp from './controller/csp.js';
 import js from './controller/js.js';
 import referrer from './controller/referrer.js';
 import { isApi } from './util/request.js';
@@ -101,6 +102,7 @@ app.use(
 );
 
 /* Routes */
+app.route(`/${config.api.dir}/csp`, csp);
 app.route(`/${config.api.dir}/`, js);
 app.route(`/${config.api.dir}/`, referrer);
 

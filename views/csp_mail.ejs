@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ja">
+	<head>
+		<style>
+			.disposition {
+				display: inline-block;
+				padding: 0.25em 0.5em;
+				border-radius: 0.25em;
+				color: #fff;
+				line-height: 1;
+			}
+
+			.disposition.-enforce {
+				background-color: #337ab7;
+			}
+
+			.disposition.-report {
+				background-color: #36c6d3;
+			}
+
+			table {
+				border-collapse: collapse;
+			}
+
+			th,
+			td {
+				padding: 0.5em;
+				border: 1px solid;
+			}
+
+			th {
+				background: #eee;
+				text-align: left;
+			}
+
+			dt {
+				font-weight: bold;
+			}
+
+			dd {
+				margin-left: 1em;
+			}
+		</style>
+	</head>
+	<body>
+		<p>
+			<%_ if (disposition === 'enforce') { _%>
+			<span class="disposition -enforce">Enforce</span>
+			<%_ } else { _%>
+			<span class="disposition -report">Report Only</span>
+			<%_ } _%>
+		</p>
+
+		<table>
+			<tbody>
+				<tr>
+					<th><code>document-uri</code></th>
+					<td>
+						<a href="<%= documentUri %>"><%= documentUri %></a>
+					</td>
+				</tr>
+				<tr>
+					<th><code>referrer</code></th>
+					<td><%= referrer %></td>
+				</tr>
+				<tr>
+					<th><code>blocked-uri</code></th>
+					<td><%= blockedUri %></td>
+				</tr>
+				<tr>
+					<th><code>effective-directive</code></th>
+					<td><%= effectiveDirective %></td>
+				</tr>
+				<tr>
+					<th><code>original-policy</code></th>
+					<td><%= originalPolicy %></td>
+				</tr>
+				<tr>
+					<th><code>status-code</code></th>
+					<td><%= statusCode %></td>
+				</tr>
+				<tr>
+					<th><code>sample</code></th>
+					<td><%= sample %></td>
+				</tr>
+				<tr>
+					<th><code>source-file</code></th>
+					<td><%= sourceFile %></td>
+				</tr>
+				<tr>
+					<th><code>line-number</code></th>
+					<td><%= lineNumber %></td>
+				</tr>
+				<tr>
+					<th><code>column-number</code></th>
+					<td><%= columnNumber %></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<dl>
+			<dt>IP アドレス</dt>
+			<dd><a href="https://ja.asuka.io/whois/<%= ip %>"><%= ip %></a></dd>
+			<dt>ユーザーエージェント</dt>
+			<dd><%= ua %></dd>
+		</dl>
+	</body>
+</html>
