@@ -5,12 +5,7 @@ interface headerValidator {
 	contentType: 'application/csp-report';
 }
 
-export const headerValidator = validator('header', (value, context): headerValidator => {
-	/* CORS */
-	if (context.res.headers.get('Access-Control-Allow-Origin') === null) {
-		throw new HTTPException(403, { message: 'Access from an unauthorized origin' });
-	}
-
+export const headerValidator = validator('header', (value): headerValidator => {
 	const { 'content-type': contentType } = value;
 
 	if (contentType !== 'application/csp-report') {
