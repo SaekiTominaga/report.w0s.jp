@@ -29,14 +29,14 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const dao = new ReportReferrerDao(dbFilePath);
 
 	const existSameData = await dao.same({
-		pageUrl: location,
+		pageURL: location,
 		referrer: referrer,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			pageUrl: location,
+			pageURL: location,
 			referrer: referrer,
 		});
 
