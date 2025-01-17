@@ -1,11 +1,11 @@
 import ejs from 'ejs';
-import { Hono } from 'hono';
+import { Hono, type HonoRequest } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import ip from 'ip';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import Mail from '../util/Mail.js';
-import { header as headerValidator } from '../validator/csp.js';
+import { header as headerValidator, type ContentType } from '../validator/csp.js';
 
 interface ReportingApiV1Body {
 	/* https://w3c.github.io/webappsec-csp/#reporting */
@@ -54,20 +54,15 @@ interface ReportUri {
  */
 const logger = Log4js.getLogger('csp');
 
-const app = new Hono().post('/', headerValidator, async (context) => {
-	const { req } = context;
-
-	const reportings: Readonly<ReportingApiV1>[] = [];
-	const ipAddress = ip.address();
-
-	const { contentType } = req.valid('header');
-	if (contentType === 'application/reports+json') {
-		const json = await req.json<ReportingApiV1[]>();
-		logger.debug(json);
-		reportings.push(...json);
-	} else {
+const getReporting = async (
+	req: HonoRequest,
+	option: {
+		contentType: ContentType;
+	},
+): Promise<ReportingApiV1[]> => {
+	if (option.contentType === 'application/csp-report') {
 		const json = await req.json<ReportUri>();
-		logger.debug(json);
+		logger.debug('report-uri', option.contentType, json);
 		const { 'csp-report': cspReport } = json;
 
 		const reportingBody: ReportingApiV1Body = {
@@ -96,14 +91,31 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 			reportingBody.columnNumber = cspReport['column-number'];
 		}
 
-		reportings.push({
-			age: -1,
-			body: reportingBody,
-			type: 'csp-violation',
-			url: reportingBody.documentURL,
-			user_agent: req.header('User-Agent'),
-		});
+		return [
+			{
+				age: -1,
+				body: reportingBody,
+				type: 'csp-violation',
+				url: reportingBody.documentURL,
+				user_agent: req.header('User-Agent'),
+			},
+		];
 	}
+
+	const json = await req.json<ReportingApiV1[]>();
+	logger.debug('Reporting Api v1', option.contentType, json);
+	return json;
+};
+
+const app = new Hono().post('/', headerValidator, async (context) => {
+	const { req } = context;
+
+	const { contentType } = req.valid('header');
+
+	const reportings = await getReporting(req, {
+		contentType: contentType,
+	});
+	const ipAddress = ip.address();
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
