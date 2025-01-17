@@ -28,7 +28,7 @@ interface ReportingApiV1 {
 	body: ReportingApiV1Body;
 	type: string;
 	url: string;
-	user_agent: string;
+	user_agent: string | undefined;
 }
 
 interface ReportUri {
@@ -57,22 +57,20 @@ const logger = Log4js.getLogger('csp');
 const app = new Hono().post('/', headerValidator, async (context) => {
 	const { req } = context;
 
-	let reportingBody: ReportingApiV1Body;
-	let ua: string | undefined;
+	const reportings: Readonly<ReportingApiV1>[] = [];
 	const ipAddress = ip.address();
 
 	const { contentType } = req.valid('header');
 	if (contentType === 'application/reports+json') {
-		const { body, user_agent: userAgent } = await req.json<ReportingApiV1>();
-		logger.debug(body);
-
-		reportingBody = body;
-		ua = userAgent;
+		const json = await req.json<ReportingApiV1[]>();
+		logger.debug(json);
+		reportings.push(...json);
 	} else {
-		const { 'csp-report': cspReport } = await req.json<ReportUri>();
-		logger.debug(cspReport);
+		const json = await req.json<ReportUri>();
+		logger.debug(json);
+		const { 'csp-report': cspReport } = json;
 
-		reportingBody = {
+		const reportingBody: ReportingApiV1Body = {
 			documentURL: cspReport['document-uri'],
 			effectiveDirective: cspReport['effective-directive'],
 			originalPolicy: cspReport['original-policy'],
@@ -98,7 +96,13 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 			reportingBody.columnNumber = cspReport['column-number'];
 		}
 
-		ua = req.header('User-Agent');
+		reportings.push({
+			age: -1,
+			body: reportingBody,
+			type: 'csp-violation',
+			url: reportingBody.documentURL,
+			user_agent: req.header('User-Agent'),
+		});
 	}
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
@@ -108,54 +112,59 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 
 	const dao = new ReportCspDao(dbFilePath);
 
-	const existSameData = await dao.same({
-		documentURL: reportingBody.documentURL,
-		referrer: reportingBody.referrer,
-		blockedURL: reportingBody.blockedURL,
-		effectiveDirective: reportingBody.effectiveDirective,
-		originalPolicy: reportingBody.originalPolicy,
-		sourceFile: reportingBody.sourceFile,
-		sample: reportingBody.sample,
-		disposition: reportingBody.disposition,
-		statusCode: reportingBody.statusCode,
-		lineNumber: reportingBody.lineNumber,
-		columnNumber: reportingBody.columnNumber,
-		ua: ua,
-		ip: ipAddress,
+	const noticeList = (
+		await Promise.all(
+			reportings.map(async (reporting) => {
+				const { body, user_agent: userAgent } = reporting;
+
+				const existSameData = await dao.same({
+					documentURL: body.documentURL,
+					referrer: body.referrer,
+					blockedURL: body.blockedURL,
+					effectiveDirective: body.effectiveDirective,
+					originalPolicy: body.originalPolicy,
+					sourceFile: body.sourceFile,
+					sample: body.sample,
+					disposition: body.disposition,
+					statusCode: body.statusCode,
+					lineNumber: body.lineNumber,
+					columnNumber: body.columnNumber,
+					ua: userAgent,
+					ip: ipAddress,
+				});
+
+				return !existSameData ? reporting : undefined;
+			}),
+		)
+	).filter((notice) => notice !== undefined);
+
+	const insertList: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>[] = reportings.map((reporting) => {
+		const { body, user_agent: userAgent } = reporting;
+
+		return {
+			documentURL: body.documentURL,
+			referrer: body.referrer,
+			blockedURL: body.blockedURL,
+			effectiveDirective: body.effectiveDirective,
+			originalPolicy: body.originalPolicy,
+			sourceFile: body.sourceFile,
+			sample: body.sample,
+			disposition: body.disposition,
+			statusCode: body.statusCode,
+			lineNumber: body.lineNumber,
+			columnNumber: body.columnNumber,
+			ua: userAgent,
+			ip: ipAddress,
+		};
 	});
 
 	/* DB に登録 */
-	await dao.insert({
-		documentURL: reportingBody.documentURL,
-		referrer: reportingBody.referrer,
-		blockedURL: reportingBody.blockedURL,
-		effectiveDirective: reportingBody.effectiveDirective,
-		originalPolicy: reportingBody.originalPolicy,
-		sourceFile: reportingBody.sourceFile,
-		sample: reportingBody.sample,
-		disposition: reportingBody.disposition,
-		statusCode: reportingBody.statusCode,
-		lineNumber: reportingBody.lineNumber,
-		columnNumber: reportingBody.columnNumber,
-		ua: ua,
-		ip: ipAddress,
-	});
+	await dao.insert(insertList);
 
-	if (!existSameData) {
+	if (noticeList.length >= 1) {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/csp_mail.ejs`, {
-			documentURL: reportingBody.documentURL,
-			referrer: reportingBody.referrer,
-			blockedURL: reportingBody.blockedURL,
-			effectiveDirective: reportingBody.effectiveDirective,
-			originalPolicy: reportingBody.originalPolicy,
-			sourceFile: reportingBody.sourceFile,
-			sample: reportingBody.sample,
-			disposition: reportingBody.disposition,
-			statusCode: reportingBody.statusCode,
-			lineNumber: reportingBody.lineNumber,
-			columnNumber: reportingBody.columnNumber,
-			ua: ua,
+			reportings: noticeList,
 			ip: ipAddress,
 		});
 
