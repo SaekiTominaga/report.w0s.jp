@@ -43,8 +43,12 @@
 		</style>
 	</head>
 	<body>
+		<%_ reportings.forEach(({ body, user_agent: userAgent }, index) => { _%> <%_ if (index > 0) { _%>
+		<hr />
+		<%_ } _%>
+
 		<p>
-			<%_ if (disposition === 'enforce') { _%>
+			<%_ if (body.disposition === 'enforce') { _%>
 			<span class="disposition -enforce">Enforce</span>
 			<%_ } else { _%>
 			<span class="disposition -report">Report Only</span>
@@ -56,53 +60,54 @@
 				<tr>
 					<th><code>documentURL</code></th>
 					<td>
-						<a href="<%= documentURL %>"><%= documentURL %></a>
+						<a href="<%= body.documentURL %>"><%= body.documentURL %></a>
 					</td>
 				</tr>
 				<tr>
 					<th><code>referrer</code></th>
-					<td><%= referrer %></td>
+					<td><%= body.referrer %></td>
 				</tr>
 				<tr>
 					<th><code>blockedURL</code></th>
-					<td><%= blockedURL %></td>
+					<td><%= body.blockedURL %></td>
 				</tr>
 				<tr>
 					<th><code>effectiveDirective</code></th>
-					<td><%= effectiveDirective %></td>
+					<td><%= body.effectiveDirective %></td>
 				</tr>
 				<tr>
 					<th><code>originalPolicy</code></th>
-					<td><%= originalPolicy %></td>
+					<td><%= body.originalPolicy %></td>
 				</tr>
 				<tr>
 					<th><code>sourceFile</code></th>
-					<td><%= sourceFile %></td>
+					<td><%= body.sourceFile %></td>
 				</tr>
 				<tr>
 					<th><code>sample</code></th>
-					<td><%= sample %></td>
+					<td><%= body.sample %></td>
 				</tr>
 				<tr>
 					<th><code>statusCode</code></th>
-					<td><%= statusCode %></td>
+					<td><%= body.statusCode %></td>
 				</tr>
 				<tr>
 					<th><code>lineNumber</code></th>
-					<td><%= lineNumber %></td>
+					<td><%= body.lineNumber %></td>
 				</tr>
 				<tr>
 					<th><code>columnNumber</code></th>
-					<td><%= columnNumber %></td>
+					<td><%= body.columnNumber %></td>
 				</tr>
 			</tbody>
 		</table>
 
+		<p><%= userAgent %></p>
+		<%_ }); _%>
+
 		<dl>
 			<dt>IP アドレス</dt>
 			<dd><a href="https://ja.asuka.io/whois/<%= ip %>"><%= ip %></a></dd>
-			<dt>ユーザーエージェント</dt>
-			<dd><%= ua %></dd>
 		</dl>
 	</body>
 </html>
