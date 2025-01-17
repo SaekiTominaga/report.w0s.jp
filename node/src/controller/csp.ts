@@ -9,13 +9,13 @@ import { header as headerValidator, type ContentType } from '../validator/csp.js
 
 interface ReportingApiV1Body {
 	/* https://w3c.github.io/webappsec-csp/#reporting */
-	documentURL: string;
-	referrer?: string;
-	blockedURL?: string;
-	effectiveDirective: string;
-	originalPolicy: string;
+	documentURL: string; // 違反が発生したドキュメントの URL
+	referrer?: string; // 違反が発生した文書の参照元
+	blockedURL?: string; // ブロックされたリソースの URL
+	effectiveDirective: string; // 違反が発生したディレクティブ
+	originalPolicy: string; // 元のポリシー
 	sourceFile?: string;
-	sample?: string;
+	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report';
 	statusCode: number;
 	lineNumber?: number;
@@ -23,20 +23,20 @@ interface ReportingApiV1Body {
 }
 
 interface ReportingApiV1 {
-	/* https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#violation_reporting */
-	age: number;
-	body: ReportingApiV1Body;
-	type: string;
+	/* https://w3c.github.io/reporting/#serialize-reports */
+	age: number; // レポートのタイムスタンプと現在時刻の間のミリ秒数
+	type: string; // CSP の場合は `csp-violation`
 	url: string;
-	user_agent: string | undefined;
+	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
+	body: ReportingApiV1Body;
 }
 
 interface ReportUri {
 	/* https://w3c.github.io/webappsec-csp/#deprecated-serialize-violation */
 	'csp-report': {
-		'document-uri': string; // 違反が発生したドキュメントの URI
+		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
-		'blocked-uri'?: string; // ブロックされたリソースの URI
+		'blocked-uri'?: string; // ブロックされたリソースの URL
 		'effective-directive': string; // 違反が発生したディレクティブ
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
