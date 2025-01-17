@@ -56,9 +56,9 @@ const logger = Log4js.getLogger('csp');
 
 const getReporting = async (
 	req: HonoRequest,
-	option: {
+	option: Readonly<{
 		contentType: ContentType;
-	},
+	}>,
 ): Promise<ReportingApiV1[]> => {
 	if (option.contentType === 'application/csp-report') {
 		const json = await req.json<ReportUri>();

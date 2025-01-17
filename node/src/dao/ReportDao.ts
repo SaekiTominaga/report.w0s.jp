@@ -13,7 +13,7 @@ export default class ReportDao {
 	 * @param filepath - DB ファイルパス
 	 * @param dbh - DB 接続情報
 	 */
-	constructor(filepath: string, dbh?: sqlite.Database) {
+	constructor(filepath: string, dbh?: Readonly<sqlite.Database>) {
 		this.#filepath = filepath;
 
 		if (dbh !== undefined) {

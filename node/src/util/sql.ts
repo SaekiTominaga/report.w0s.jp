@@ -6,7 +6,7 @@
  * @returns WHERE 句の文字列と bind で使用するオブジェクト
  */
 export const prepareWhereEqual = (
-	data: Record<string, string | number | undefined>,
+	data: Readonly<Record<string, string | number | undefined>>,
 ): { sqlWhere: string; bind: Record<string, string | number | undefined> } => {
 	const dataArray = Object.entries(data);
 
