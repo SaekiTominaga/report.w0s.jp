@@ -43,6 +43,8 @@
 		</style>
 	</head>
 	<body>
+		<p><%= reportings.length %>件のレポート</p>
+
 		<%_ reportings.forEach(({ body, user_agent: userAgent }, index) => { _%> <%_ if (index > 0) { _%>
 		<hr />
 		<%_ } _%>

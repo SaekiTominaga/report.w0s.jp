@@ -1,21 +1,21 @@
 import ejs from 'ejs';
-import { Hono } from 'hono';
+import { Hono, type HonoRequest } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import ip from 'ip';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import Mail from '../util/Mail.js';
-import { header as headerValidator } from '../validator/csp.js';
+import { header as headerValidator, type ContentType } from '../validator/csp.js';
 
 interface ReportingApiV1Body {
 	/* https://w3c.github.io/webappsec-csp/#reporting */
-	documentURL: string;
-	referrer?: string;
-	blockedURL?: string;
-	effectiveDirective: string;
-	originalPolicy: string;
+	documentURL: string; // 違反が発生したドキュメントの URL
+	referrer?: string; // 違反が発生した文書の参照元
+	blockedURL?: string; // ブロックされたリソースの URL
+	effectiveDirective: string; // 違反が発生したディレクティブ
+	originalPolicy: string; // 元のポリシー
 	sourceFile?: string;
-	sample?: string;
+	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report';
 	statusCode: number;
 	lineNumber?: number;
@@ -23,20 +23,20 @@ interface ReportingApiV1Body {
 }
 
 interface ReportingApiV1 {
-	/* https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#violation_reporting */
-	age: number;
-	body: ReportingApiV1Body;
-	type: string;
+	/* https://w3c.github.io/reporting/#serialize-reports */
+	age: number; // レポートのタイムスタンプと現在時刻の間のミリ秒数
+	type: string; // CSP の場合は `csp-violation`
 	url: string;
-	user_agent: string | undefined;
+	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
+	body: ReportingApiV1Body;
 }
 
 interface ReportUri {
 	/* https://w3c.github.io/webappsec-csp/#deprecated-serialize-violation */
 	'csp-report': {
-		'document-uri': string; // 違反が発生したドキュメントの URI
+		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
-		'blocked-uri'?: string; // ブロックされたリソースの URI
+		'blocked-uri'?: string; // ブロックされたリソースの URL
 		'effective-directive': string; // 違反が発生したディレクティブ
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
@@ -54,20 +54,16 @@ interface ReportUri {
  */
 const logger = Log4js.getLogger('csp');
 
-const app = new Hono().post('/', headerValidator, async (context) => {
-	const { req } = context;
-
-	const reportings: Readonly<ReportingApiV1>[] = [];
-	const ipAddress = ip.address();
-
-	const { contentType } = req.valid('header');
-	if (contentType === 'application/reports+json') {
-		const json = await req.json<ReportingApiV1[]>();
-		logger.debug(json);
-		reportings.push(...json);
-	} else {
+const getReporting = async (
+	req: HonoRequest,
+	option: Readonly<{
+		contentType: ContentType;
+	}>,
+): Promise<ReportingApiV1[]> => {
+	if (option.contentType === 'application/csp-report') {
 		const json = await req.json<ReportUri>();
-		logger.debug(json);
+		const ua = req.header('User-Agent');
+		logger.debug('report-uri', option.contentType, json, ua);
 		const { 'csp-report': cspReport } = json;
 
 		const reportingBody: ReportingApiV1Body = {
@@ -96,14 +92,31 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 			reportingBody.columnNumber = cspReport['column-number'];
 		}
 
-		reportings.push({
-			age: -1,
-			body: reportingBody,
-			type: 'csp-violation',
-			url: reportingBody.documentURL,
-			user_agent: req.header('User-Agent'),
-		});
+		return [
+			{
+				age: -1,
+				body: reportingBody,
+				type: 'csp-violation',
+				url: reportingBody.documentURL,
+				user_agent: ua,
+			},
+		];
 	}
+
+	const json = await req.json<ReportingApiV1[]>();
+	logger.debug('Reporting Api v1', option.contentType, json);
+	return json;
+};
+
+const app = new Hono().post('/', headerValidator, async (context) => {
+	const { req } = context;
+
+	const { contentType } = req.valid('header');
+
+	const reportings = await getReporting(req, {
+		contentType: contentType,
+	});
+	const ipAddress = ip.address();
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {

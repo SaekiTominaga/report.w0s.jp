@@ -5,10 +5,10 @@ export default {
 			csp: {
 				'frame-ancestors': ["'self'"],
 				'report-uri': ['/report/csp'],
-				'report-to': ['default'],
+				'report-to': ['csp'],
 			},
 			reportingEndpoints: {
-				default: '/report/csp',
+				csp: '/report/csp',
 			},
 		},
 	},

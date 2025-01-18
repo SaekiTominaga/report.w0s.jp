@@ -1,8 +1,10 @@
 import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
+export type ContentType = 'application/reports+json' | 'application/csp-report';
+
 interface RequestHeader {
-	contentType: 'application/reports+json' | 'application/csp-report';
+	contentType: ContentType;
 }
 
 export const header = validator('header', (value): RequestHeader => {
