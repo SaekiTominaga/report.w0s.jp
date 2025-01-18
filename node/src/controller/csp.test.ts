@@ -11,7 +11,7 @@ await test('success', async (t) => {
 			headers: new Headers({ Origin: origin, 'Content-Type': 'application/reports+json' }),
 			body: JSON.stringify([
 				{
-					age: 1,
+					age: 0,
 					body: {
 						documentURL: 'documentURL1',
 						referrer: 'referrer1',
@@ -25,12 +25,12 @@ await test('success', async (t) => {
 						lineNumber: 12,
 						columnNumber: 13,
 					},
-					type: 'cors',
+					type: 'csp-violation',
 					url: 'https://example.com/1',
 					user_agent: 'Mozilla/5.0...',
 				},
 				{
-					age: 2,
+					age: 1,
 					body: {
 						documentURL: 'documentURL2',
 						referrer: 'referrer2',
@@ -44,8 +44,18 @@ await test('success', async (t) => {
 						lineNumber: 22,
 						columnNumber: 23,
 					},
-					type: 'cors',
+					type: 'csp-violation',
 					url: 'https://example.com/2',
+					user_agent: 'Mozilla/5.0...',
+				},
+				{
+					age: 999,
+					body: {
+						xxx1: 'xxx1',
+						xxx2: 'xxx2',
+					},
+					type: 'another-type',
+					url: 'https://example.com/999',
 					user_agent: 'Mozilla/5.0...',
 				},
 			]),

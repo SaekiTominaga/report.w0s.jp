@@ -104,7 +104,7 @@ const getReporting = async (
 
 	const json = await req.json<ReportingApiV1[]>();
 	logger.debug('Reporting Api v1', option.contentType, json);
-	return json;
+	return json.filter((data) => data.type === 'csp-violation');
 };
 
 const app = new Hono().post('/', headerValidator, async (context) => {
