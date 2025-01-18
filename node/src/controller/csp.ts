@@ -62,7 +62,8 @@ const getReporting = async (
 ): Promise<ReportingApiV1[]> => {
 	if (option.contentType === 'application/csp-report') {
 		const json = await req.json<ReportUri>();
-		logger.debug('report-uri', option.contentType, json);
+		const ua = req.header('User-Agent');
+		logger.debug('report-uri', option.contentType, json, ua);
 		const { 'csp-report': cspReport } = json;
 
 		const reportingBody: ReportingApiV1Body = {
@@ -97,7 +98,7 @@ const getReporting = async (
 				body: reportingBody,
 				type: 'csp-violation',
 				url: reportingBody.documentURL,
-				user_agent: req.header('User-Agent'),
+				user_agent: ua,
 			},
 		];
 	}
