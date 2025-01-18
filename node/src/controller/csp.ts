@@ -1,7 +1,6 @@
 import ejs from 'ejs';
 import { Hono, type HonoRequest } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import ip from 'ip';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import Mail from '../util/Mail.js';
@@ -116,7 +115,6 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 	const reportings = await getReporting(req, {
 		contentType: contentType,
 	});
-	const ipAddress = ip.address();
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
@@ -143,7 +141,6 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 					lineNumber: body.lineNumber,
 					columnNumber: body.columnNumber,
 					ua: userAgent,
-					ip: ipAddress,
 				});
 
 				return !existSameData ? reporting : undefined;
@@ -167,7 +164,6 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 			lineNumber: body.lineNumber,
 			columnNumber: body.columnNumber,
 			ua: userAgent,
-			ip: ipAddress,
 		};
 	});
 
@@ -178,7 +174,6 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/csp_mail.ejs`, {
 			reportings: noticeList,
-			ip: ipAddress,
 		});
 
 		await new Mail().sendHtml(process.env['CSP_MAIL_TITLE'], html);

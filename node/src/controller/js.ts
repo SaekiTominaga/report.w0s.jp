@@ -1,7 +1,6 @@
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import ip from 'ip';
 import Log4js from 'log4js';
 import ReportJsDao from '../dao/ReportJsDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
@@ -19,7 +18,6 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const { location, message, filename, lineno, colno } = req.valid('json');
 
 	const ua = req.header('User-Agent');
-	const ipAddress = ip.address();
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
@@ -29,25 +27,23 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const dao = new ReportJsDao(dbFilePath);
 
 	const existSameData = await dao.same({
-		pageURL: location,
+		documentURL: location,
 		message: message,
 		jsURL: filename,
 		lineNumber: lineno,
 		columnNumber: colno,
 		ua: ua,
-		ip: ipAddress,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			pageURL: location,
+			documentURL: location,
 			message: message,
 			jsURL: filename,
 			lineNumber: lineno,
 			columnNumber: colno,
 			ua: ua,
-			ip: ipAddress,
 		});
 
 		/* メール通知 */
@@ -58,7 +54,6 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 			lineno: lineno,
 			colno: colno,
 			ua: ua,
-			ip: ipAddress,
 		});
 
 		await new Mail().sendHtml(process.env['JS_MAIL_TITLE'], html);

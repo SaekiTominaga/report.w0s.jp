@@ -23,14 +23,13 @@ export default class ReportJsDao extends ReportDao {
 			lineno: data.lineNumber,
 			colno: data.columnNumber,
 			ua: data.ua,
-			ip: data.ip,
 		});
 
 		const dbh = await this.getDbh();
 
 		const sth = await dbh.prepare(`
 			SELECT
-				COUNT(insert_date) AS count
+				COUNT(registered_at) AS count
 			FROM
 				d_js
 			WHERE
@@ -61,18 +60,17 @@ export default class ReportJsDao extends ReportDao {
 			const insertDataSth = await dbh.prepare(`
 				INSERT INTO
 					d_js
-					( page_url,  message,  js_url,  lineno,       colno,          ua,  ip,  insert_date)
+					( document_url,  message,  js_url,  lineno,       colno,          ua,  registered_at)
 				VALUES
-					(:page_url, :message, :js_url, :line_number, :column_number, :ua, :ip, :registered_at)
+					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :registered_at)
 			`);
 			await insertDataSth.run({
-				':page_url': data.pageURL,
+				':document_url': data.documentURL,
 				':message': data.message,
 				':js_url': data.jsURL,
 				':line_number': data.lineNumber,
 				':column_number': data.columnNumber,
 				':ua': data.ua ?? null,
-				':ip': data.ip,
 				':registered_at': Math.round(Date.now() / 1000),
 			});
 			await insertDataSth.finalize();

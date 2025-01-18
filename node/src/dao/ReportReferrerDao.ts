@@ -18,7 +18,7 @@ export default class ReportReferrerDao extends ReportDao {
 		}
 
 		const { sqlWhere, bind } = prepareWhereEqual({
-			page_url: data.pageURL,
+			document_url: data.documentURL,
 			referrer: data.referrer,
 		});
 
@@ -26,7 +26,7 @@ export default class ReportReferrerDao extends ReportDao {
 
 		const sth = await dbh.prepare(`
 			SELECT
-				COUNT(insert_date) AS count
+				COUNT(registered_at) AS count
 			FROM
 				d_referrer
 			WHERE
@@ -57,12 +57,12 @@ export default class ReportReferrerDao extends ReportDao {
 			const insertDataSth = await dbh.prepare(`
 				INSERT INTO
 					d_referrer
-					( page_url,  referrer,  insert_date)
+					( document_url,  referrer,  registered_at)
 				VALUES
-					(:page_url, :referrer, :registered_at)
+					(:document_url, :referrer, :registered_at)
 			`);
 			await insertDataSth.run({
-				':page_url': data.pageURL,
+				':document_url': data.documentURL,
 				':referrer': data.referrer,
 				':registered_at': Math.round(Date.now() / 1000),
 			});
