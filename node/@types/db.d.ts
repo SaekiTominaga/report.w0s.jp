@@ -16,7 +16,7 @@ declare namespace ReportDB {
 	}
 
 	interface JS {
-		pageURL: string;
+		documentURL: string;
 		message: string;
 		jsURL: string;
 		lineNumber: number;
@@ -26,7 +26,7 @@ declare namespace ReportDB {
 	}
 
 	interface Referrer {
-		pageURL: string;
+		documentURL: string;
 		referrer: string;
 		registeredAt: Date;
 	}

@@ -18,7 +18,7 @@ export default class ReportReferrerDao extends ReportDao {
 		}
 
 		const { sqlWhere, bind } = prepareWhereEqual({
-			document_url: data.pageURL,
+			document_url: data.documentURL,
 			referrer: data.referrer,
 		});
 
@@ -62,7 +62,7 @@ export default class ReportReferrerDao extends ReportDao {
 					(:document_url, :referrer, :registered_at)
 			`);
 			await insertDataSth.run({
-				':document_url': data.pageURL,
+				':document_url': data.documentURL,
 				':referrer': data.referrer,
 				':registered_at': Math.round(Date.now() / 1000),
 			});

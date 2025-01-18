@@ -65,7 +65,7 @@ export default class ReportJsDao extends ReportDao {
 					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :registered_at)
 			`);
 			await insertDataSth.run({
-				':document_url': data.pageURL,
+				':document_url': data.documentURL,
 				':message': data.message,
 				':js_url': data.jsURL,
 				':line_number': data.lineNumber,

@@ -27,7 +27,7 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const dao = new ReportJsDao(dbFilePath);
 
 	const existSameData = await dao.same({
-		pageURL: location,
+		documentURL: location,
 		message: message,
 		jsURL: filename,
 		lineNumber: lineno,
@@ -38,7 +38,7 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			pageURL: location,
+			documentURL: location,
 			message: message,
 			jsURL: filename,
 			lineNumber: lineno,
