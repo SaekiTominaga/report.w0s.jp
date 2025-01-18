@@ -30,7 +30,6 @@ export default class ReportJsDao extends ReportDao {
 			line_number: data.lineNumber,
 			column_number: data.columnNumber,
 			ua: data.ua,
-			ip: data.ip,
 		});
 
 		const dbh = await this.getDbh();
@@ -74,9 +73,9 @@ export default class ReportJsDao extends ReportDao {
 					const sth = await dbh.prepare(`
 						INSERT INTO
 							d_csp
-							( document_url,  referrer,  blocked_url,  effective_directive,  original_policy,  source_file,  sample,  disposition,  status_code,  line_number,  column_number,  ua,  ip,  registered_at)
+							( document_url,  referrer,  blocked_url,  effective_directive,  original_policy,  source_file,  sample,  disposition,  status_code,  line_number,  column_number,  ua,  registered_at)
 						VALUES
-							(:document_url, :referrer, :blocked_url, :effective_directive, :original_policy, :source_file, :sample, :disposition, :status_code, :line_number, :column_number, :ua, :ip, :registered_at)
+							(:document_url, :referrer, :blocked_url, :effective_directive, :original_policy, :source_file, :sample, :disposition, :status_code, :line_number, :column_number, :ua, :registered_at)
 					`);
 					await sth.run({
 						':document_url': data.documentURL,
@@ -91,7 +90,6 @@ export default class ReportJsDao extends ReportDao {
 						':line_number': data.lineNumber ?? null,
 						':column_number': data.columnNumber ?? null,
 						':ua': data.ua ?? null,
-						':ip': data.ip,
 						':registered_at': Math.round(Date.now() / 1000),
 					});
 					await sth.finalize();

@@ -12,7 +12,6 @@ declare namespace ReportDB {
 		lineNumber: number | undefined;
 		columnNumber: number | undefined;
 		ua: string | undefined;
-		ip: string;
 		registeredAt: Date;
 	}
 
@@ -23,7 +22,6 @@ declare namespace ReportDB {
 		lineNumber: number;
 		columnNumber: number;
 		ua: string | undefined;
-		ip: string;
 		registeredAt: Date;
 	}
 

@@ -1,7 +1,6 @@
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import ip from 'ip';
 import Log4js from 'log4js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
@@ -19,7 +18,6 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 	const { location, referrer } = req.valid('json');
 
 	const ua = req.header('User-Agent');
-	const ipAddress = ip.address();
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
@@ -45,7 +43,6 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 			location: location,
 			referrer: referrer,
 			ua: ua,
-			ip: ipAddress,
 		});
 
 		await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);

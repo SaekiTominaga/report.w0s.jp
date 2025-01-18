@@ -23,7 +23,6 @@ export default class ReportJsDao extends ReportDao {
 			lineno: data.lineNumber,
 			colno: data.columnNumber,
 			ua: data.ua,
-			ip: data.ip,
 		});
 
 		const dbh = await this.getDbh();
@@ -61,9 +60,9 @@ export default class ReportJsDao extends ReportDao {
 			const insertDataSth = await dbh.prepare(`
 				INSERT INTO
 					d_js
-					( document_url,  message,  js_url,  lineno,       colno,          ua,  ip,  registered_at)
+					( document_url,  message,  js_url,  lineno,       colno,          ua,  registered_at)
 				VALUES
-					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :ip, :registered_at)
+					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :registered_at)
 			`);
 			await insertDataSth.run({
 				':document_url': data.pageURL,
@@ -72,7 +71,6 @@ export default class ReportJsDao extends ReportDao {
 				':line_number': data.lineNumber,
 				':column_number': data.columnNumber,
 				':ua': data.ua ?? null,
-				':ip': data.ip,
 				':registered_at': Math.round(Date.now() / 1000),
 			});
 			await insertDataSth.finalize();
