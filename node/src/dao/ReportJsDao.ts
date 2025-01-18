@@ -20,8 +20,8 @@ export default class ReportJsDao extends ReportDao {
 		const { sqlWhere, bind } = prepareWhereEqual({
 			message: data.message,
 			js_url: data.jsURL,
-			lineno: data.lineNumber,
-			colno: data.columnNumber,
+			line_number: data.lineNumber,
+			column_number: data.columnNumber,
 			ua: data.ua,
 		});
 
@@ -60,7 +60,7 @@ export default class ReportJsDao extends ReportDao {
 			const insertDataSth = await dbh.prepare(`
 				INSERT INTO
 					d_js
-					( document_url,  message,  js_url,  lineno,       colno,          ua,  registered_at)
+					( document_url,  message,  js_url,  line_number,  column_number,  ua,  registered_at)
 				VALUES
 					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :registered_at)
 			`);
