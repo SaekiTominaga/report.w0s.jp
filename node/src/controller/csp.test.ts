@@ -33,7 +33,7 @@ await test('Reporting API v1', async (t) => {
 		});
 
 		assert.equal(res.status, 403);
-		assert.equal((await res.json()).message, 'The violation’s url is not a valid URL');
+		assert.equal((await res.json()).message, 'The violation’s url is not an allowed origin');
 	});
 
 	await t.test('`documentURL` invalid origin', async () => {
