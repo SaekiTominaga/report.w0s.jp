@@ -116,6 +116,25 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 		contentType: contentType,
 	});
 
+	/* 自ドメイン以外のデータを弾く（実質的な CORS の代替処理） */
+	const allowOrigins = process.env['CSP_ALLOW_ORIGINS'];
+	if (allowOrigins === undefined) {
+		throw new HTTPException(500, { message: 'CSP allow origins not defined' });
+	}
+	if (
+		reportings.some((reporting) => {
+			let url: URL;
+			try {
+				url = new URL(reporting.body.documentURL);
+			} catch (e) {
+				throw new HTTPException(403, { message: 'The violation’s url is not a valid URL' });
+			}
+			return !allowOrigins.split(' ').includes(url.origin);
+		})
+	) {
+		throw new HTTPException(403, { message: 'The violation’s url is not an allowed origin' });
+	}
+
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {
 		throw new HTTPException(500, { message: 'DB file path not defined' });
