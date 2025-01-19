@@ -107,6 +107,23 @@ const getReporting = async (
 	return json.filter((data) => data.type === 'csp-violation');
 };
 
+const validateBody = (reportings: ReportingApiV1[]): boolean => {
+	const allowOrigins = process.env['CSP_ALLOW_ORIGINS'];
+	if (allowOrigins === undefined) {
+		throw new HTTPException(500, { message: 'CSP allow origins not defined' });
+	}
+
+	return reportings.some((reporting) => {
+		let url: URL;
+		try {
+			url = new URL(reporting.body.documentURL);
+		} catch (e) {
+			return false;
+		}
+		return allowOrigins.split(' ').includes(url.origin);
+	});
+};
+
 const app = new Hono().post('/', headerValidator, async (context) => {
 	const { req } = context;
 
@@ -115,6 +132,11 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 	const reportings = await getReporting(req, {
 		contentType: contentType,
 	});
+
+	/* 自ドメイン以外のデータを弾く（実質的な CORS の代替処理） */
+	if (!validateBody(reportings)) {
+		throw new HTTPException(403, { message: 'The violation’s url is not an allowed origin' });
+	}
 
 	const dbFilePath = process.env['SQLITE_REPORT'];
 	if (dbFilePath === undefined) {

@@ -2,18 +2,80 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 
-const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
+const origin = process.env['CSP_ALLOW_ORIGINS']!.split(' ').at(0)!;
 
-await test('success', async (t) => {
-	await t.test('Reporting API v1', async () => {
+await test('Reporting API v1', async (t) => {
+	await t.test('`documentURL` invalid URL', async () => {
 		const res = await app.request('/report/csp', {
 			method: 'post',
-			headers: new Headers({ Origin: origin, 'Content-Type': 'application/reports+json' }),
+			headers: new Headers({ 'Content-Type': 'application/reports+json' }),
 			body: JSON.stringify([
 				{
 					age: 0,
 					body: {
-						documentURL: 'documentURL1',
+						documentURL: `xxx`,
+						referrer: 'referrer',
+						blockedURL: 'blockedURL',
+						effectiveDirective: 'effectiveDirective',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'sourceFile',
+						sample: 'sample',
+						disposition: 'disposition',
+						statusCode: 11,
+						lineNumber: 12,
+						columnNumber: 13,
+					},
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]),
+		});
+
+		assert.equal(res.status, 403);
+		assert.equal((await res.json()).message, 'The violation’s url is not an allowed origin');
+	});
+
+	await t.test('`documentURL` invalid origin', async () => {
+		const res = await app.request('/report/csp', {
+			method: 'post',
+			headers: new Headers({ 'Content-Type': 'application/reports+json' }),
+			body: JSON.stringify([
+				{
+					age: 0,
+					body: {
+						documentURL: `http://example.com/xxx`,
+						referrer: 'referrer',
+						blockedURL: 'blockedURL',
+						effectiveDirective: 'effectiveDirective',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'sourceFile',
+						sample: 'sample',
+						disposition: 'disposition',
+						statusCode: 11,
+						lineNumber: 12,
+						columnNumber: 13,
+					},
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]),
+		});
+
+		assert.equal(res.status, 403);
+		assert.equal((await res.json()).message, 'The violation’s url is not an allowed origin');
+	});
+
+	await t.test('success', async () => {
+		const res = await app.request('/report/csp', {
+			method: 'post',
+			headers: new Headers({ 'Content-Type': 'application/reports+json' }),
+			body: JSON.stringify([
+				{
+					age: 0,
+					body: {
+						documentURL: `${origin}/documentURL1`,
 						referrer: 'referrer1',
 						blockedURL: 'blockedURL1',
 						effectiveDirective: 'effectiveDirective1',
@@ -32,7 +94,7 @@ await test('success', async (t) => {
 				{
 					age: 1,
 					body: {
-						documentURL: 'documentURL2',
+						documentURL: `${origin}/documentURL2`,
 						referrer: 'referrer2',
 						blockedURL: 'blockedURL2',
 						effectiveDirective: 'effectiveDirective2',
@@ -65,14 +127,16 @@ await test('success', async (t) => {
 		assert.equal(res.headers.get('Content-Type'), null);
 		assert.equal(await res.text(), '');
 	});
+});
 
-	await t.test('report-uri', async () => {
+await test('report-uri', async (t) => {
+	await t.test('success', async () => {
 		const res = await app.request('/report/csp', {
 			method: 'post',
-			headers: new Headers({ Origin: origin, 'Content-Type': 'application/csp-report' }),
+			headers: new Headers({ 'Content-Type': 'application/csp-report' }),
 			body: JSON.stringify({
 				'csp-report': {
-					'document-uri': 'document-uri',
+					'document-uri': `${origin}/document-uri`,
 					referrer: 'referrer',
 					'blocked-uri': 'blocked-uri',
 					'effective-directive': 'effective-directive',
