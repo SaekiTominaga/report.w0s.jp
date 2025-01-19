@@ -14,6 +14,7 @@ import js from './controller/js.js';
 import jsSample from './controller/jsSample.js';
 import referrer from './controller/referrer.js';
 import referrerSample from './controller/referrerSample.js';
+import { env } from './util/env.js';
 import { isApi } from './util/request.js';
 
 dotenv.config({
@@ -21,11 +22,7 @@ dotenv.config({
 });
 
 /* Logger */
-const loggerFilePath = process.env['LOGGER'];
-if (loggerFilePath === undefined) {
-	throw new Error('Logger file path not defined');
-}
-Log4js.configure(loggerFilePath);
+Log4js.configure(env('LOGGER'));
 const logger = Log4js.getLogger();
 
 /* Hono */
@@ -98,7 +95,7 @@ app.use(
 app.use(
 	`/${config.api.dir}/*`,
 	cors({
-		origin: process.env['CORS_ORIGINS']?.split(' ') ?? '*',
+		origin: env('CORS_ORIGINS').split(' '),
 		allowMethods: config.api.allowMethods,
 	}),
 );
@@ -163,11 +160,8 @@ app.onError((err, context) => {
 });
 
 /* HTTP Server */
-if (process.env['TEST'] !== 'test') {
-	const port = process.env['PORT'];
-	if (port === undefined) {
-		throw new Error('Port not defined');
-	}
+if (env('TEST') !== 'test') {
+	const port = env('PORT');
 	logger.info(`Server is running on http://localhost:${port}`);
 
 	serve({

@@ -2,13 +2,10 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 
-const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
-
 await test('header', async (t) => {
 	await t.test('Content-Type', async () => {
 		const res = await app.request('/report/csp', {
 			method: 'post',
-			headers: new Headers({ Origin: origin }),
 		});
 
 		assert.equal(res.status, 400);
