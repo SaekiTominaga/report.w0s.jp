@@ -3,6 +3,7 @@ import { Hono, type HonoRequest } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
+import { env } from '../util/env.js';
 import Mail from '../util/Mail.js';
 import { header as headerValidator, type ContentType } from '../validator/csp.js';
 
@@ -108,10 +109,7 @@ const getReporting = async (
 };
 
 const validateBody = (reportings: ReportingApiV1[]): boolean => {
-	const allowOrigins = process.env['CSP_ALLOW_ORIGINS'];
-	if (allowOrigins === undefined) {
-		throw new HTTPException(500, { message: 'CSP allow origins not defined' });
-	}
+	const allowOrigins = env('CSP_ALLOW_ORIGINS');
 
 	return reportings.some((reporting) => {
 		let url: URL;
@@ -138,12 +136,7 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 		throw new HTTPException(403, { message: 'The violation’s url is not an allowed origin' });
 	}
 
-	const dbFilePath = process.env['SQLITE_REPORT'];
-	if (dbFilePath === undefined) {
-		throw new HTTPException(500, { message: 'DB file path not defined' });
-	}
-
-	const dao = new ReportCspDao(dbFilePath);
+	const dao = new ReportCspDao(env('SQLITE_REPORT'));
 
 	const noticeList = (
 		await Promise.all(
@@ -194,11 +187,11 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 
 	if (noticeList.length >= 1) {
 		/* メール通知 */
-		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/csp_mail.ejs`, {
+		const html = await ejs.renderFile(`${env('VIEWS')}/csp_mail.ejs`, {
 			reportings: noticeList,
 		});
 
-		await new Mail().sendHtml(process.env['CSP_MAIL_TITLE'], html);
+		await new Mail().sendHtml(env('CSP_MAIL_TITLE'), html);
 	} else {
 		logger.info('重複データにつきメール通知スルー');
 	}

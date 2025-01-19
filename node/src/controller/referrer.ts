@@ -1,9 +1,9 @@
 import ejs from 'ejs';
 import { Hono } from 'hono';
-import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import ReportReferrerDao from '../dao/ReportReferrerDao.js';
 import { cors as corsMiddleware } from '../middleware/cors.js';
+import { env } from '../util/env.js';
 import Mail from '../util/Mail.js';
 import { json as jsonValidator } from '../validator/referrer.js';
 
@@ -19,12 +19,7 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 
 	const ua = req.header('User-Agent');
 
-	const dbFilePath = process.env['SQLITE_REPORT'];
-	if (dbFilePath === undefined) {
-		throw new HTTPException(500, { message: 'DB file path not defined' });
-	}
-
-	const dao = new ReportReferrerDao(dbFilePath);
+	const dao = new ReportReferrerDao(env('SQLITE_REPORT'));
 
 	const existSameData = await dao.same({
 		documentURL: location,
@@ -39,13 +34,13 @@ const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) 
 		});
 
 		/* メール通知 */
-		const html = await ejs.renderFile(`${process.env['VIEWS'] ?? ''}/referrer_mail.ejs`, {
+		const html = await ejs.renderFile(`${env('VIEWS')}/referrer_mail.ejs`, {
 			location: location,
 			referrer: referrer,
 			ua: ua,
 		});
 
-		await new Mail().sendHtml(process.env['REFERRER_MAIL_TITLE'], html);
+		await new Mail().sendHtml(env('REFERRER_MAIL_TITLE'), html);
 	} else {
 		logger.info('重複データにつき DB 登録スルー');
 	}

@@ -1,8 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
+import { env } from '../util/env.js';
 
-const origin = process.env['CORS_ORIGINS']!.split(' ').at(0)!;
+const origin = env('CORS_ORIGINS').split(' ').at(0)!;
 
 await test('cors', async () => {
 	const res = await app.request('/report/referrer-sample', {
