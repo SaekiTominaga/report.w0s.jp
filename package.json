@@ -16,22 +16,22 @@
 		"@log4js-node/smtp": "^2.0.8",
 		"dotenv": "^16.4.7",
 		"ejs": "^3.1.10",
-		"hono": "^4.6.15",
+		"hono": "^4.6.17",
 		"log4js": "^6.9.1",
-		"nodemailer": "^6.9.9",
+		"nodemailer": "^6.9.16",
 		"sqlite": "^5.1.1",
-		"sqlite3": "^5.1.6"
+		"sqlite3": "^5.1.7"
 	},
 	"devDependencies": {
 		"@types/ejs": "^3.1.5",
-		"@types/nodemailer": "^6.4.14",
+		"@types/nodemailer": "^6.4.17",
 		"@w0s/eslint-config": "^8.3.0",
-		"@w0s/tsconfig": "^1.4.0",
-		"eslint": "^9.17.0",
-		"prettier": "^3.1.1",
+		"@w0s/tsconfig": "^1.5.1",
+		"eslint": "^9.18.0",
+		"prettier": "^3.4.2",
 		"rimraf": "^6.0.1",
-		"tsx": "^4.13.1",
-		"typescript": "^5.0.4",
+		"tsx": "^4.19.2",
+		"typescript": "^5.7.3",
 		"yaml-lint": "^1.7.0"
 	},
 	"private": true
