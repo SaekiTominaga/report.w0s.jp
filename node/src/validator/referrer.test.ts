@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
 
-const origin = env('CORS_ORIGINS').split(' ').at(0)!;
+const origin = env('REFERRER_ORIGINS').split(' ').at(0)!;
 
 await test('location undefined', async () => {
 	const res = await app.request('/report/referrer', {
