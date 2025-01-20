@@ -93,9 +93,30 @@ app.use(
 
 /* CORS */
 app.use(
-	`/${config.api.dir}/*`,
+	`/${config.api.dir}/js`,
 	cors({
-		origin: env('CORS_ORIGINS').split(' '),
+		origin: env('JS_ALLOW_ORIGINS').split(' '),
+		allowMethods: config.api.allowMethods,
+	}),
+);
+app.use(
+	`/${config.api.dir}/js-sample`,
+	cors({
+		origin: env('JS_SAMPLE_ALLOW_ORIGINS').split(' '),
+		allowMethods: config.api.allowMethods,
+	}),
+);
+app.use(
+	`/${config.api.dir}/referrer`,
+	cors({
+		origin: env('REFERRER_ORIGINS').split(' '),
+		allowMethods: config.api.allowMethods,
+	}),
+);
+app.use(
+	`/${config.api.dir}/referrer-sample`,
+	cors({
+		origin: env('REFERRER_SAMPLE_ORIGINS').split(' '),
 		allowMethods: config.api.allowMethods,
 	}),
 );
@@ -160,7 +181,7 @@ app.onError((err, context) => {
 });
 
 /* HTTP Server */
-if (env('TEST') !== 'test') {
+if (process.env['TEST'] !== 'test') {
 	const port = env('PORT');
 	logger.info(`Server is running on http://localhost:${port}`);
 

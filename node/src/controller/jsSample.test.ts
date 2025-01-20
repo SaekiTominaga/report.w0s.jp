@@ -3,15 +3,27 @@ import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
 
-const origin = env('CORS_ORIGINS').split(' ').at(0)!;
+const origin = env('JS_SAMPLE_ALLOW_ORIGINS').split(' ').at(0)!;
 
-await test('cors', async () => {
-	const res = await app.request('/report/js-sample', {
-		method: 'post',
+await test('cors', async (t) => {
+	await t.test('no origin', async () => {
+		const res = await app.request('/report/js-sample', {
+			method: 'post',
+		});
+
+		assert.equal(res.status, 403);
+		assert.equal((await res.json()).message, 'Access from an unauthorized origin');
 	});
 
-	assert.equal(res.status, 403);
-	assert.equal((await res.json()).message, 'Access from an unauthorized origin');
+	await t.test('disallowed origin', async () => {
+		const res = await app.request('/report/js-sample', {
+			method: 'post',
+			headers: new Headers({ Origin: 'http://example.com' }),
+		});
+
+		assert.equal(res.status, 403);
+		assert.equal((await res.json()).message, 'Access from an unauthorized origin');
+	});
 });
 
 await test('success', async () => {
