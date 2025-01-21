@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
 
-const origin = env('CSP_ALLOW_ORIGINS').split(' ').at(0)!;
+const origin = env('CSP_ALLOW_ORIGINS', 'string[]').at(0)!;
 
 await test('Reporting API v1', async (t) => {
 	await t.test('`documentURL` invalid URL', async () => {

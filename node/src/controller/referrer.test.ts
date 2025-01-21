@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
 
-const origin = env('REFERRER_ORIGINS').split(' ').at(0)!;
+const origin = env('REFERRER_ORIGINS', 'string[]').at(0)!;
 
 await test('cors', async (t) => {
 	await t.test('no origin', async () => {

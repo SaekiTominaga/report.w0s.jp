@@ -109,7 +109,7 @@ const getReporting = async (
 };
 
 const validateBody = (reportings: ReportingApiV1[]): boolean => {
-	const allowOrigins = env('CSP_ALLOW_ORIGINS');
+	const allowOrigins = env('CSP_ALLOW_ORIGINS', 'string[]');
 
 	return reportings.some((reporting) => {
 		let url: URL;
@@ -118,7 +118,7 @@ const validateBody = (reportings: ReportingApiV1[]): boolean => {
 		} catch (e) {
 			return false;
 		}
-		return allowOrigins.split(' ').includes(url.origin);
+		return allowOrigins.includes(url.origin);
 	});
 };
 
