@@ -40,7 +40,7 @@ interface ReportUri {
 		'effective-directive': string; // 違反が発生したディレクティブ
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
-		disposition: 'enforce' | 'report';
+		disposition?: 'enforce' | 'report';
 		'status-code': number;
 		'script-sample'?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 		'source-file'?: string;
@@ -70,7 +70,7 @@ const getReporting = async (
 			documentURL: cspReport['document-uri'],
 			effectiveDirective: cspReport['effective-directive'],
 			originalPolicy: cspReport['original-policy'],
-			disposition: cspReport.disposition,
+			disposition: cspReport.disposition ?? 'report',
 			statusCode: cspReport['status-code'],
 		};
 		if (cspReport.referrer !== undefined) {

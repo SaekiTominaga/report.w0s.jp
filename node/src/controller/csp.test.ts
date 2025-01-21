@@ -131,30 +131,52 @@ await test('Reporting API v1', async (t) => {
 });
 
 await test('report-uri', async (t) => {
-	await t.test('success', async () => {
-		const res = await app.request('/report/csp', {
-			method: 'post',
-			headers: new Headers({ 'Content-Type': 'application/csp-report' }),
-			body: JSON.stringify({
-				'csp-report': {
-					'document-uri': `${origin}/document-uri`,
-					referrer: 'referrer',
-					'blocked-uri': 'blocked-uri',
-					'effective-directive': 'effective-directive',
-					'violated-directive': 'violated-directive',
-					'original-policy': 'original-policy',
-					disposition: 'disposition',
-					'status-code': 1,
-					'script-sample': 'script-sample',
-					'source-file': 'source-file',
-					'line-number': 2,
-					'column-number': 3,
-				},
-			}),
+	await t.test('success', async (t2) => {
+		await t2.test('minimum', async () => {
+			const res = await app.request('/report/csp', {
+				method: 'post',
+				headers: new Headers({ 'Content-Type': 'application/csp-report' }),
+				body: JSON.stringify({
+					'csp-report': {
+						'document-uri': `${origin}/document-uri`,
+						'effective-directive': 'effective-directive',
+						'violated-directive': 'violated-directive',
+						'original-policy': 'original-policy',
+						'status-code': 1,
+					},
+				}),
+			});
+
+			assert.equal(res.status, 204);
+			assert.equal(res.headers.get('Content-Type'), null);
+			assert.equal(await res.text(), '');
 		});
 
-		assert.equal(res.status, 204);
-		assert.equal(res.headers.get('Content-Type'), null);
-		assert.equal(await res.text(), '');
+		await t2.test('all', async () => {
+			const res = await app.request('/report/csp', {
+				method: 'post',
+				headers: new Headers({ 'Content-Type': 'application/csp-report' }),
+				body: JSON.stringify({
+					'csp-report': {
+						'document-uri': `${origin}/document-uri`,
+						referrer: 'referrer',
+						'blocked-uri': 'blocked-uri',
+						'effective-directive': 'effective-directive',
+						'violated-directive': 'violated-directive',
+						'original-policy': 'original-policy',
+						disposition: 'disposition',
+						'status-code': 1,
+						'script-sample': 'script-sample',
+						'source-file': 'source-file',
+						'line-number': 2,
+						'column-number': 3,
+					},
+				}),
+			});
+
+			assert.equal(res.status, 204);
+			assert.equal(res.headers.get('Content-Type'), null);
+			assert.equal(await res.text(), '');
+		});
 	});
 });
