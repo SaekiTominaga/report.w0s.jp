@@ -93,6 +93,13 @@ app.use(
 
 /* CORS */
 app.use(
+	`/${config.api.dir}/csp`,
+	cors({
+		origin: env('CSP_ALLOW_ORIGINS').split(' '),
+		allowMethods: config.api.allowMethods,
+	}),
+);
+app.use(
 	`/${config.api.dir}/js`,
 	cors({
 		origin: env('JS_ALLOW_ORIGINS').split(' '),
