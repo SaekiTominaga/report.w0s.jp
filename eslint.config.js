@@ -19,7 +19,7 @@ export default [
 		rules: {
 			'func-style': [
 				'error',
-				'declaration',
+				'expression',
 				{
 					overrides: {
 						namedExports: 'ignore',
