@@ -8,21 +8,31 @@ const origin = env('REFERRER_ORIGINS').split(' ').at(0)!;
 await test('cors', async (t) => {
 	await t.test('no origin', async () => {
 		const res = await app.request('/report/referrer', {
-			method: 'post',
+			method: 'options',
 		});
 
-		assert.equal(res.status, 403);
-		assert.equal((await res.json()).message, 'Access from an unauthorized origin');
+		assert.equal(res.status, 204);
+		assert.equal(res.headers.get('Access-Control-Allow-Origin'), null);
 	});
 
-	await t.test('disallowed origin', async () => {
+	await t.test('disallow origin', async () => {
 		const res = await app.request('/report/referrer', {
-			method: 'post',
+			method: 'options',
 			headers: new Headers({ Origin: 'http://example.com' }),
 		});
 
-		assert.equal(res.status, 403);
-		assert.equal((await res.json()).message, 'Access from an unauthorized origin');
+		assert.equal(res.status, 204);
+		assert.equal(res.headers.get('Access-Control-Allow-Origin'), null);
+	});
+
+	await t.test('allow origin', async () => {
+		const res = await app.request('/report/referrer', {
+			method: 'options',
+			headers: new Headers({ Origin: origin }),
+		});
+
+		assert.equal(res.status, 204);
+		assert.equal(res.headers.get('Access-Control-Allow-Origin'), origin);
 	});
 });
 
