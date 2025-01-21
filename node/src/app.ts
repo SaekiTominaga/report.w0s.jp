@@ -93,30 +93,37 @@ app.use(
 
 /* CORS */
 app.use(
+	`/${config.api.dir}/csp`,
+	cors({
+		origin: env('CSP_ALLOW_ORIGINS', 'string[]'),
+		allowMethods: config.api.allowMethods,
+	}),
+);
+app.use(
 	`/${config.api.dir}/js`,
 	cors({
-		origin: env('JS_ALLOW_ORIGINS').split(' '),
+		origin: env('JS_ALLOW_ORIGINS', 'string[]'),
 		allowMethods: config.api.allowMethods,
 	}),
 );
 app.use(
 	`/${config.api.dir}/js-sample`,
 	cors({
-		origin: env('JS_SAMPLE_ALLOW_ORIGINS').split(' '),
+		origin: env('JS_SAMPLE_ALLOW_ORIGINS', 'string[]'),
 		allowMethods: config.api.allowMethods,
 	}),
 );
 app.use(
 	`/${config.api.dir}/referrer`,
 	cors({
-		origin: env('REFERRER_ORIGINS').split(' '),
+		origin: env('REFERRER_ORIGINS', 'string[]'),
 		allowMethods: config.api.allowMethods,
 	}),
 );
 app.use(
 	`/${config.api.dir}/referrer-sample`,
 	cors({
-		origin: env('REFERRER_SAMPLE_ORIGINS').split(' '),
+		origin: env('REFERRER_SAMPLE_ORIGINS', 'string[]'),
 		allowMethods: config.api.allowMethods,
 	}),
 );
@@ -182,12 +189,12 @@ app.onError((err, context) => {
 
 /* HTTP Server */
 if (process.env['TEST'] !== 'test') {
-	const port = env('PORT');
-	logger.info(`Server is running on http://localhost:${port}`);
+	const port = env('PORT', 'number');
+	logger.info(`Server is running on http://localhost:${String(port)}`);
 
 	serve({
 		fetch: app.fetch,
-		port: Number(port),
+		port: port,
 	});
 }
 

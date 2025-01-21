@@ -2,7 +2,6 @@ import ejs from 'ejs';
 import { Hono } from 'hono';
 import Log4js from 'log4js';
 import ReportJsDao from '../dao/ReportJsDao.js';
-import { cors as corsMiddleware } from '../middleware/cors.js';
 import { env } from '../util/env.js';
 import Mail from '../util/Mail.js';
 import { json as jsonValidator } from '../validator/js.js';
@@ -12,7 +11,7 @@ import { json as jsonValidator } from '../validator/js.js';
  */
 const logger = Log4js.getLogger('js');
 
-const app = new Hono().post('/', corsMiddleware, jsonValidator, async (context) => {
+const app = new Hono().post('/', jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { location, message, filename, lineno, colno } = req.valid('json');
