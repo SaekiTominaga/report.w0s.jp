@@ -6,7 +6,7 @@ import { parseRequestJson } from './csp.js';
 
 const origin = env('CSP_ALLOW_ORIGINS', 'string[]').at(0)!;
 
-await test('getReporting()', async (t) => {
+await test('parseRequestJson()', async (t) => {
 	await t.test('Reporting Api v1', () => {
 		const reportings = parseRequestJson(
 			[
@@ -130,7 +130,7 @@ await test('getReporting()', async (t) => {
 						documentURL: 'https://example.com/',
 						effectiveDirective: 'effective-directive',
 						originalPolicy: 'original-policy',
-						disposition: 'report',
+						disposition: undefined,
 						statusCode: 11,
 					},
 					type: 'csp-violation',
