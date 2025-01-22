@@ -1,5 +1,5 @@
 import ejs from 'ejs';
-import { Hono, type HonoRequest } from 'hono';
+import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import ReportCspDao from '../dao/ReportCspDao.js';
@@ -7,8 +7,8 @@ import { env } from '../util/env.js';
 import Mail from '../util/Mail.js';
 import { header as headerValidator, type ContentType } from '../validator/csp.js';
 
-interface ReportingApiV1Body {
-	/* https://w3c.github.io/webappsec-csp/#reporting */
+interface CSPViolationReportBody {
+	/* https://www.w3.org/TR/2024/WD-CSP3-20241217/#reporting */
 	documentURL: string; // 違反が発生したドキュメントの URL
 	referrer?: string; // 違反が発生した文書の参照元
 	blockedURL?: string; // ブロックされたリソースの URL
@@ -23,16 +23,31 @@ interface ReportingApiV1Body {
 }
 
 interface ReportingApiV1 {
-	/* https://w3c.github.io/reporting/#serialize-reports */
+	/* https://www.w3.org/TR/2024/WD-reporting-1-20240813/#serialize-reports */
 	age: number; // レポートのタイムスタンプと現在時刻の間のミリ秒数
 	type: string; // CSP の場合は `csp-violation`
 	url: string;
 	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
-	body: ReportingApiV1Body;
+	body: Record<string, unknown>;
+}
+
+interface ReportingApiV1CSP {
+	age: number; // レポートのタイムスタンプと現在時刻の間のミリ秒数
+	type: `csp-violation`;
+	url: string;
+	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
+	body: CSPViolationReportBody;
+}
+
+interface ReportingApiSafari {
+	/* Safari 18.2; https://www.w3.org/TR/2018/WD-reporting-1-20180925/#interface-reporting-observer */
+	type: `csp-violation`;
+	url: string;
+	body: CSPViolationReportBody;
 }
 
 interface ReportUri {
-	/* https://w3c.github.io/webappsec-csp/#deprecated-serialize-violation */
+	/* Firefox 136; https://www.w3.org/TR/2024/WD-CSP3-20241217/#deprecated-serialize-violation */
 	'csp-report': {
 		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
@@ -54,64 +69,76 @@ interface ReportUri {
  */
 const logger = Log4js.getLogger('csp');
 
-const getReporting = async (
-	req: HonoRequest,
-	option: Readonly<{
+export const parseRequestJson = (
+	requestJson: ReportingApiV1[] | ReportingApiSafari | ReportUri,
+	headers: {
 		contentType: ContentType;
-	}>,
-): Promise<ReportingApiV1[]> => {
-	if (option.contentType === 'application/csp-report') {
-		const json = await req.json<ReportUri>();
-		const ua = req.header('User-Agent');
-		logger.debug('report-uri', option.contentType, json, ua);
-		const { 'csp-report': cspReport } = json;
+		ua: string | undefined;
+	},
+): ReportingApiV1CSP[] => {
+	if (Array.isArray(requestJson)) {
+		/* Chrome */
+		logger.debug(headers.contentType, requestJson);
+		return requestJson.filter((data) => data.type === 'csp-violation') as unknown[] as ReportingApiV1CSP[];
+	}
 
-		const reportingBody: ReportingApiV1Body = {
-			documentURL: cspReport['document-uri'],
-			effectiveDirective: cspReport['effective-directive'],
-			originalPolicy: cspReport['original-policy'],
-			disposition: cspReport.disposition ?? 'report',
-			statusCode: cspReport['status-code'],
-		};
-		if (cspReport.referrer !== undefined) {
-			reportingBody.referrer = cspReport.referrer;
-		}
-		if (cspReport['blocked-uri'] !== undefined) {
-			reportingBody.blockedURL = cspReport['blocked-uri'];
-		}
-		if (cspReport['source-file'] !== undefined) {
-			reportingBody.sourceFile = cspReport['source-file'];
-		}
-		if (cspReport['script-sample'] !== undefined) {
-			reportingBody.sample = cspReport['script-sample'];
-		}
-		if (cspReport['line-number'] !== undefined) {
-			reportingBody.lineNumber = cspReport['line-number'];
-		}
-		if (cspReport['column-number'] !== undefined) {
-			reportingBody.columnNumber = cspReport['column-number'];
-		}
+	logger.debug(headers.contentType, headers.ua, requestJson);
 
+	if (!('csp-report' in requestJson)) {
+		/* Safari 18.2 */
 		return [
 			{
 				age: -1,
-				body: reportingBody,
-				type: 'csp-violation',
-				url: reportingBody.documentURL,
-				user_agent: ua,
+				type: requestJson.type,
+				url: requestJson.url,
+				user_agent: headers.ua,
+				body: requestJson.body,
 			},
 		];
 	}
 
-	const json = await req.json<ReportingApiV1[]>();
-	logger.debug('Reporting Api v1', option.contentType, json);
-	return json.filter((data) => data.type === 'csp-violation');
+	/* Firefox 136 */
+	const { 'csp-report': cspReport } = requestJson;
+
+	const reportingBody: CSPViolationReportBody = {
+		documentURL: cspReport['document-uri'],
+		effectiveDirective: cspReport['effective-directive'],
+		originalPolicy: cspReport['original-policy'],
+		disposition: cspReport.disposition ?? 'report',
+		statusCode: cspReport['status-code'],
+	};
+	if (cspReport.referrer !== undefined) {
+		reportingBody.referrer = cspReport.referrer;
+	}
+	if (cspReport['blocked-uri'] !== undefined) {
+		reportingBody.blockedURL = cspReport['blocked-uri'];
+	}
+	if (cspReport['source-file'] !== undefined) {
+		reportingBody.sourceFile = cspReport['source-file'];
+	}
+	if (cspReport['script-sample'] !== undefined) {
+		reportingBody.sample = cspReport['script-sample'];
+	}
+	if (cspReport['line-number'] !== undefined) {
+		reportingBody.lineNumber = cspReport['line-number'];
+	}
+	if (cspReport['column-number'] !== undefined) {
+		reportingBody.columnNumber = cspReport['column-number'];
+	}
+
+	return [
+		{
+			age: -1,
+			body: reportingBody,
+			type: 'csp-violation',
+			url: reportingBody.documentURL,
+			user_agent: headers.ua,
+		},
+	];
 };
 
-const validateBody = (reportings: ReportingApiV1[]): boolean => {
-	const allowOrigins = env('CSP_ALLOW_ORIGINS', 'string[]');
-
-	return reportings.some((reporting) => {
+const validateBody = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): boolean =>
+	reportings.some((reporting) => {
 		let url: URL;
 		try {
 			url = new URL(reporting.body.documentURL);
@@ -120,19 +147,20 @@ const validateBody = (reportings: ReportingApiV1[]): boolean => {
 		}
 		return allowOrigins.includes(url.origin);
 	});
-};
 
 const app = new Hono().post('/', headerValidator, async (context) => {
 	const { req } = context;
 
 	const { contentType } = req.valid('header');
+	const requestJson = await req.json<ReportingApiV1[] | ReportingApiSafari | ReportUri>();
 
-	const reportings = await getReporting(req, {
+	const reportings = parseRequestJson(requestJson, {
 		contentType: contentType,
+		ua: req.header('User-Agent'),
 	});
 
 	/* 自ドメイン以外のデータを弾く（実質的な CORS の代替処理） */
-	if (!validateBody(reportings)) {
+	if (!validateBody(reportings, env('CSP_ALLOW_ORIGINS', 'string[]'))) {
 		throw new HTTPException(403, { message: 'The violation’s url is not an allowed origin' });
 	}
 
