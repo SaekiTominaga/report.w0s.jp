@@ -7,6 +7,7 @@
 				padding: 0.25em 0.5em;
 				border-radius: 0.25em;
 				color: #fff;
+				background-color: #767676;
 				line-height: 1;
 			}
 
@@ -44,8 +45,10 @@
 		<p>
 			<%_ if (body.disposition === 'enforce') { _%>
 			<span class="disposition -enforce">Enforce</span>
-			<%_ } else { _%>
+			<%_ } else if (body.disposition === 'report') { _%>
 			<span class="disposition -report">Report Only</span>
+			<%_ } else { _%>
+			<span class="disposition">Unknown</span>
 			<%_ } _%>
 		</p>
 

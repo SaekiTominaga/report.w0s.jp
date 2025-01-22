@@ -16,7 +16,7 @@ interface CSPViolationReportBody {
 	originalPolicy: string; // 元のポリシー
 	sourceFile?: string;
 	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
-	disposition: 'enforce' | 'report';
+	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
 	statusCode: number;
 	lineNumber?: number;
 	columnNumber?: number;
@@ -104,7 +104,7 @@ export const parseRequestJson = (
 		documentURL: cspReport['document-uri'],
 		effectiveDirective: cspReport['effective-directive'],
 		originalPolicy: cspReport['original-policy'],
-		disposition: cspReport.disposition ?? 'report',
+		disposition: cspReport.disposition ?? undefined,
 		statusCode: cspReport['status-code'],
 	};
 	if (cspReport.referrer !== undefined) {
