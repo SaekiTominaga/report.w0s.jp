@@ -2,37 +2,37 @@ import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
 interface RequestJson {
-	location: string;
+	documentURL: string;
 	message: string;
-	filename: string;
-	lineno: number;
-	colno: number;
+	jsURL: string;
+	lineNumber: number;
+	columnNumber: number;
 }
 
 export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
-	const { location, message, filename, lineno, colno } = value;
+	const { documentURL, message, jsURL, lineNumber, columnNumber } = value;
 
-	if (typeof location !== 'string') {
-		throw new HTTPException(400, { message: 'The `location` parameter is invalid' });
+	if (typeof documentURL !== 'string') {
+		throw new HTTPException(400, { message: 'The `documentURL` parameter is invalid' });
 	}
 	if (typeof message !== 'string') {
 		throw new HTTPException(400, { message: 'The `message` parameter is invalid' });
 	}
-	if (typeof filename !== 'string') {
-		throw new HTTPException(400, { message: 'The `filename` parameter is invalid' });
+	if (typeof jsURL !== 'string') {
+		throw new HTTPException(400, { message: 'The `jsURL` parameter is invalid' });
 	}
-	if (typeof lineno !== 'string' && typeof lineno !== 'number') {
-		throw new HTTPException(400, { message: 'The `lineno` parameter is invalid' });
+	if (typeof lineNumber !== 'number') {
+		throw new HTTPException(400, { message: 'The `lineNumber` parameter is invalid' });
 	}
-	if (typeof colno !== 'string' && typeof colno !== 'number') {
-		throw new HTTPException(400, { message: 'The `colno` parameter is invalid' });
+	if (typeof columnNumber !== 'number') {
+		throw new HTTPException(400, { message: 'The `columnNumber` parameter is invalid' });
 	}
 
 	return {
-		location,
+		documentURL,
 		message,
-		filename,
-		lineno: Number(lineno),
-		colno: Number(colno),
+		jsURL,
+		lineNumber: lineNumber,
+		columnNumber: columnNumber,
 	};
 });

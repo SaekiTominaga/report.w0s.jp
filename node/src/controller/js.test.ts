@@ -40,7 +40,7 @@ await test('success', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', message: 'xxx', filename: 'xxx', lineno: 1, colno: 1 }),
+		body: JSON.stringify({ documentURL: 'xxx', message: 'xxx', jsURL: 'xxx', lineNumber: 1, columnNumber: 1 }),
 	});
 
 	assert.equal(res.status, 204);

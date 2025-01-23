@@ -5,56 +5,56 @@ import { env } from '../util/env.js';
 
 const origin = env('JS_ALLOW_ORIGINS', 'string[]').at(0)!;
 
-await test('location undefined', async () => {
+await test('documentURL undefined', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin }),
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal((await res.json()).message, 'The `location` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `documentURL` parameter is invalid');
 });
 
 await test('message undefined', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx' }),
+		body: JSON.stringify({ documentURL: 'xxx' }),
 	});
 
 	assert.equal(res.status, 400);
 	assert.equal((await res.json()).message, 'The `message` parameter is invalid');
 });
 
-await test('filename undefined', async () => {
+await test('jsURL undefined', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', message: 'xxx' }),
+		body: JSON.stringify({ documentURL: 'xxx', message: 'xxx' }),
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal((await res.json()).message, 'The `filename` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `jsURL` parameter is invalid');
 });
 
-await test('lineno undefined', async () => {
+await test('lineNumber undefined', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', message: 'xxx', filename: 'xxx' }),
+		body: JSON.stringify({ documentURL: 'xxx', message: 'xxx', jsURL: 'xxx' }),
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal((await res.json()).message, 'The `lineno` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `lineNumber` parameter is invalid');
 });
 
-await test('colno undefined', async () => {
+await test('columnNumber undefined', async () => {
 	const res = await app.request('/report/js', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', message: 'xxx', filename: 'xxx', lineno: 1 }),
+		body: JSON.stringify({ documentURL: 'xxx', message: 'xxx', jsURL: 'xxx', lineNumber: 1 }),
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal((await res.json()).message, 'The `colno` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `columnNumber` parameter is invalid');
 });

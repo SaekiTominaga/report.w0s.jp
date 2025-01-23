@@ -40,7 +40,7 @@ await test('success', async () => {
 	const res = await app.request('/report/referrer', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx', referrer: 'xxx' }),
+		body: JSON.stringify({ documentURL: 'xxx', referrer: 'xxx' }),
 	});
 
 	assert.equal(res.status, 204);
