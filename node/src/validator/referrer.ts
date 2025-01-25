@@ -2,22 +2,22 @@ import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 
 interface RequestJson {
-	location: string;
+	documentURL: string;
 	referrer: string;
 }
 
 export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
-	const { location, referrer } = value;
+	const { documentURL, referrer } = value;
 
-	if (typeof location !== 'string') {
-		throw new HTTPException(400, { message: 'The `location` parameter is invalid' });
+	if (typeof documentURL !== 'string') {
+		throw new HTTPException(400, { message: 'The `documentURL` parameter is invalid' });
 	}
 	if (typeof referrer !== 'string') {
 		throw new HTTPException(400, { message: 'The `referrer` parameter is invalid' });
 	}
 
 	return {
-		location,
+		documentURL,
 		referrer,
 	};
 });

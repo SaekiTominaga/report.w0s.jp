@@ -14,39 +14,39 @@ const logger = Log4js.getLogger('js');
 const app = new Hono().post('/', jsonValidator, async (context) => {
 	const { req } = context;
 
-	const { location, message, filename, lineno, colno } = req.valid('json');
+	const { documentURL, message, jsURL, lineNumber, columnNumber } = req.valid('json');
 
 	const ua = req.header('User-Agent');
 
 	const dao = new ReportJsDao(env('SQLITE_REPORT'));
 
 	const existSameData = await dao.same({
-		documentURL: location,
+		documentURL: documentURL,
 		message: message,
-		jsURL: filename,
-		lineNumber: lineno,
-		columnNumber: colno,
+		jsURL: jsURL,
+		lineNumber: lineNumber,
+		columnNumber: columnNumber,
 		ua: ua,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			documentURL: location,
+			documentURL: documentURL,
 			message: message,
-			jsURL: filename,
-			lineNumber: lineno,
-			columnNumber: colno,
+			jsURL: jsURL,
+			lineNumber: lineNumber,
+			columnNumber: columnNumber,
 			ua: ua,
 		});
 
 		/* メール通知 */
 		const html = await ejs.renderFile(`${env('VIEWS')}/js_mail.ejs`, {
-			location: location,
+			documentURL: documentURL,
 			message: message,
-			filename: filename,
-			lineno: lineno,
-			colno: colno,
+			jsURL: jsURL,
+			lineNumber: lineNumber,
+			columnNumber: columnNumber,
 			ua: ua,
 		});
 

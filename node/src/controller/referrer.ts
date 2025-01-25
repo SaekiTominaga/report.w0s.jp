@@ -15,7 +15,7 @@ const app = new Hono().post('/', jsonValidator, async (context) => {
 	const { req } = context;
 
 	const responseBody = req.valid('json');
-	const { location, referrer } = responseBody;
+	const { documentURL, referrer } = responseBody;
 	logger.debug(responseBody);
 
 	const ua = req.header('User-Agent');
@@ -23,20 +23,20 @@ const app = new Hono().post('/', jsonValidator, async (context) => {
 	const dao = new ReportReferrerDao(env('SQLITE_REPORT'));
 
 	const existSameData = await dao.same({
-		documentURL: location,
+		documentURL: documentURL,
 		referrer: referrer,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			documentURL: location,
+			documentURL: documentURL,
 			referrer: referrer,
 		});
 
 		/* メール通知 */
 		const html = await ejs.renderFile(`${env('VIEWS')}/referrer_mail.ejs`, {
-			location: location,
+			documentURL: documentURL,
 			referrer: referrer,
 			ua: ua,
 		});

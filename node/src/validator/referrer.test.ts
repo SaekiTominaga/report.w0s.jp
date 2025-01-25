@@ -5,21 +5,21 @@ import { env } from '../util/env.js';
 
 const origin = env('REFERRER_ORIGINS', 'string[]').at(0)!;
 
-await test('location undefined', async () => {
+await test('documentURL undefined', async () => {
 	const res = await app.request('/report/referrer', {
 		method: 'post',
 		headers: new Headers({ Origin: origin }),
 	});
 
 	assert.equal(res.status, 400);
-	assert.equal((await res.json()).message, 'The `location` parameter is invalid');
+	assert.equal((await res.json()).message, 'The `documentURL` parameter is invalid');
 });
 
 await test('referrer undefined', async () => {
 	const res = await app.request('/report/referrer', {
 		method: 'post',
 		headers: new Headers({ Origin: origin, 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ location: 'xxx' }),
+		body: JSON.stringify({ documentURL: 'xxx' }),
 	});
 
 	assert.equal(res.status, 400);
