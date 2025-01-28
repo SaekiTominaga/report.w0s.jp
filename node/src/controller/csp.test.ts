@@ -214,14 +214,14 @@ await test('cors()', async (t) => {
 		);
 	});
 
-	await t.test('invalid documentURL origin', () => {
+	await t.test('disallow documentURL origin', () => {
 		assert.equal(
 			cors(
 				[
 					{
 						age: 0,
 						body: {
-							documentURL: 'http://example.com/xxx',
+							documentURL: 'http://example.com/documentURL',
 							effectiveDirective: 'effectiveDirective',
 							originalPolicy: 'originalPolicy',
 							disposition: 'enforce',
@@ -239,91 +239,157 @@ await test('cors()', async (t) => {
 	});
 });
 
-await test('validateBody()', async (t) => {
-	await t.test('invalid blockedURL', () => {
-		assert.equal(
-			narrowBody([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/xxx',
-						blockedURL: 'xxx',
-						effectiveDirective: 'effectiveDirective',
-						originalPolicy: 'originalPolicy',
-						disposition: 'enforce',
-						statusCode: 11,
+await test('narrowBody()', async (t) => {
+	await t.test('no blockedURL', async (t2) => {
+		await t2.test('disallow effectiveDirective', () => {
+			assert.deepEqual(
+				narrowBody([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							effectiveDirective: 'connect-src',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			0,
-		);
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							effectiveDirective: 'fenced-frame-src',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]),
+				[
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							effectiveDirective: 'connect-src',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				],
+			);
+		});
+
+		await t2.test('allow effectiveDirective', () => {
+			assert.equal(
+				narrowBody([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							effectiveDirective: 'effectiveDirective',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]).length,
+				1,
+			);
+		});
 	});
 
-	await t.test('invalid effectiveDirective', () => {
-		assert.equal(
-			narrowBody([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/xxx',
-						effectiveDirective: 'fenced-frame-src',
-						originalPolicy: 'originalPolicy',
-						disposition: 'enforce',
-						statusCode: 11,
+	await t.test('exist blockedURL', async (t2) => {
+		await t2.test('invalid blockedURL', () => {
+			assert.equal(
+				narrowBody([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'xxx',
+							effectiveDirective: 'effectiveDirective',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			0,
-		);
-	});
+				]).length,
+				0,
+			);
+		});
 
-	await t.test('invalid blockedURL & effectiveDirective', () => {
-		assert.equal(
-			narrowBody([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/xxx',
-						blockedURL: 'https://csi.gstatic.com/csi?foo',
-						effectiveDirective: 'connect-src',
-						originalPolicy: 'originalPolicy',
-						disposition: 'enforce',
-						statusCode: 11,
+		await t2.test('disallow blockedURL & effectiveDirective', () => {
+			assert.equal(
+				narrowBody([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'https://csi.gstatic.com/csi?foo',
+							effectiveDirective: 'connect-src',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			0,
-		);
-	});
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'http://example.com/blockedURL',
+							effectiveDirective: 'fenced-frame-src',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]).length,
+				0,
+			);
+		});
 
-	await t.test('valid', () => {
-		assert.equal(
-			narrowBody([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/xxx',
-						effectiveDirective: 'effectiveDirective',
-						originalPolicy: 'originalPolicy',
-						disposition: 'enforce',
-						statusCode: 11,
+		await t2.test('allow blockedURL & effectiveDirective', () => {
+			assert.equal(
+				narrowBody([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/xxx',
+							effectiveDirective: 'effectiveDirective',
+							originalPolicy: 'originalPolicy',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			1,
-		);
+				]).length,
+				1,
+			);
+		});
 	});
 });
 

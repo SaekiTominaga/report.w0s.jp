@@ -140,10 +140,8 @@ export const parseRequestJson = (
 
 export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): boolean =>
 	reportings.some(({ body }) => {
-		let url: URL;
-		try {
-			url = new URL(body.documentURL);
-		} catch (e) {
+		const url = URL.parse(body.documentURL);
+		if (url === null) {
 			return false;
 		}
 
@@ -152,26 +150,32 @@ export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): b
 
 export const narrowBody = (reportings: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
 	reportings.filter(({ body }) => {
-		let blockedURL: URL;
-		if (body.blockedURL !== undefined) {
-			try {
-				blockedURL = new URL(body.blockedURL);
-			} catch (e) {
+		/* effectiveDirective */
+		if (body.blockedURL === undefined) {
+			if (
+				configCsp.narrowBody.disallowEffectives.find(
+					([effectiveDirective, blockedPath]) => effectiveDirective === body.effectiveDirective && blockedPath === undefined,
+				)
+			) {
 				return false;
 			}
-		}
+		} else {
+			const blockedURL = URL.parse(body.blockedURL);
+			if (blockedURL === null) {
+				return false;
+			}
 
-		/* effectiveDirective */
-		if (
-			configCsp.narrowBody.disallowEffectives.find(([effectiveDirective, blockedPath]) => {
-				if (body.blockedURL === undefined) {
-					return effectiveDirective === body.effectiveDirective;
-				}
+			if (
+				configCsp.narrowBody.disallowEffectives.find(([effectiveDirective, blockedPath]) => {
+					if (blockedPath === undefined) {
+						return effectiveDirective === body.effectiveDirective;
+					}
 
-				return effectiveDirective === body.effectiveDirective && blockedPath === `${blockedURL.origin}${blockedURL.pathname}`;
-			})
-		) {
-			return false;
+					return effectiveDirective === body.effectiveDirective && blockedPath === `${blockedURL.origin}${blockedURL.pathname}`;
+				})
+			) {
+				return false;
+			}
 		}
 
 		return true;
