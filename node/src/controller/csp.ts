@@ -2,6 +2,7 @@ import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
+import configCsp from '../config/csp.js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import { env } from '../util/env.js';
 import Mail from '../util/Mail.js';
@@ -137,15 +138,43 @@ export const parseRequestJson = (
 	];
 };
 
-const validateBody = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): boolean =>
-	reportings.some((reporting) => {
+export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): boolean =>
+	reportings.some(({ body }) => {
 		let url: URL;
 		try {
-			url = new URL(reporting.body.documentURL);
+			url = new URL(body.documentURL);
 		} catch (e) {
 			return false;
 		}
+
 		return allowOrigins.includes(url.origin);
+	});
+
+export const narrowBody = (reportings: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
+	reportings.filter(({ body }) => {
+		let blockedURL: URL;
+		if (body.blockedURL !== undefined) {
+			try {
+				blockedURL = new URL(body.blockedURL);
+			} catch (e) {
+				return false;
+			}
+		}
+
+		/* effectiveDirective */
+		if (
+			configCsp.narrowBody.disallowEffectives.find(([effectiveDirective, blockedPath]) => {
+				if (body.blockedURL === undefined) {
+					return effectiveDirective === body.effectiveDirective;
+				}
+
+				return effectiveDirective === body.effectiveDirective && blockedPath === `${blockedURL.origin}${blockedURL.pathname}`;
+			})
+		) {
+			return false;
+		}
+
+		return true;
 	});
 
 const app = new Hono().post('/', headerValidator, async (context) => {
@@ -154,44 +183,20 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 	const { contentType } = req.valid('header');
 	const requestJson = await req.json<ReportingApiV1[] | ReportingApiSafari | ReportUri>();
 
-	const reportings = parseRequestJson(requestJson, {
+	const reportingList = parseRequestJson(requestJson, {
 		contentType: contentType,
 		ua: req.header('User-Agent'),
 	});
 
 	/* 自ドメイン以外のデータを弾く（実質的な CORS の代替処理） */
-	if (!validateBody(reportings, env('CSP_ALLOW_ORIGINS', 'string[]'))) {
+	if (!cors(reportingList, env('CSP_ALLOW_ORIGINS', 'string[]'))) {
 		throw new HTTPException(403, { message: 'The violation’s url is not an allowed origin' });
 	}
 
+	/* DB に登録 */
 	const dao = new ReportCspDao(env('SQLITE_REPORT'));
 
-	const noticeList = (
-		await Promise.all(
-			reportings.map(async (reporting) => {
-				const { body, user_agent: userAgent } = reporting;
-
-				const existSameData = await dao.same({
-					documentURL: body.documentURL,
-					referrer: body.referrer,
-					blockedURL: body.blockedURL,
-					effectiveDirective: body.effectiveDirective,
-					originalPolicy: body.originalPolicy,
-					sourceFile: body.sourceFile,
-					sample: body.sample,
-					disposition: body.disposition,
-					statusCode: body.statusCode,
-					lineNumber: body.lineNumber,
-					columnNumber: body.columnNumber,
-					ua: userAgent,
-				});
-
-				return !existSameData ? reporting : undefined;
-			}),
-		)
-	).filter((notice) => notice !== undefined);
-
-	const insertList: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>[] = reportings.map((reporting) => {
+	const dbInsertList: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>[] = reportingList.map((reporting) => {
 		const { body, user_agent: userAgent } = reporting;
 
 		return {
@@ -210,9 +215,10 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 		};
 	});
 
-	/* DB に登録 */
-	await dao.insert(insertList);
+	await dao.insert(dbInsertList);
 
+	/* 既知のエラーは通知除外する */
+	const noticeList = narrowBody(reportingList);
 	if (noticeList.length >= 1) {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${env('VIEWS')}/csp_mail.ejs`, {
@@ -220,8 +226,6 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 		});
 
 		await new Mail().sendHtml(env('CSP_MAIL_TITLE'), html);
-	} else {
-		logger.info('重複データにつきメール通知スルー');
 	}
 
 	return new Response(null, {
