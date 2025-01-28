@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
-import { parseRequestJson, cors, narrowBody } from './csp.js';
+import { parseRequestJson, cors, noticeFilter } from './csp.js';
 
 const origin = env('CSP_ALLOW_ORIGINS', 'string[]').at(0)!;
 
@@ -239,157 +239,167 @@ await test('cors()', async (t) => {
 	});
 });
 
-await test('narrowBody()', async (t) => {
-	await t.test('no blockedURL', async (t2) => {
-		await t2.test('disallow effectiveDirective', () => {
-			assert.deepEqual(
-				narrowBody([
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							effectiveDirective: 'connect-src',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
+await test('noticeFilter()', async (t) => {
+	await t.test('no match', () => {
+		assert.equal(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						effectiveDirective: 'effectiveDirective',
+						originalPolicy: 'originalPolicy',
+						disposition: 'enforce',
+						statusCode: 11,
 					},
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							effectiveDirective: 'fenced-frame-src',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
-					},
-				]),
-				[
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							effectiveDirective: 'connect-src',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
-					},
-				],
-			);
-		});
-
-		await t2.test('allow effectiveDirective', () => {
-			assert.equal(
-				narrowBody([
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							effectiveDirective: 'effectiveDirective',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
-					},
-				]).length,
-				1,
-			);
-		});
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			1,
+		);
 	});
 
-	await t.test('exist blockedURL', async (t2) => {
-		await t2.test('invalid blockedURL', () => {
-			assert.equal(
-				narrowBody([
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							blockedURL: 'xxx',
-							effectiveDirective: 'effectiveDirective',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
+	await t.test('only match', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						effectiveDirective: 'fenced-frame-src',
+						originalPolicy: 'originalPolicy',
+						disposition: 'enforce',
+						statusCode: 11,
 					},
-				]).length,
-				0,
-			);
-		});
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			0,
+		);
+	});
 
-		await t2.test('disallow blockedURL & effectiveDirective', () => {
-			assert.equal(
-				narrowBody([
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							blockedURL: 'https://csi.gstatic.com/csi?foo',
-							effectiveDirective: 'connect-src',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
+	await t.test('some match (except: blockedURL)', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						blockedURL: 'trusted-types-policy2',
+						effectiveDirective: 'trusted-types',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'chrome-extension',
+						sample: 'dompurify',
+						disposition: 'enforce',
+						statusCode: 11,
 					},
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/documentURL',
-							blockedURL: 'http://example.com/blockedURL',
-							effectiveDirective: 'fenced-frame-src',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
-					},
-				]).length,
-				0,
-			);
-		});
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			1,
+		);
+	});
 
-		await t2.test('allow blockedURL & effectiveDirective', () => {
-			assert.equal(
-				narrowBody([
-					{
-						age: 0,
-						body: {
-							documentURL: 'http://example.com/xxx',
-							effectiveDirective: 'effectiveDirective',
-							originalPolicy: 'originalPolicy',
-							disposition: 'enforce',
-							statusCode: 11,
-						},
-						type: 'csp-violation',
-						url: 'https://example.com/',
-						user_agent: 'Mozilla/5.0...',
+	await t.test('some match (except: effectiveDirective)', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						blockedURL: 'trusted-types-policy',
+						effectiveDirective: 'trusted-types2',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'chrome-extension',
+						sample: 'dompurify',
+						disposition: 'enforce',
+						statusCode: 11,
 					},
-				]).length,
-				1,
-			);
-		});
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			1,
+		);
+	});
+
+	await t.test('some match (except: sourceFile)', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						blockedURL: 'trusted-types-policy',
+						effectiveDirective: 'trusted-types',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'chrome-extension2',
+						sample: 'dompurify',
+						disposition: 'enforce',
+						statusCode: 11,
+					},
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			1,
+		);
+	});
+
+	await t.test('some match (except: sample)', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						blockedURL: 'trusted-types-policy',
+						effectiveDirective: 'trusted-types',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'chrome-extension',
+						sample: 'dompurify2',
+						disposition: 'enforce',
+						statusCode: 11,
+					},
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			1,
+		);
+	});
+
+	await t.test('all match', () => {
+		assert.deepEqual(
+			noticeFilter([
+				{
+					age: 0,
+					body: {
+						documentURL: 'http://example.com/documentURL',
+						blockedURL: 'trusted-types-policy',
+						effectiveDirective: 'trusted-types',
+						originalPolicy: 'originalPolicy',
+						sourceFile: 'chrome-extension',
+						sample: 'dompurify',
+						disposition: 'enforce',
+						statusCode: 11,
+					},
+					type: 'csp-violation',
+					url: 'https://example.com/',
+					user_agent: 'Mozilla/5.0...',
+				},
+			]).length,
+			0,
+		);
 	});
 });
 

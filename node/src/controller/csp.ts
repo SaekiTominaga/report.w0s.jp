@@ -148,38 +148,33 @@ export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): b
 		return allowOrigins.includes(url.origin);
 	});
 
-export const narrowBody = (reportings: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
-	reportings.filter(({ body }) => {
-		/* effectiveDirective */
-		if (body.blockedURL === undefined) {
-			if (
-				configCsp.narrowBody.disallowEffectives.find(
-					([effectiveDirective, blockedPath]) => effectiveDirective === body.effectiveDirective && blockedPath === undefined,
-				)
-			) {
-				return false;
-			}
-		} else {
-			const blockedURL = URL.parse(body.blockedURL);
-			if (blockedURL === null) {
-				return false;
-			}
-
-			if (
-				configCsp.narrowBody.disallowEffectives.find(([effectiveDirective, blockedPath]) => {
-					if (blockedPath === undefined) {
-						return effectiveDirective === body.effectiveDirective;
+export const noticeFilter = (reportings: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
+	reportings.filter(
+		({ body }) =>
+			!configCsp.noticeFilter.some(({ blockedURL, effectiveDirective, sourceFile, sample }) => {
+				/* return true: 除去対象 */
+				if (blockedURL !== undefined && body.blockedURL !== undefined) {
+					if (blockedURL !== body.blockedURL) {
+						return false;
 					}
+				}
+				if (effectiveDirective !== body.effectiveDirective) {
+					return false;
+				}
+				if (sourceFile !== undefined && body.sourceFile !== undefined) {
+					if (sourceFile !== body.sourceFile) {
+						return false;
+					}
+				}
+				if (sample !== undefined && body.sample !== undefined) {
+					if (sample !== body.sample) {
+						return false;
+					}
+				}
 
-					return effectiveDirective === body.effectiveDirective && blockedPath === `${blockedURL.origin}${blockedURL.pathname}`;
-				})
-			) {
-				return false;
-			}
-		}
-
-		return true;
-	});
+				return true;
+			}),
+	);
 
 const app = new Hono().post('/', headerValidator, async (context) => {
 	const { req } = context;
@@ -222,7 +217,7 @@ const app = new Hono().post('/', headerValidator, async (context) => {
 	await dao.insert(dbInsertList);
 
 	/* 既知のエラーは通知除外する */
-	const noticeList = narrowBody(reportingList);
+	const noticeList = noticeFilter(reportingList);
 	if (noticeList.length >= 1) {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${env('VIEWS')}/csp_mail.ejs`, {
