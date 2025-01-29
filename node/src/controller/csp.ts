@@ -148,8 +148,8 @@ export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): b
 		return allowOrigins.includes(url.origin);
 	});
 
-export const noticeFilter = (reportings: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
-	reportings.filter(
+export const noticeFilter = (reportingList: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
+	reportingList.filter(
 		({ body }) =>
 			!configCsp.noticeFilter.some(({ blockedURL, effectiveDirective, sourceFile, sample }) => {
 				/* return true: 除去対象 */
