@@ -15,6 +15,7 @@ import jsSample from './controller/jsSample.js';
 import referrer from './controller/referrer.js';
 import referrerSample from './controller/referrerSample.js';
 import { env } from './util/env.js';
+import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.js';
 import { isApi } from './util/request.js';
 
 dotenv.config({
@@ -33,20 +34,10 @@ app.use(async (context, next) => {
 	context.header('Strict-Transport-Security', config.response.header.hsts);
 
 	/* CSP */
-	context.header(
-		'Content-Security-Policy',
-		Object.entries(config.response.header.csp)
-			.map(([key, values]) => `${key} ${values.join(' ')}`)
-			.join(';'),
-	);
+	context.header('Content-Security-Policy', cspHeader(config.response.header.csp));
 
 	/* Report */
-	context.header(
-		'Reporting-Endpoints',
-		Object.entries(config.response.header.reportingEndpoints)
-			.map(([key, value]) => `${key}="${value}"`)
-			.join(','),
-	);
+	context.header('Reporting-Endpoints', reportingEndpointsHeader(config.response.header.reportingEndpoints));
 
 	/* MIME スニッフィング抑止 */
 	context.header('X-Content-Type-Options', 'nosniff');
