@@ -176,7 +176,7 @@ export const noticeFilter = (reportingList: ReportingApiV1CSP[]): ReportingApiV1
 			}),
 	);
 
-export const csp = new Hono().post(headerValidator, async (context) => {
+export const cspApp = new Hono().post(headerValidator, async (context) => {
 	const { req } = context;
 
 	const { contentType } = req.valid('header');
