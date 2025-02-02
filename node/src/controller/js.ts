@@ -11,7 +11,7 @@ import { json as jsonValidator } from '../validator/js.js';
  */
 const logger = Log4js.getLogger('js');
 
-const app = new Hono().post('/', jsonValidator, async (context) => {
+export const jsApp = new Hono().post(jsonValidator, async (context) => {
 	const { req } = context;
 
 	const { documentURL, message, jsURL, lineNumber, columnNumber } = req.valid('json');
@@ -59,5 +59,3 @@ const app = new Hono().post('/', jsonValidator, async (context) => {
 		status: 204,
 	});
 });
-
-export default app;

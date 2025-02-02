@@ -9,11 +9,11 @@ import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
 import config from './config/hono.js';
-import csp from './controller/csp.js';
-import js from './controller/js.js';
-import jsSample from './controller/jsSample.js';
-import referrer from './controller/referrer.js';
-import referrerSample from './controller/referrerSample.js';
+import { cspApp } from './controller/csp.js';
+import { jsApp } from './controller/js.js';
+import { jsSampleApp } from './controller/jsSample.js';
+import { referrerApp } from './controller/referrer.js';
+import { referrerSampleApp } from './controller/referrerSample.js';
 import { env } from './util/env.js';
 import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.js';
 import { isApi } from './util/request.js';
@@ -120,11 +120,11 @@ app.use(
 );
 
 /* Routes */
-app.route(`/${config.api.dir}/csp`, csp);
-app.route(`/${config.api.dir}/js`, js);
-app.route(`/${config.api.dir}/js-sample`, jsSample);
-app.route(`/${config.api.dir}/referrer`, referrer);
-app.route(`/${config.api.dir}/referrer-sample`, referrerSample);
+app.route(`/${config.api.dir}/csp`, cspApp);
+app.route(`/${config.api.dir}/js`, jsApp);
+app.route(`/${config.api.dir}/js-sample`, jsSampleApp);
+app.route(`/${config.api.dir}/referrer`, referrerApp);
+app.route(`/${config.api.dir}/referrer-sample`, referrerSampleApp);
 
 /* Error pages */
 app.notFound((context) => {

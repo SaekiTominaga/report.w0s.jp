@@ -11,7 +11,7 @@ import { json as jsonValidator } from '../validator/referrer.js';
  */
 const logger = Log4js.getLogger('referrer');
 
-const app = new Hono().post('/', jsonValidator, async (context) => {
+export const referrerApp = new Hono().post(jsonValidator, async (context) => {
 	const { req } = context;
 
 	const responseBody = req.valid('json');
@@ -50,5 +50,3 @@ const app = new Hono().post('/', jsonValidator, async (context) => {
 		status: 204,
 	});
 });
-
-export default app;
