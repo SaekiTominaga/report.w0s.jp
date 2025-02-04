@@ -1,4 +1,4 @@
-import { prepareWhereEqual } from '../util/sql.js';
+import { prepareWhere } from '../util/sql.js';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -17,7 +17,7 @@ export default class ReportJsDao extends ReportDao {
 			count: number;
 		}
 
-		const { sqlWhere, bind } = prepareWhereEqual({
+		const { sqlWhere, bindParams } = prepareWhere({
 			message: data.message,
 			js_url: data.jsURL,
 			line_number: data.lineNumber,
@@ -35,7 +35,7 @@ export default class ReportJsDao extends ReportDao {
 			WHERE
 				${sqlWhere}
 		`);
-		await sth.bind(bind);
+		await sth.bind(bindParams);
 
 		const row = await sth.get<Select>();
 		await sth.finalize();
@@ -57,14 +57,14 @@ export default class ReportJsDao extends ReportDao {
 
 		await dbh.exec('BEGIN');
 		try {
-			const insertDataSth = await dbh.prepare(`
+			const sth = await dbh.prepare(`
 				INSERT INTO
 					d_js
 					( document_url,  message,  js_url,  line_number,  column_number,  ua,  registered_at)
 				VALUES
 					(:document_url, :message, :js_url, :line_number, :column_number, :ua, :registered_at)
 			`);
-			await insertDataSth.run({
+			await sth.run({
 				':document_url': data.documentURL,
 				':message': data.message,
 				':js_url': data.jsURL,
@@ -73,7 +73,7 @@ export default class ReportJsDao extends ReportDao {
 				':ua': data.ua ?? null,
 				':registered_at': Math.round(Date.now() / 1000),
 			});
-			await insertDataSth.finalize();
+			await sth.finalize();
 
 			await dbh.exec('COMMIT');
 		} catch (e) {

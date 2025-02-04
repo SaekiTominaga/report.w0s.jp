@@ -1,4 +1,4 @@
-import { prepareWhereEqual } from '../util/sql.js';
+import { prepareWhere } from '../util/sql.js';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -17,7 +17,7 @@ export default class ReportReferrerDao extends ReportDao {
 			count: number;
 		}
 
-		const { sqlWhere, bind } = prepareWhereEqual({
+		const { sqlWhere, bindParams } = prepareWhere({
 			document_url: data.documentURL,
 			referrer: data.referrer,
 		});
@@ -32,7 +32,7 @@ export default class ReportReferrerDao extends ReportDao {
 			WHERE
 				${sqlWhere}
 		`);
-		await sth.bind(bind);
+		await sth.bind(bindParams);
 
 		const row = await sth.get<Select>();
 		await sth.finalize();

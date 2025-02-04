@@ -5,9 +5,9 @@
  *
  * @returns WHERE 句の文字列と bind で使用するオブジェクト
  */
-export const prepareWhereEqual = (
+export const prepareWhere = (
 	data: Readonly<Record<string, string | number | undefined>>,
-): { sqlWhere: string; bind: Record<string, string | number | undefined> } => {
+): { sqlWhere: string; bindParams: Record<string, string | number | undefined> } => {
 	const dataArray = Object.entries(data);
 
 	const sqlWhere = dataArray
@@ -19,10 +19,10 @@ export const prepareWhereEqual = (
 		})
 		.join(' AND ');
 
-	const bind = Object.fromEntries(dataArray.filter(([, value]) => value !== undefined).map(([key, value]) => [`:${key}`, value]));
+	const bindParams = Object.fromEntries(dataArray.filter(([, value]) => value !== undefined).map(([key, value]) => [`:${key}`, value]));
 
 	return {
 		sqlWhere: sqlWhere,
-		bind: bind,
+		bindParams: bindParams,
 	};
 };
