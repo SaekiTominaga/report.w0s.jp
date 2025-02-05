@@ -1,4 +1,4 @@
-import { prepareWhere } from '../util/sql.js';
+import { prepareSelect, prepareInsert } from '../util/sql.js';
 import ReportDao from './ReportDao.js';
 
 /**
@@ -17,12 +17,12 @@ export default class ReportReferrerDao extends ReportDao {
 			count: number;
 		}
 
-		const { sqlWhere, bindParams } = prepareWhere({
+		const dbh = await this.getDbh();
+
+		const { sqlWhere, bindParams } = prepareSelect({
 			document_url: data.documentURL,
 			referrer: data.referrer,
 		});
-
-		const dbh = await this.getDbh();
 
 		const sth = await dbh.prepare(`
 			SELECT
@@ -54,19 +54,21 @@ export default class ReportReferrerDao extends ReportDao {
 
 		await dbh.exec('BEGIN');
 		try {
-			const insertDataSth = await dbh.prepare(`
+			const { sqlInto, sqlValues, bindParams } = prepareInsert({
+				document_url: data.documentURL,
+				referrer: data.referrer,
+				registered_at: new Date(),
+			});
+
+			const sth = await dbh.prepare(`
 				INSERT INTO
 					d_referrer
-					( document_url,  referrer,  registered_at)
+					${sqlInto}
 				VALUES
-					(:document_url, :referrer, :registered_at)
+					${sqlValues}
 			`);
-			await insertDataSth.run({
-				':document_url': data.documentURL,
-				':referrer': data.referrer,
-				':registered_at': Math.round(Date.now() / 1000),
-			});
-			await insertDataSth.finalize();
+			await sth.run(bindParams);
+			await sth.finalize();
 
 			await dbh.exec('COMMIT');
 		} catch (e) {
