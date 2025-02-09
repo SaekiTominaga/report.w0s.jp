@@ -330,28 +330,53 @@ await test('noticeFilter()', async (t) => {
 		);
 	});
 
-	await t.test('some match (except: sourceFile)', () => {
-		assert.deepEqual(
-			noticeFilter([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/documentURL',
-						blockedURL: 'trusted-types-policy',
-						effectiveDirective: 'trusted-types',
-						originalPolicy: 'originalPolicy',
-						sourceFile: 'chrome-extension2',
-						sample: 'dompurify',
-						disposition: 'enforce',
-						statusCode: 11,
+	await t.test('some match (except: sourceFile)', async (t2) => {
+		await t2.test('string', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'trusted-types-policy',
+							effectiveDirective: 'trusted-types',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'chrome-extension2',
+							sample: 'dompurify',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			1,
-		);
+				]).length,
+				1,
+			);
+		});
+
+		await t2.test('RegExp', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'inline',
+							effectiveDirective: 'script-src-elem',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'safari-web-extension://1234ABCD-12AB-12AB-12AB-123456ABCDEF/js/utils2.js',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]).length,
+				1,
+			);
+		});
 	});
 
 	await t.test('some match (except: sample)', () => {
@@ -378,28 +403,53 @@ await test('noticeFilter()', async (t) => {
 		);
 	});
 
-	await t.test('all match', () => {
-		assert.deepEqual(
-			noticeFilter([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/documentURL',
-						blockedURL: 'trusted-types-policy',
-						effectiveDirective: 'trusted-types',
-						originalPolicy: 'originalPolicy',
-						sourceFile: 'chrome-extension',
-						sample: 'dompurify',
-						disposition: 'enforce',
-						statusCode: 11,
+	await t.test('all match', async (t2) => {
+		await t2.test('string', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'trusted-types-policy',
+							effectiveDirective: 'trusted-types',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'chrome-extension',
+							sample: 'dompurify',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			0,
-		);
+				]).length,
+				0,
+			);
+		});
+
+		await t2.test('RegExp', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'inline',
+							effectiveDirective: 'script-src-elem',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'safari-web-extension://1234ABCD-12AB-12AB-12AB-123456ABCDEF/js/utils.js',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]).length,
+				0,
+			);
+		});
 	});
 });
 

@@ -162,7 +162,11 @@ export const noticeFilter = (reportingList: ReportingApiV1CSP[]): ReportingApiV1
 					return false;
 				}
 				if (sourceFile !== undefined && body.sourceFile !== undefined) {
-					if (sourceFile !== body.sourceFile) {
+					if (typeof sourceFile === 'string') {
+						if (sourceFile !== body.sourceFile) {
+							return false;
+						}
+					} else if (!sourceFile.test(body.sourceFile)) {
 						return false;
 					}
 				}
