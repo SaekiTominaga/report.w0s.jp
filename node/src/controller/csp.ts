@@ -53,7 +53,7 @@ interface ReportUri {
 		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
 		'blocked-uri'?: string; // ブロックされたリソースの URL
-		'effective-directive': string; // 違反が発生したディレクティブ
+		'effective-directive'?: string; // 違反が発生したディレクティブ
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
 		disposition?: 'enforce' | 'report';
@@ -103,7 +103,7 @@ export const parseRequestJson = (
 
 	const reportingBody: CSPViolationReportBody = {
 		documentURL: cspReport['document-uri'],
-		effectiveDirective: cspReport['effective-directive'],
+		effectiveDirective: cspReport['effective-directive'] ?? cspReport['violated-directive'], // 古い Firefox は violated-directive のみ
 		originalPolicy: cspReport['original-policy'],
 		disposition: cspReport.disposition ?? undefined,
 		statusCode: cspReport['status-code'],
