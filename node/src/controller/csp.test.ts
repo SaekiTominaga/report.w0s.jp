@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import app from '../app.js';
 import { env } from '../util/env.js';
-import { parseRequestJson, cors, noticeFilter } from './csp.js';
+import { cors, noticeFilter, parseRequestJson } from './csp.js';
 
 const origin = env('CSP_ALLOW_ORIGINS', 'string[]').at(0)!;
 
@@ -282,28 +282,54 @@ await test('noticeFilter()', async (t) => {
 		);
 	});
 
-	await t.test('some match (except: blockedURL)', () => {
-		assert.deepEqual(
-			noticeFilter([
-				{
-					age: 0,
-					body: {
-						documentURL: 'http://example.com/documentURL',
-						blockedURL: 'trusted-types-policy2',
-						effectiveDirective: 'trusted-types',
-						originalPolicy: 'originalPolicy',
-						sourceFile: 'chrome-extension',
-						sample: 'dompurify',
-						disposition: 'enforce',
-						statusCode: 11,
+	await t.test('some match (except: blockedURL)', async (t2) => {
+		await t2.test('string', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'trusted-types-policy2',
+							effectiveDirective: 'trusted-types',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'chrome-extension',
+							sample: 'dompurify',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
 					},
-					type: 'csp-violation',
-					url: 'https://example.com/',
-					user_agent: 'Mozilla/5.0...',
-				},
-			]).length,
-			1,
-		);
+				]).length,
+				1,
+			);
+		});
+
+		await t2.test('RegExp', () => {
+			assert.deepEqual(
+				noticeFilter([
+					{
+						age: 0,
+						body: {
+							documentURL: 'http://example.com/documentURL',
+							blockedURL: 'https://analytics.w0s.jp/matomo/matomo2.php?foo',
+							effectiveDirective: 'connect-src',
+							originalPolicy: 'originalPolicy',
+							sourceFile: 'chrome-extension',
+							sample: 'dompurify',
+							disposition: 'enforce',
+							statusCode: 11,
+						},
+						type: 'csp-violation',
+						url: 'https://example.com/',
+						user_agent: 'Mozilla/5.0...',
+					},
+				]).length,
+				1,
+			);
+		});
 	});
 
 	await t.test('some match (except: effectiveDirective)', () => {
