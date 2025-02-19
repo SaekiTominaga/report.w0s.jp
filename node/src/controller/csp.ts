@@ -154,7 +154,11 @@ export const noticeFilter = (reportingList: ReportingApiV1CSP[]): ReportingApiV1
 			!configCsp.noticeFilter.some(({ blockedURL, effectiveDirective, sourceFile, sample }) => {
 				/* return true: 除去対象 */
 				if (blockedURL !== undefined && body.blockedURL !== undefined) {
-					if (blockedURL !== body.blockedURL) {
+					if (typeof blockedURL === 'string') {
+						if (blockedURL !== body.blockedURL) {
+							return false;
+						}
+					} else if (!blockedURL.test(body.blockedURL)) {
 						return false;
 					}
 				}
