@@ -2,6 +2,7 @@ import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
+import sqlite3 from 'sqlite3';
 import configCsp from '../config/csp.js';
 import ReportCspDao from '../dao/ReportCspDao.js';
 import { env } from '../util/env.js';
@@ -222,7 +223,19 @@ export const cspApp = new Hono().post(headerValidator, async (context) => {
 		};
 	});
 
-	await dao.insert(dbInsertList);
+	try {
+		await dao.insert(dbInsertList);
+	} catch (e) {
+		if (e instanceof Error) {
+			// @ts-expect-error: ts(2339)
+			if (e.errno === sqlite3.BUSY) {
+				logger.warn(e.message);
+				return context.json({ message: e.message }, 500);
+			}
+		}
+
+		throw e;
+	}
 
 	/* 既知のエラーは通知除外する */
 	const noticeList = noticeFilter(reportingList);
