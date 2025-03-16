@@ -19,7 +19,7 @@ interface CSPViolationReportBody {
 	sourceFile?: string;
 	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
-	statusCode: number;
+	statusCode: number | undefined; // undefined は cntn 付き Firefox を名乗るアクセスのために必要
 	lineNumber?: number;
 	columnNumber?: number;
 }

@@ -8,7 +8,7 @@ declare namespace ReportDB {
 		sourceFile: string | undefined;
 		sample: string | undefined;
 		disposition: string | undefined;
-		statusCode: number;
+		statusCode: number | undefined;
 		lineNumber: number | undefined;
 		columnNumber: number | undefined;
 		ua: string | undefined;
