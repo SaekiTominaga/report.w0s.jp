@@ -19,7 +19,7 @@ interface CSPViolationReportBody {
 	sourceFile?: string;
 	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
-	statusCode: number;
+	statusCode: number | undefined; // undefined は古い Firefox のために必要
 	lineNumber?: number;
 	columnNumber?: number;
 }
@@ -58,7 +58,7 @@ interface ReportUri {
 		'violated-directive': string; // `effective-directive` の旧名称
 		'original-policy': string; // 元のポリシー
 		disposition?: 'enforce' | 'report';
-		'status-code': number;
+		'status-code'?: number; // 古い Firefox は送られない
 		'script-sample'?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 		'source-file'?: string;
 		'line-number'?: number;
