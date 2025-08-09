@@ -14,7 +14,7 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
 		"@log4js-node/smtp": "^2.0.8",
-		"dotenv": "^16.4.7",
+		"dotenv": "^17.2.1",
 		"ejs": "^3.1.10",
 		"hono": "^4.6.17",
 		"log4js": "^6.9.1",
