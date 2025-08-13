@@ -14,7 +14,6 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.7",
 		"@log4js-node/smtp": "^2.0.8",
-		"dotenv": "^17.2.1",
 		"ejs": "^3.1.10",
 		"hono": "^4.6.17",
 		"log4js": "^6.9.1",
@@ -24,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@types/ejs": "^3.1.5",
+		"@types/node": "^22.17.1",
 		"@types/nodemailer": "^6.4.17",
 		"@w0s/eslint-config": "^8.3.0",
 		"@w0s/tsconfig": "^1.5.1",
