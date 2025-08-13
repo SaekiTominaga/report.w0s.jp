@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import dotenv from 'dotenv';
+import { loadEnvFile } from 'node:process';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
@@ -18,9 +18,7 @@ import { env } from './util/env.js';
 import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.js';
 import { isApi } from './util/request.js';
 
-dotenv.config({
-	path: process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development',
-});
+loadEnvFile(process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development');
 
 /* Logger */
 Log4js.configure(env('LOGGER'));
