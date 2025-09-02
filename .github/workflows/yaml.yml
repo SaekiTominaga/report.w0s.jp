@@ -1,13 +1,11 @@
-name: Linting JavaScript files
+name: YAML files
 
 on:
   pull_request:
     branches:
       - main
     paths:
-      - 'node/src/**/*.ts'
-      - 'node/@types/*.d.ts'
-      - 'eslint.config.js'
+      - '.github/workflows/*.yml'
   workflow_dispatch:
 
 jobs:
@@ -19,4 +17,4 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci
-      - run: npm run lint
+      - run: npm run yaml-lint
