@@ -1,5 +1,5 @@
-import { prepareInsert } from '../util/sql.js';
-import ReportDao from './ReportDao.js';
+import { prepareInsert } from '../util/sql.ts';
+import ReportDao from './ReportDao.ts';
 
 /**
  * CSP エラー

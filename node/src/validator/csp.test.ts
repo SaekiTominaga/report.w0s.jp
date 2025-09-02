@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import app from '../app.js';
+import app from '../app.ts';
 
 await test('header', async (t) => {
 	await t.test('Content-Type', async () => {

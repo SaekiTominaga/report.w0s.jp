@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { json as jsonValidator } from '../validator/js.js';
+import { json as jsonValidator } from '../validator/js.ts';
 
 /**
  * JavaScript エラー（サンプル）
