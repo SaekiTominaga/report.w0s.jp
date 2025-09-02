@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { json as jsonValidator } from '../validator/referrer.js';
+import { json as jsonValidator } from '../validator/referrer.ts';
 
 /**
  * リファラーエラー（サンプル）

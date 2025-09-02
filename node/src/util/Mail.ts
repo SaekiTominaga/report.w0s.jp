@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import type SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { env } from './env.js';
+import { env } from './env.ts';
 
 export default class Mail {
 	readonly #transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;

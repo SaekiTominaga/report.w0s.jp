@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import app from '../app.js';
-import { env } from '../util/env.js';
+import app from '../app.ts';
+import { env } from '../util/env.ts';
 
 const origin = env('JS_ALLOW_ORIGINS', 'string[]').at(0)!;
 

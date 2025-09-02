@@ -1,5 +1,5 @@
-import { prepareSelect, prepareInsert } from '../util/sql.js';
-import ReportDao from './ReportDao.js';
+import { prepareSelect, prepareInsert } from '../util/sql.ts';
+import ReportDao from './ReportDao.ts';
 
 /**
  * リファラーエラー

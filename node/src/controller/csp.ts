@@ -3,11 +3,11 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import sqlite3 from 'sqlite3';
-import configCsp from '../config/csp.js';
-import ReportCspDao from '../dao/ReportCspDao.js';
-import { env } from '../util/env.js';
-import Mail from '../util/Mail.js';
-import { header as headerValidator, type ContentType } from '../validator/csp.js';
+import configCsp from '../config/csp.ts';
+import ReportCspDao from '../dao/ReportCspDao.ts';
+import { env } from '../util/env.ts';
+import Mail from '../util/Mail.ts';
+import { header as headerValidator, type ContentType } from '../validator/csp.ts';
 
 interface CSPViolationReportBody {
 	/* https://www.w3.org/TR/2024/WD-CSP3-20241217/#reporting */
