@@ -7,8 +7,7 @@
 		"build": "tsc -p node/tsconfig.json",
 		"lint": "eslint node/src/**/*.ts",
 		"test": "node --experimental-test-coverage --env-file=.env.test --test node/src/**/*.test.ts",
-		"format": "prettier -w .",
-		"yaml-lint": "yamllint .github/workflows/*.yml"
+		"format": "prettier -w ."
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.1",
@@ -30,8 +29,7 @@
 		"prettier": "^3.6.2",
 		"rimraf": "^6.0.1",
 		"tsx": "^4.20.5",
-		"typescript": "^5.9.2",
-		"yaml-lint": "^1.7.0"
+		"typescript": "^5.9.2"
 	},
 	"private": true
 }
