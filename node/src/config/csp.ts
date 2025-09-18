@@ -6,8 +6,8 @@ interface Filter {
 }
 
 const noticeFilter: Filter[] = [
-	{ effectiveDirective: 'connect-src', blockedURL: /^https:\/\/analytics\.w0s\.jp\/matomo\/matomo\.php\?/ },
-	{ effectiveDirective: 'font-src', blockedURL: /^https:\/\/fonts\.gstatic\.com\/s\// },
+	{ effectiveDirective: 'connect-src', blockedURL: /^https:\/\/analytics\.w0s\.jp\/matomo\/matomo\.php\?/v },
+	{ effectiveDirective: 'font-src', blockedURL: /^https:\/\/fonts\.gstatic\.com\/s\//v },
 	{ effectiveDirective: 'media-src', blockedURL: 'data' }, // moz-extension (NoScript)
 	{ effectiveDirective: 'script-src', blockedURL: 'https://analytics.w0s.jp' }, // old Safari
 	{ effectiveDirective: 'script-src', blockedURL: 'https://analytics.w0s.jp/matomo/matomo.js' }, // old Safari
@@ -17,12 +17,12 @@ const noticeFilter: Filter[] = [
 	{
 		effectiveDirective: 'script-src-elem',
 		blockedURL: 'inline',
-		sourceFile: /^safari-web-extension:\/\/[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\/content\.js$/,
+		sourceFile: /^safari-web-extension:\/\/[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\/content\.js$/v,
 	},
 	{
 		effectiveDirective: 'script-src-elem',
 		blockedURL: 'inline',
-		sourceFile: /^safari-web-extension:\/\/[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\/js\/utils\.js$/,
+		sourceFile: /^safari-web-extension:\/\/[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\/js\/utils\.js$/v,
 	},
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'default' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'dompurify' },

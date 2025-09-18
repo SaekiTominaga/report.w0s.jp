@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.ts';
 import { env } from './env.ts';
 
 export default class Mail {
