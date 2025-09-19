@@ -1,4 +1,4 @@
-import { prepareSelect, prepareInsert } from '../util/sql.ts';
+import { prepareSelect, prepareInsert } from '@w0s/sqlite-utility';
 import ReportDao from './ReportDao.ts';
 
 /**
