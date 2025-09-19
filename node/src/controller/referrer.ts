@@ -1,8 +1,8 @@
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import Log4js from 'log4js';
+import { env } from '@w0s/env-value-type';
 import ReportReferrerDao from '../dao/ReportReferrerDao.ts';
-import { env } from '../util/env.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/referrer.ts';
 

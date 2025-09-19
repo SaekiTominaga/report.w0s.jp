@@ -8,13 +8,13 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import Log4js from 'log4js';
+import { env } from '@w0s/env-value-type';
 import config from './config/hono.ts';
 import { cspApp } from './controller/csp.ts';
 import { jsApp } from './controller/js.ts';
 import { jsSampleApp } from './controller/jsSample.ts';
 import { referrerApp } from './controller/referrer.ts';
 import { referrerSampleApp } from './controller/referrerSample.ts';
-import { env } from './util/env.ts';
 import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.ts';
 import { isApi } from './util/request.ts';
 

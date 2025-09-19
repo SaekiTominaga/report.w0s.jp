@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
+import { env } from '@w0s/env-value-type';
 import app from '../app.ts';
-import { env } from '../util/env.ts';
 import { cors, noticeFilter, parseRequestJson } from './csp.ts';
 
 const origin = env('CSP_ALLOW_ORIGINS', 'string[]').at(0)!;
