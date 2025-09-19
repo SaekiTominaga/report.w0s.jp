@@ -3,9 +3,9 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import sqlite3 from 'sqlite3';
+import { env } from '@w0s/env-value-type';
 import configCsp from '../config/csp.ts';
 import ReportCspDao from '../dao/ReportCspDao.ts';
-import { env } from '../util/env.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
 
