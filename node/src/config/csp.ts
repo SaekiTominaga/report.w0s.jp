@@ -26,6 +26,7 @@ const noticeFilter: Filter[] = [
 		blockedURL: 'inline',
 		sourceFile: /^safari-web-extension:\/\/[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\/js\/utils\.js$/v,
 	},
+	{ effectiveDirective: 'script-src-elem', blockedURL: 'inline', sourceFile: 'sandbox eval code' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'default' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'default2' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'dompurify' },
