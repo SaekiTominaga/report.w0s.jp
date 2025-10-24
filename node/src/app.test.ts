@@ -1,6 +1,8 @@
 import { strict as assert } from 'node:assert';
+import fs from 'node:fs';
 import { test } from 'node:test';
 import app from './app.ts';
+import config from './config/hono.ts';
 
 await test('headers', async () => {
 	const res = await app.request('/');
@@ -18,21 +20,26 @@ await test('Top page', async () => {
 	assert.equal(res.headers.get('Content-Type'), 'text/html; charset=utf-8');
 });
 
-await test('favicon.ico', async () => {
-	const res = await app.request('/favicon.ico');
+await test('favicon.ico', async (t) => {
+	await t.test('no compression', async () => {
+		const [file, res] = await Promise.all([fs.promises.readFile(`${config.static.root}/favicon.svg`), app.request('/favicon.ico')]);
 
-	assert.equal(res.status, 200);
-	assert.equal(res.headers.get('Content-Type'), 'image/svg+xml;charset=utf-8');
+		assert.equal(res.status, 200);
+		assert.equal(res.headers.get('Content-Type'), 'image/svg+xml;charset=utf-8');
+		assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
+		assert.equal(res.headers.get('Content-Length'), String(file.byteLength));
+	});
+
+	await t.test('gzip', async () => {
+		const res = await app.request('/favicon.ico', {
+			headers: { 'Accept-Encoding': 'gzip, deflate' },
+		});
+
+		assert.equal(res.headers.get('Content-Encoding'), null);
+	});
 });
 
 await test('serveStatic', async (t) => {
-	await t.test('Cache-Control: path', async () => {
-		const res = await app.request('/favicon.ico');
-
-		assert.equal(res.status, 200);
-		assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
-	});
-
 	await t.test('Cache-Control: extension', async () => {
 		const res = await app.request('/apple-touch-icon.png');
 
