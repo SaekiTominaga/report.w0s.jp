@@ -43,15 +43,13 @@ app.use(async (context, next) => {
 	await next();
 });
 
-app.get('/favicon.ico', async (context, next) => {
-	const { res } = context;
+app.get('/favicon.ico', async (context) => {
+	const file = await fs.promises.readFile(`${config.static.root}/favicon.svg`);
 
-	const file = await fs.promises.readFile(`${config.static.root}/favicon.ico`);
-
-	res.headers.set('Content-Type', 'image/svg+xml;charset=utf-8'); // `context.header` だと実際には問題ないが、test で落ちる
-	context.body(Buffer.from(file));
-
-	await next();
+	context.header('Content-Type', 'image/svg+xml;charset=utf-8');
+	context.header('Content-Length', String(file.byteLength));
+	context.header('Cache-Control', 'max-age=604800');
+	return context.body(Buffer.from(file));
 });
 
 app.use(
@@ -72,7 +70,6 @@ app.use(
 
 			/* Cache-Control */
 			const cacheControl =
-				config.static.headers.cacheControl.path.find((ccPath) => ccPath.paths.includes(urlPath))?.value ??
 				config.static.headers.cacheControl.extension.find((ccExt) => ccExt.extensions.includes(urlExtension))?.value ??
 				config.static.headers.cacheControl.default;
 			context.header('Cache-Control', cacheControl);
