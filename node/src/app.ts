@@ -47,7 +47,6 @@ app.get('/favicon.ico', async (context) => {
 	const file = await fs.promises.readFile(`${config.static.root}/favicon.svg`);
 
 	context.header('Content-Type', 'image/svg+xml;charset=utf-8');
-	context.header('Content-Length', String(file.byteLength));
 	context.header('Cache-Control', 'max-age=604800');
 	return context.body(Buffer.from(file));
 });

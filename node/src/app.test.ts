@@ -1,8 +1,6 @@
 import { strict as assert } from 'node:assert';
-import fs from 'node:fs';
 import { test } from 'node:test';
 import app from './app.ts';
-import config from './config/hono.ts';
 
 await test('headers', async () => {
 	const res = await app.request('/');
@@ -22,12 +20,12 @@ await test('Top page', async () => {
 
 await test('favicon.ico', async (t) => {
 	await t.test('no compression', async () => {
-		const [file, res] = await Promise.all([fs.promises.readFile(`${config.static.root}/favicon.svg`), app.request('/favicon.ico')]);
+		const res = await app.request('/favicon.ico');
 
 		assert.equal(res.status, 200);
 		assert.equal(res.headers.get('Content-Type'), 'image/svg+xml;charset=utf-8');
+		assert.equal(res.headers.get('Content-Encoding'), null);
 		assert.equal(res.headers.get('Cache-Control'), 'max-age=604800');
-		assert.equal(res.headers.get('Content-Length'), String(file.byteLength));
 	});
 
 	await t.test('gzip', async () => {
