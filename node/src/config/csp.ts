@@ -7,7 +7,7 @@ interface Filter {
 
 const noticeFilter: Filter[] = [
 	{ effectiveDirective: 'connect-src', blockedURL: /^https:\/\/analytics\.w0s\.jp\/matomo\/matomo\.php\?/v },
-	{ effectiveDirective: 'font-src', blockedURL: /^https:\/\/fonts\.gstatic\.com\/s\//v },
+	{ effectiveDirective: 'font-src', blockedURL: /^https:\/\/fonts\.gstatic\.com(:443)?\/s\//v },
 	{ effectiveDirective: 'frame-src', blockedURL: 'https://pwm-image.trendmicro.jp' },
 	{ effectiveDirective: 'img-src', blockedURL: 'blob', sourceFile: /^https:\/\/w0s\.jp:443\//v }, // iPad
 	{ effectiveDirective: 'media-src', blockedURL: 'data' }, // moz-extension (NoScript)
@@ -36,13 +36,14 @@ const noticeFilter: Filter[] = [
 	},
 	{
 		effectiveDirective: 'style-src-elem',
-		blockedURL: /^https:\/\/fonts\.googleapis\.com\/css\?/v,
+		blockedURL: /^https:\/\/fonts\.googleapis\.com(:443)?\/css\?/v,
 		sourceFile: /^https:\/\/pagead2\.googlesyndication\.com\//v,
 	},
 	{ effectiveDirective: 'style-src-elem', blockedURL: 'https://pwm-image.trendmicro.jp/5.8/extensionFrame/styles/engineV3.css' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'default' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'default2' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'dompurify' },
+	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'immersive-translate-sanitizer' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'sanitizer' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: 'vue' },
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'chrome-extension', sample: '@azure/ms-rest-js#xml.browser' },
