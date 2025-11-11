@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import { Hono } from 'hono';
 import Log4js from 'log4js';
 import { env } from '@w0s/env-value-type';
-import ReportReferrerDao from '../dao/ReportReferrerDao.ts';
+import ReportReferrerDao from '../db/Referrer.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/referrer.ts';
 
@@ -23,14 +23,14 @@ export const referrerApp = new Hono().post(jsonValidator, async (context) => {
 	const dao = new ReportReferrerDao(env('SQLITE_REPORT'));
 
 	const existSameData = await dao.same({
-		documentURL: documentURL,
+		document_url: documentURL,
 		referrer: referrer,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			documentURL: documentURL,
+			document_url: documentURL,
 			referrer: referrer,
 		});
 

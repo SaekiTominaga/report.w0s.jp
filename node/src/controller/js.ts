@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import { Hono } from 'hono';
 import Log4js from 'log4js';
 import { env } from '@w0s/env-value-type';
-import ReportJsDao from '../dao/ReportJsDao.ts';
+import ReportJsDao from '../db/JS.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/js.ts';
 
@@ -21,22 +21,22 @@ export const jsApp = new Hono().post(jsonValidator, async (context) => {
 	const dao = new ReportJsDao(env('SQLITE_REPORT'));
 
 	const existSameData = await dao.same({
-		documentURL: documentURL,
+		document_url: documentURL,
 		message: message,
-		jsURL: jsURL,
-		lineNumber: lineNumber,
-		columnNumber: columnNumber,
+		js_url: jsURL,
+		line_number: lineNumber,
+		column_number: columnNumber,
 		ua: ua,
 	});
 
 	if (!existSameData) {
 		/* DB に登録 */
 		await dao.insert({
-			documentURL: documentURL,
+			document_url: documentURL,
 			message: message,
-			jsURL: jsURL,
-			lineNumber: lineNumber,
-			columnNumber: columnNumber,
+			js_url: jsURL,
+			line_number: lineNumber,
+			column_number: columnNumber,
 			ua: ua,
 		});
 
