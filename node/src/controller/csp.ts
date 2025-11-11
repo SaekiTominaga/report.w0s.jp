@@ -1,13 +1,14 @@
+import { SqliteError } from 'better-sqlite3';
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
-import sqlite3 from 'sqlite3';
 import { env } from '@w0s/env-value-type';
 import configCsp from '../config/csp.ts';
-import ReportCspDao from '../dao/ReportCspDao.ts';
+import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
+import type { DCsp } from '../../../@types/db.d.ts';
 
 interface CSPViolationReportBody {
 	/* https://www.w3.org/TR/2024/WD-CSP3-20241217/#reporting */
@@ -204,21 +205,21 @@ export const cspApp = new Hono().post(headerValidator, async (context) => {
 	/* DB に登録 */
 	const dao = new ReportCspDao(env('SQLITE_REPORT'));
 
-	const dbInsertList: Readonly<Omit<ReportDB.CSP, 'registeredAt'>>[] = reportingList.map((reporting) => {
+	const dbInsertList: Readonly<Omit<DCsp, 'registered_at'>>[] = reportingList.map((reporting) => {
 		const { body, user_agent: userAgent } = reporting;
 
 		return {
-			documentURL: body.documentURL,
+			document_url: body.documentURL,
 			referrer: body.referrer,
-			blockedURL: body.blockedURL,
-			effectiveDirective: body.effectiveDirective,
-			originalPolicy: body.originalPolicy,
-			sourceFile: body.sourceFile,
+			blocked_url: body.blockedURL,
+			effective_directive: body.effectiveDirective,
+			original_policy: body.originalPolicy,
+			source_file: body.sourceFile,
 			sample: body.sample,
 			disposition: body.disposition,
-			statusCode: body.statusCode,
-			lineNumber: body.lineNumber,
-			columnNumber: body.columnNumber,
+			status_code: body.statusCode,
+			line_number: body.lineNumber,
+			column_number: body.columnNumber,
 			ua: userAgent,
 		};
 	});
@@ -226,12 +227,14 @@ export const cspApp = new Hono().post(headerValidator, async (context) => {
 	try {
 		await dao.insert(dbInsertList);
 	} catch (e) {
-		if (e instanceof Error) {
-			// @ts-expect-error: ts(2339)
-			if (e.errno === sqlite3.BUSY) {
+		if (e instanceof SqliteError) {
+			if (e.code === 'SQLITE_BUSY') {
 				logger.warn(e.message);
-				return context.json({ message: e.message }, 500);
+			} else {
+				logger.error(e.message);
 			}
+
+			return context.json({ message: e.message }, 500);
 		}
 
 		throw e;
