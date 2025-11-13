@@ -1,5 +1,5 @@
 import { sql, type Insertable, type Selectable } from 'kysely';
-import { jsToSQLite } from '@w0s/sqlite-utility';
+import { jsToSQLiteAssignment, jsToSQLiteComparison } from '@w0s/sqlite-utility';
 import type { DReferrer } from '../../../@types/db.d.ts';
 import Database from './Database.ts';
 
@@ -16,8 +16,8 @@ export default class extends Database {
 	 */
 	async same(data: Readonly<Omit<Selectable<DReferrer>, 'registered_at'>>): Promise<boolean> {
 		let query = this.db.selectFrom('d_referrer').select([sql<number>`COUNT(registered_at)`.as('count')]);
-		query = query.where('document_url', '=', jsToSQLite(data.document_url));
-		query = query.where('referrer', '=', jsToSQLite(data.referrer));
+		query = query.where('document_url', '=', jsToSQLiteComparison(data.document_url));
+		query = query.where('referrer', '=', jsToSQLiteComparison(data.referrer));
 
 		const row = await query.executeTakeFirst();
 		if (row === undefined) {
@@ -35,9 +35,9 @@ export default class extends Database {
 	async insert(data: Readonly<Omit<Insertable<DReferrer>, 'registered_at'>>): Promise<void> {
 		let query = this.db.insertInto('d_referrer');
 		query = query.values({
-			document_url: jsToSQLite(data.document_url),
-			referrer: jsToSQLite(data.referrer),
-			registered_at: jsToSQLite(new Date()),
+			document_url: jsToSQLiteAssignment(data.document_url),
+			referrer: jsToSQLiteAssignment(data.referrer),
+			registered_at: jsToSQLiteAssignment(new Date()),
 		});
 
 		await query.executeTakeFirst();
