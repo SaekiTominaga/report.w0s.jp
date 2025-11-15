@@ -2,7 +2,7 @@
 
 import w0sConfig from '@w0s/eslint-config';
 
-/** @type {import("@typescript-eslint/utils/ts-eslint").FlatConfig.ConfigArray} */
+/** @type {import("eslint").Linter.Config[]} */
 export default [
 	...w0sConfig,
 	{
@@ -14,6 +14,21 @@ export default [
 			parserOptions: {
 				tsconfigRootDir: import.meta.dirname,
 			},
+		},
+		rules: {
+			'@typescript-eslint/prefer-readonly-parameter-types': [
+				'error',
+				{
+					allow: [
+						{
+							from: 'package',
+							name: 'Context',
+							package: 'hono',
+						},
+					],
+					ignoreInferredTypes: true,
+				},
+			],
 		},
 	},
 	{

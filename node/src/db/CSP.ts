@@ -12,7 +12,7 @@ export default class extends Database {
 	 *
 	 * @param datas - 登録データ
 	 */
-	async insert(datas: Readonly<Omit<Insertable<DCsp>, 'registered_at'>>[]): Promise<void> {
+	async insert(datas: readonly Readonly<Omit<Insertable<DCsp>, 'registered_at'>>[]): Promise<void> {
 		if (datas.length === 0) {
 			return;
 		}

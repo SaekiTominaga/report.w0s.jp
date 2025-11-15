@@ -31,7 +31,7 @@ interface ReportingApiV1 {
 	type: string; // CSP の場合は `csp-violation`
 	url: string;
 	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
-	body: Record<string, unknown>;
+	body: Readonly<Record<string, unknown>>;
 }
 
 interface ReportingApiV1CSP {
@@ -39,19 +39,19 @@ interface ReportingApiV1CSP {
 	type: `csp-violation`;
 	url: string;
 	user_agent: string | undefined; // undefined は `report-uri` ディレクティブの互換性確保のために必要
-	body: CSPViolationReportBody;
+	body: Readonly<CSPViolationReportBody>;
 }
 
 interface ReportingApiSafari {
 	/* Safari 18.2; https://www.w3.org/TR/2018/WD-reporting-1-20180925/#interface-reporting-observer */
 	type: `csp-violation`;
 	url: string;
-	body: CSPViolationReportBody;
+	body: Readonly<CSPViolationReportBody>;
 }
 
 interface ReportUri {
 	/* Firefox 136; https://www.w3.org/TR/2024/WD-CSP3-20241217/#deprecated-serialize-violation */
-	'csp-report': {
+	'csp-report': Readonly<{
 		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
 		'blocked-uri'?: string; // ブロックされたリソースの URL
@@ -64,7 +64,7 @@ interface ReportUri {
 		'source-file'?: string;
 		'line-number'?: number;
 		'column-number'?: number;
-	};
+	}>;
 }
 
 /**
@@ -72,14 +72,18 @@ interface ReportUri {
  */
 const logger = Log4js.getLogger('csp');
 
+const isReportingApiArray = (
+	arg: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
+): arg is readonly Readonly<ReportingApiV1>[] => Array.isArray(arg);
+
 export const parseRequestJson = (
-	requestJson: ReportingApiV1[] | ReportingApiSafari | ReportUri,
-	headers: {
+	requestJson: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
+	headers: Readonly<{
 		contentType: ContentType;
 		ua: string | undefined;
-	},
+	}>,
 ): ReportingApiV1CSP[] => {
-	if (Array.isArray(requestJson)) {
+	if (isReportingApiArray(requestJson)) {
 		/* Chrome */
 		logger.debug(headers.contentType, requestJson);
 		return requestJson.filter((data) => data.type === 'csp-violation') as unknown[] as ReportingApiV1CSP[];
@@ -140,7 +144,7 @@ export const parseRequestJson = (
 	];
 };
 
-export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): boolean =>
+export const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOrigins: readonly string[]): boolean =>
 	reportings.some(({ body }) => {
 		const url = URL.parse(body.documentURL);
 		if (url === null) {
@@ -150,7 +154,7 @@ export const cors = (reportings: ReportingApiV1CSP[], allowOrigins: string[]): b
 		return allowOrigins.includes(url.origin);
 	});
 
-export const noticeFilter = (reportingList: ReportingApiV1CSP[]): ReportingApiV1CSP[] =>
+export const noticeFilter = (reportingList: readonly Readonly<ReportingApiV1CSP>[]): ReportingApiV1CSP[] =>
 	reportingList.filter(
 		({ body }) =>
 			!configCsp.noticeFilter.some(({ blockedURL, effectiveDirective, sourceFile, sample }) => {
