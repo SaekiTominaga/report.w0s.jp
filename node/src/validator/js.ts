@@ -9,7 +9,7 @@ interface RequestJson {
 	columnNumber: number;
 }
 
-export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
+export const json = validator('json', (value: Readonly<Record<string, unknown>>): RequestJson => {
 	const { documentURL, message, jsURL, lineNumber, columnNumber } = value;
 
 	if (typeof documentURL !== 'string') {

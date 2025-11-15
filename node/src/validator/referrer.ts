@@ -6,7 +6,7 @@ interface RequestJson {
 	referrer: string;
 }
 
-export const json = validator('json', (value: Record<string, unknown>): RequestJson => {
+export const json = validator('json', (value: Readonly<Record<string, unknown>>): RequestJson => {
 	const { documentURL, referrer } = value;
 
 	if (typeof documentURL !== 'string') {

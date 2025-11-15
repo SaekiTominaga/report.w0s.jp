@@ -5,7 +5,7 @@
  *
  * @returns ヘッダー値
  */
-export const csp = (object: Record<string, string[]>): string =>
+export const csp = (object: Readonly<Record<string, readonly string[]>>): string =>
 	Object.entries(object)
 		.map(([key, values]) => `${key} ${values.join(' ')}`)
 		.join(';');
@@ -17,7 +17,7 @@ export const csp = (object: Record<string, string[]>): string =>
  *
  * @returns ヘッダー値
  */
-export const reportingEndpoints = (object: Record<string, string>): string =>
+export const reportingEndpoints = (object: Readonly<Record<string, string>>): string =>
 	Object.entries(object)
 		.map(([key, value]) => `${key}="${value}"`)
 		.join(',');
