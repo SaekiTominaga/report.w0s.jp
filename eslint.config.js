@@ -15,21 +15,6 @@ export default [
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
-		rules: {
-			'@typescript-eslint/prefer-readonly-parameter-types': [
-				'error',
-				{
-					allow: [
-						{
-							from: 'package',
-							name: 'Context',
-							package: 'hono',
-						},
-					],
-					ignoreInferredTypes: true,
-				},
-			],
-		},
 	},
 	{
 		files: ['node/src/**/*.test.ts'],
