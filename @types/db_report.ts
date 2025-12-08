@@ -1,5 +1,3 @@
-import type { Generated } from 'kysely';
-
 type TypeTransform<T> = T extends boolean ? 0 | 1 : T extends Date ? number : T extends URL ? string : T;
 type NullTransform<T> = Exclude<T, undefined> | (undefined extends T ? null : never);
 type Transform<T> = TypeTransform<NullTransform<T>>;
