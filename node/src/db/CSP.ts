@@ -1,6 +1,6 @@
 import type { Insertable } from 'kysely';
 import { jsToSQLiteAssignment } from '@w0s/sqlite-utility';
-import type { DCsp } from '../../../@types/db.d.ts';
+import type { DCsp } from '../../../@types/db_report.ts';
 import Database from './Database.ts';
 
 /**

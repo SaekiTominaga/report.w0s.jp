@@ -1,6 +1,6 @@
 import { sql, type Insertable, type Selectable } from 'kysely';
 import { jsToSQLiteAssignment, jsToSQLiteComparison } from '@w0s/sqlite-utility';
-import type { DJs } from '../../../@types/db.d.ts';
+import type { DJs } from '../../../@types/db_report.ts';
 import Database from './Database.ts';
 
 /**
