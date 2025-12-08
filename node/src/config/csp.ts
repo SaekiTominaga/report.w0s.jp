@@ -5,7 +5,7 @@ interface Filter {
 	sample?: string;
 }
 
-const noticeFilter: Filter[] = [
+const noticeFilter: readonly Readonly<Filter>[] = [
 	{ effectiveDirective: 'connect-src', blockedURL: /^https:\/\/analytics\.w0s\.jp\/matomo\/matomo\.php\?/v },
 	{
 		effectiveDirective: 'connect-src',
@@ -45,6 +45,8 @@ const noticeFilter: Filter[] = [
 	},
 	{ effectiveDirective: 'script-src', blockedURL: 'eval', sourceFile: 'chrome-extension' },
 	{ effectiveDirective: 'script-src', blockedURL: 'wasm-eval', sourceFile: 'chrome-extension' },
+	{ effectiveDirective: 'script-src-elem', blockedURL: 'blob', sourceFile: 'chrome-extension' },
+	{ effectiveDirective: 'script-src-elem', blockedURL: 'inline', sourceFile: 'chrome-extension' },
 	{ effectiveDirective: 'script-src-elem', blockedURL: 'inline', sourceFile: 'moz-extension' }, // moz-extension (Violentmonkey)
 	{ effectiveDirective: 'script-src-elem', blockedURL: 'inline', sourceFile: 'sandbox eval code' },
 	{ effectiveDirective: 'script-src-elem', blockedURL: 'inline', sourceFile: 'user-script' }, // iPad
@@ -87,7 +89,9 @@ const noticeFilter: Filter[] = [
 		sample: 'lit-html',
 	},
 	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sourceFile: 'user-script', sample: 'dompurify' }, // iPad
+	{ effectiveDirective: 'trusted-types', blockedURL: 'trusted-types-policy', sample: 'decodeHTMLEntitiesPolicy' },
 	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sourceFile: 'chrome-extension' }, // Trend Micro ?
+	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sourceFile: 'user-script' },
 	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sample: 'Function|(\n) {\n\n})' }, // old Safari
 	{ effectiveDirective: 'fenced-frame-src' },
 ];
