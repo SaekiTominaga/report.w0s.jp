@@ -8,7 +8,7 @@ import configCsp from '../config/csp.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
-import type { DCsp } from '../../../@types/db_report.ts';
+import type { DCsp } from '../../../@types/db_report.d.ts';
 
 interface CSPViolationReportBody {
 	/* https://www.w3.org/TR/2024/WD-CSP3-20241217/#reporting */
