@@ -1,9 +1,7 @@
+**/node_modules
 .env
 .env.*
 
-/log/
-
-/node/dist/
+/log
+/node/dist
 /node/log4js.*.json
-
-/node_modules/
