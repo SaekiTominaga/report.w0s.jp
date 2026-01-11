@@ -25,7 +25,7 @@
 		"@types/ejs": "^3.1.5",
 		"@types/node": "^24.10.0",
 		"@types/nodemailer": "^7.0.4",
-		"@w0s/eslint-config": "^9.3.1",
+		"@w0s/eslint-config": "^9.4.1",
 		"@w0s/tsconfig": "^1.7.0",
 		"prettier": "^3.7.4",
 		"rimraf": "^6.1.2",
