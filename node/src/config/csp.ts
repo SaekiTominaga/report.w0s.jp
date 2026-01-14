@@ -25,6 +25,7 @@ const noticeFilter: readonly Readonly<Filter>[] = [
 	{ effectiveDirective: 'frame-src', blockedURL: 'https://pagead2.googlesyndication.com' },
 	{ effectiveDirective: 'frame-src', blockedURL: 'https://pwm-image.trendmicro.jp' },
 	{ effectiveDirective: 'frame-src', blockedURL: /^https?:\/\/[a-z0-9\-]+\.iss\.netstar-inc\.com$/v },
+	{ effectiveDirective: 'img-src', blockedURL: 'blob', sourceFile: 'user-script' },
 	{ effectiveDirective: 'img-src', blockedURL: 'blob', sourceFile: /^https:\/\/(blog\.)?w0s\.jp(:443)?\//v },
 	{ effectiveDirective: 'img-src', blockedURL: /^https:\/\/fonts\.gstatic\.com(:443)?\/[ls]\//v }, // Google translation
 	{ effectiveDirective: 'img-src', blockedURL: /^https:\/\/translate\.google\.com(:443)?\/gen204\?/v }, // Google translation
@@ -99,6 +100,11 @@ const noticeFilter: readonly Readonly<Filter>[] = [
 	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sourceFile: 'chrome-extension' }, // Trend Micro ?
 	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sourceFile: 'user-script' },
 	{ effectiveDirective: 'require-trusted-types-for', blockedURL: 'trusted-types-sink', sample: 'Function|(\n) {\n\n})' }, // old Safari
+	{
+		effectiveDirective: 'worker-src',
+		blockedURL: 'blob',
+		sourceFile: 'chrome-extension',
+	},
 	{
 		effectiveDirective: 'worker-src',
 		blockedURL: 'blob',
