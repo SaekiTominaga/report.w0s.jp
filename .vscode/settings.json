@@ -6,6 +6,6 @@
 	"eslint.validate": ["typescript"],
 	"search.exclude": {
 		"/node/dist": true,
-		"**/package-lock.json": true
+		"**/pnpm-lock.yaml": true
 	}
 }
