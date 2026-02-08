@@ -41,7 +41,7 @@ export const jsApp = new Hono().post(jsonValidator, async (context) => {
 		});
 
 		/* メール通知 */
-		const html = await ejs.renderFile(`${env('VIEWS')}/js_mail.ejs`, {
+		const html = await ejs.renderFile(`${env('ROOT')}/${env('TEMPLATE_DIR')}/mail/js.ejs`, {
 			documentURL: documentURL,
 			message: message,
 			jsURL: jsURL,

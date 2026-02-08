@@ -35,7 +35,7 @@ export const referrerApp = new Hono().post(jsonValidator, async (context) => {
 		});
 
 		/* メール通知 */
-		const html = await ejs.renderFile(`${env('VIEWS')}/referrer_mail.ejs`, {
+		const html = await ejs.renderFile(`${env('ROOT')}/${env('TEMPLATE_DIR')}/mail/referrer.ejs`, {
 			documentURL: documentURL,
 			referrer: referrer,
 			ua: ua,
