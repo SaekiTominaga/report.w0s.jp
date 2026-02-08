@@ -18,7 +18,7 @@ export const jsApp = new Hono().post(jsonValidator, async (context) => {
 
 	const ua = req.header('User-Agent');
 
-	const dao = new ReportJsDao(env('SQLITE_REPORT'));
+	const dao = new ReportJsDao(`${env('ROOT')}/${env('SQLITE_DIR')}/${env('SQLITE_REPORT')}`);
 
 	const existSameData = await dao.same({
 		document_url: documentURL,
