@@ -207,7 +207,7 @@ export const cspApp = new Hono().post(headerValidator, async (context) => {
 	}
 
 	/* DB に登録 */
-	const dao = new ReportCspDao(env('SQLITE_REPORT'));
+	const dao = new ReportCspDao(`${env('ROOT')}/${env('SQLITE_DIR')}/${env('SQLITE_REPORT')}`);
 
 	const dbInsertList: Readonly<Omit<DCsp, 'registered_at'>>[] = reportingList.map((reporting) => {
 		const { body, user_agent: userAgent } = reporting;

@@ -3,11 +3,11 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "tsx --watch --tsconfig node/tsconfig.json node/src/app.ts",
-		"prebuild": "rimraf node/dist/* -g",
-		"build": "tsc -p node/tsconfig.json",
-		"lint": "eslint node/src/**/*.ts",
-		"test": "node --experimental-test-coverage --env-file=.env.test --test node/src/**/*.test.ts"
+		"dev": "tsx --watch --tsconfig hono/tsconfig.json hono/src/app.ts",
+		"prebuild": "rimraf hono/dist/* -g",
+		"build": "tsc -p hono/tsconfig.json",
+		"lint": "eslint hono/src/**/*.ts",
+		"test": "node --experimental-test-coverage --env-file=.env.test --test hono/src/**/*.test.ts"
 	},
 	"dependencies": {
 		"@hono/node-server": "1.19.9",
