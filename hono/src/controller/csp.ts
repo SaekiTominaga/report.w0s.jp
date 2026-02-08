@@ -248,7 +248,7 @@ export const cspApp = new Hono().post(headerValidator, async (context) => {
 	const noticeList = noticeFilter(reportingList);
 	if (noticeList.length >= 1) {
 		/* メール通知 */
-		const html = await ejs.renderFile(`${env('VIEWS')}/csp_mail.ejs`, {
+		const html = await ejs.renderFile(`${env('ROOT')}/${env('TEMPLATE_DIR')}/mail/csp.ejs`, {
 			reportings: noticeList,
 		});
 
