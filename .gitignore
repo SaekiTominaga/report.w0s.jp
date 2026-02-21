@@ -2,5 +2,6 @@
 .env
 .env.*
 log4js.*.json
+*.tsbuildinfo
 
 /hono/dist
