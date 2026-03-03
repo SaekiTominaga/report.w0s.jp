@@ -4,7 +4,6 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import Log4js from 'log4js';
 import { env } from '@w0s/env-value-type';
-import configCsp from '../config/csp.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
@@ -155,40 +154,7 @@ export const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOr
 	});
 
 export const noticeFilter = (reportingList: readonly Readonly<ReportingApiV1CSP>[]): ReportingApiV1CSP[] =>
-	reportingList.filter(
-		({ body }) =>
-			!configCsp.noticeFilter.some(({ blockedURL, effectiveDirective, sourceFile, sample }) => {
-				/* return true: 除去対象 */
-				if (blockedURL !== undefined && body.blockedURL !== undefined) {
-					if (typeof blockedURL === 'string') {
-						if (blockedURL !== body.blockedURL) {
-							return false;
-						}
-					} else if (!blockedURL.test(body.blockedURL)) {
-						return false;
-					}
-				}
-				if (effectiveDirective !== body.effectiveDirective) {
-					return false;
-				}
-				if (sourceFile !== undefined && body.sourceFile !== undefined) {
-					if (typeof sourceFile === 'string') {
-						if (sourceFile !== body.sourceFile) {
-							return false;
-						}
-					} else if (!sourceFile.test(body.sourceFile)) {
-						return false;
-					}
-				}
-				if (sample !== undefined && body.sample !== undefined) {
-					if (sample !== body.sample) {
-						return false;
-					}
-				}
-
-				return true;
-			}),
-	);
+	reportingList.filter(({ body }) => body.disposition !== 'report');
 
 export const cspApp = new Hono().post(headerValidator, async (context) => {
 	const { req } = context;
