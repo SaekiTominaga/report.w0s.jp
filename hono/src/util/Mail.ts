@@ -25,7 +25,7 @@ export default class Mail {
 	async sendHtml(subject: string, html: string): Promise<void> {
 		await this.#transport.sendMail({
 			from: env('MAIL_FROM'),
-			to: env('MAIL_TO'),
+			to: env('NOTICE_MAIL_TO'),
 			subject: subject,
 			html: html,
 		});

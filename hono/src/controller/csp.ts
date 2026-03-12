@@ -1,9 +1,10 @@
+import path from 'node:path';
 import { SqliteError } from 'better-sqlite3';
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
-import Log4js from 'log4js';
 import { env } from '@w0s/env-value-type';
+import { getLogger } from '../logger.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
@@ -69,7 +70,7 @@ interface ReportUri {
 /**
  * CSP エラー
  */
-const logger = Log4js.getLogger('csp');
+const logger = getLogger(path.basename(import.meta.url, '.ts'));
 
 const isReportingApiArray = (
 	arg: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
@@ -84,11 +85,11 @@ export const parseRequestJson = (
 ): ReportingApiV1CSP[] => {
 	if (isReportingApiArray(requestJson)) {
 		/* Chrome */
-		logger.debug(headers.contentType, requestJson);
+		logger.debug(requestJson, headers.contentType);
 		return requestJson.filter((data) => data.type === 'csp-violation') as unknown[] as ReportingApiV1CSP[];
 	}
 
-	logger.debug(headers.contentType, headers.ua, requestJson);
+	logger.debug(requestJson, `${headers.contentType} <${String(headers.ua)}>`);
 
 	if (!('csp-report' in requestJson)) {
 		/* Safari 18.2 */

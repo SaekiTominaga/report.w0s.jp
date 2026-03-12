@@ -7,8 +7,8 @@ import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
-import Log4js from 'log4js';
 import { env } from '@w0s/env-value-type';
+import { getLogger } from './logger.ts';
 import config from './config/hono.ts';
 import { cspApp } from './controller/csp.ts';
 import { jsApp } from './controller/js.ts';
@@ -21,8 +21,7 @@ import { isApi } from './util/request.ts';
 loadEnvFile(process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development');
 
 /* Logger */
-Log4js.configure(env('HONO_LOG4JS_CONF'));
-const logger = Log4js.getLogger();
+const logger = getLogger(path.basename(import.meta.url, '.ts'));
 
 /* Hono */
 const app = new Hono();
@@ -151,7 +150,7 @@ app.onError((err, context) => {
 		message = err.message;
 
 		if (err.status >= 400 && err.status < 500) {
-			logger.info(err.status, err.message, context.req.header('User-Agent'));
+			logger.info(`${String(err.status)} ${err.message} <${String(context.req.header('User-Agent'))}>`);
 			title = TITLE_4XX;
 		} else {
 			logger.error(err.message);
