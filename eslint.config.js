@@ -36,4 +36,10 @@ export default [
 			],
 		},
 	},
+	{
+		files: ['hono/src/logger.ts'],
+		rules: {
+			'no-console': 'off',
+		},
+	},
 ];
