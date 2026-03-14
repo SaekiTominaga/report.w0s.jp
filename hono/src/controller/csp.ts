@@ -10,9 +10,9 @@ import { header as headerValidator, type ContentType } from '../validator/csp.ts
 import type { DCsp } from '../../../@types/db_report.d.ts';
 
 interface CSPViolationReportBody {
-	/* https://www.w3.org/TR/2024/WD-CSP3-20241217/#reporting */
+	/* https://www.w3.org/TR/2026/WD-CSP3-20260311/#reporting */
 	documentURL: string; // 違反が発生したドキュメントの URL
-	referrer?: string; // 違反が発生した文書の参照元
+	referrer?: string | null; // 違反が発生した文書の参照元（null は Firefox のために必要）
 	blockedURL?: string; // ブロックされたリソースの URL
 	effectiveDirective: string; // 違反が発生したディレクティブ
 	originalPolicy: string; // 元のポリシー
@@ -42,14 +42,14 @@ interface ReportingApiV1CSP {
 }
 
 interface ReportingApiSafari {
-	/* Safari 18.2; https://www.w3.org/TR/2018/WD-reporting-1-20180925/#interface-reporting-observer */
+	/* Safari 18.3-; https://www.w3.org/TR/2025/WD-reporting-1-20250611/#interface-reporting-observer */
 	type: `csp-violation`;
 	url: string;
 	body: Readonly<CSPViolationReportBody>;
 }
 
 interface ReportUri {
-	/* Firefox 136; https://www.w3.org/TR/2024/WD-CSP3-20241217/#deprecated-serialize-violation */
+	/* Firefox 148-; https://www.w3.org/TR/2026/WD-CSP3-20260311/#deprecated-serialize-violation */
 	'csp-report': Readonly<{
 		'document-uri': string; // 違反が発生したドキュメントの URL
 		referrer?: string; // 違反が発生した文書の参照元
@@ -82,12 +82,12 @@ export const parseRequestJson = (
 	}>,
 ): ReportingApiV1CSP[] => {
 	if (isReportingApiArray(requestJson)) {
-		/* Chrome */
+		/* Chrome, Safari 18.4+, Firefox 149+ */
 		return requestJson.filter((data) => data.type === 'csp-violation') as unknown[] as ReportingApiV1CSP[];
 	}
 
 	if (!('csp-report' in requestJson)) {
-		/* Safari 18.2 */
+		/* Safari 18.3- */
 		return [
 			{
 				age: -1,
@@ -99,7 +99,7 @@ export const parseRequestJson = (
 		];
 	}
 
-	/* Firefox 136 */
+	/* Firefox 148- */
 	const { 'csp-report': cspReport } = requestJson;
 
 	const reportingBody: CSPViolationReportBody = {
@@ -180,7 +180,7 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 
 		return {
 			document_url: body.documentURL,
-			referrer: body.referrer,
+			referrer: body.referrer ?? undefined,
 			blocked_url: body.blockedURL,
 			effective_directive: body.effectiveDirective,
 			original_policy: body.originalPolicy,
