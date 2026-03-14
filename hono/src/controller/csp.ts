@@ -1,10 +1,9 @@
-import path from 'node:path';
 import { SqliteError } from 'better-sqlite3';
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { env } from '@w0s/env-value-type';
-import { getLogger } from '../logger.ts';
+import type { Variables } from '../app.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { header as headerValidator, type ContentType } from '../validator/csp.ts';
@@ -70,7 +69,6 @@ interface ReportUri {
 /**
  * CSP エラー
  */
-const logger = getLogger(path.basename(import.meta.url));
 
 const isReportingApiArray = (
 	arg: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
@@ -85,11 +83,8 @@ export const parseRequestJson = (
 ): ReportingApiV1CSP[] => {
 	if (isReportingApiArray(requestJson)) {
 		/* Chrome */
-		logger.debug(requestJson, headers.contentType);
 		return requestJson.filter((data) => data.type === 'csp-violation') as unknown[] as ReportingApiV1CSP[];
 	}
-
-	logger.debug(requestJson, `${headers.contentType} <${String(headers.ua)}>`);
 
 	if (!('csp-report' in requestJson)) {
 		/* Safari 18.2 */
@@ -157,15 +152,19 @@ export const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOr
 export const noticeFilter = (reportingList: readonly Readonly<ReportingApiV1CSP>[]): ReportingApiV1CSP[] =>
 	reportingList.filter(({ body }) => body.disposition !== 'report');
 
-export const cspApp = new Hono().post(headerValidator, async (context) => {
+export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator, async (context) => {
 	const { req } = context;
+	const logger = context.get('logger');
 
 	const { contentType } = req.valid('header');
+	const ua = req.header('User-Agent');
 	const requestJson = await req.json<ReportingApiV1[] | ReportingApiSafari | ReportUri>();
+
+	logger.debug(requestJson, `${contentType} <${String(ua)}>`);
 
 	const reportingList = parseRequestJson(requestJson, {
 		contentType: contentType,
-		ua: req.header('User-Agent'),
+		ua: ua,
 	});
 
 	/* 自ドメイン以外のデータを弾く（実質的な CORS の代替処理） */
