@@ -70,7 +70,7 @@ interface ReportUri {
 /**
  * CSP エラー
  */
-const logger = getLogger(path.basename(import.meta.url, '.ts'));
+const logger = getLogger(path.basename(import.meta.url));
 
 const isReportingApiArray = (
 	arg: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,

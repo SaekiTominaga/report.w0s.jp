@@ -21,7 +21,7 @@ import { isApi } from './util/request.ts';
 loadEnvFile(process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development');
 
 /* Logger */
-const logger = getLogger(path.basename(import.meta.url, '.ts'));
+const logger = getLogger(path.basename(import.meta.url));
 
 /* Hono */
 const app = new Hono();

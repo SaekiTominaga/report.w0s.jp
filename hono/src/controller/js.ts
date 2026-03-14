@@ -10,7 +10,7 @@ import { json as jsonValidator } from '../validator/js.ts';
 /**
  * JavaScript エラー
  */
-const logger = getLogger(path.basename(import.meta.url, '.ts'));
+const logger = getLogger(path.basename(import.meta.url));
 
 export const jsApp = new Hono().post(jsonValidator, async (context) => {
 	const { req } = context;
