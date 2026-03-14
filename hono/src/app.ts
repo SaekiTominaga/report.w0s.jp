@@ -1,12 +1,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { loadEnvFile } from 'node:process';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
+import type { Logger } from 'pino';
 import { env } from '@w0s/env-value-type';
 import { getLogger } from './logger.ts';
 import config from './config/hono.ts';
@@ -18,13 +18,16 @@ import { referrerSampleApp } from './controller/referrerSample.ts';
 import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.ts';
 import { isApi } from './util/request.ts';
 
-loadEnvFile(process.env['NODE_ENV'] === 'production' ? '.env.production' : '.env.development');
+export interface Variables {
+	logger: Logger;
+}
 
-/* Logger */
-const logger = getLogger(path.basename(import.meta.url, '.ts'));
+const app = new Hono<{ Variables: Variables }>();
 
-/* Hono */
-const app = new Hono();
+app.use(async (context, next) => {
+	context.set('logger', getLogger(context.req.path.substring(1)));
+	await next();
+});
 
 app.use(async (context, next) => {
 	/* HSTS */
@@ -139,6 +142,8 @@ app.notFound((context) => {
 	);
 });
 app.onError((err, context) => {
+	const logger = context.get('logger');
+
 	const TITLE_4XX = 'Client error';
 	const TITLE_5XX = 'Server error';
 
@@ -175,13 +180,17 @@ app.onError((err, context) => {
 
 /* HTTP Server */
 if (process.env['TEST'] !== 'test') {
-	const port = env('HONO_PORT', 'number');
-	logger.info(`Server is running on http://localhost:${String(port)}`);
+	const logger = getLogger(path.basename(import.meta.url));
 
-	serve({
-		fetch: app.fetch,
-		port: port,
-	});
+	serve(
+		{
+			fetch: app.fetch,
+			port: env('HONO_PORT', 'number'),
+		},
+		(info) => {
+			logger.info(`Server is running on http://localhost:${String(info.port)}`);
+		},
+	);
 }
 
 export default app;

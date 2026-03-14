@@ -1,8 +1,7 @@
-import path from 'node:path';
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { env } from '@w0s/env-value-type';
-import { getLogger } from '../logger.ts';
+import type { Variables } from '../app.ts';
 import ReportReferrerDao from '../db/Referrer.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/referrer.ts';
@@ -10,10 +9,9 @@ import { json as jsonValidator } from '../validator/referrer.ts';
 /**
  * リファラーエラー
  */
-const logger = getLogger(path.basename(import.meta.url, '.ts'));
-
-export const referrerApp = new Hono().post(jsonValidator, async (context) => {
+export const referrerApp = new Hono<{ Variables: Variables }>().post(jsonValidator, async (context) => {
 	const { req } = context;
+	const logger = context.get('logger');
 
 	const responseBody = req.valid('json');
 	const { documentURL, referrer } = responseBody;
