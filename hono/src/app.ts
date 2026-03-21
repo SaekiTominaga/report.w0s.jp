@@ -147,22 +147,21 @@ app.onError((err, context) => {
 	const TITLE_4XX = 'Client error';
 	const TITLE_5XX = 'Server error';
 
-	let status: ContentfulStatusCode = 500;
 	let title = TITLE_5XX;
-	let message: string | undefined;
 	if (err instanceof HTTPException) {
-		status = err.status;
-		message = err.message;
-
 		if (err.status >= 400 && err.status < 500) {
-			logger.info(`${String(err.status)} ${err.message} <${String(context.req.header('User-Agent'))}>`);
 			title = TITLE_4XX;
+
+			logger.info(`${String(err.status)} ${err.message} <${String(context.req.header('User-Agent'))}>`);
 		} else {
 			logger.error(err.message);
 		}
 	} else {
-		logger.fatal(err.message);
+		logger.fatal(err.stack);
 	}
+
+	const status = err instanceof HTTPException ? err.status : 500;
+	const message = err instanceof HTTPException ? err.message : undefined;
 
 	if (isApi(context)) {
 		return context.json({ message: message ?? title }, status);
