@@ -11,7 +11,7 @@
 	"dependencies": {
 		"@hono/node-server": "1.19.11",
 		"@w0s/env-value-type": "1.0.1",
-		"@w0s/sqlite-utility": "2.0.0",
+		"@w0s/sqlite-utility": "2.0.1",
 		"better-sqlite3": "12.6.2",
 		"ejs": "3.1.10",
 		"hono": "4.12.7",
