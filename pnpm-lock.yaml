@@ -15,8 +15,8 @@ importers:
         specifier: 1.0.1
         version: 1.0.1
       '@w0s/sqlite-utility':
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.0.1
+        version: 2.0.1
       better-sqlite3:
         specifier: 12.6.2
         version: 12.6.2
@@ -442,8 +442,8 @@ packages:
       globals: ^17.0.0
       typescript-eslint: ^8.50.0
 
-  '@w0s/sqlite-utility@2.0.0':
-    resolution: {integrity: sha512-Gm4+l/WjYsxklvvFlGZRzdlBwZElF1VqwV0RHOB7J60fmFBV8p/QTuR8I7J+/sihsg1yzPb3sDloY2y0zVSYIQ==}
+  '@w0s/sqlite-utility@2.0.1':
+    resolution: {integrity: sha512-pyrkc5EF6ntIZmXFNnWaDFK5GbpClbuuhMHM1vZA9naigEMbOelU7NsmGmcmhKPgYeaNT/BafOkbQDlLDJQwHQ==}
 
   '@w0s/tsconfig@2.0.1':
     resolution: {integrity: sha512-cEHH/flNf5xGTNEpLafPI+ua3dRNxflIZEScXbHcqRZmymR2J8bMl8+rPd2/q3PKlySdfbY8TWs6w14dW2Kexw==}
@@ -1951,7 +1951,7 @@ snapshots:
       globals: 17.1.0
       typescript-eslint: 8.54.0(eslint@9.39.2)(typescript@5.9.3)
 
-  '@w0s/sqlite-utility@2.0.0': {}
+  '@w0s/sqlite-utility@2.0.1': {}
 
   '@w0s/tsconfig@2.0.1(typescript@5.9.3)':
     dependencies:
