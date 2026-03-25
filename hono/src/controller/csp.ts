@@ -12,17 +12,17 @@ import type { DCsp } from '../../../@types/db_report.d.ts';
 interface CSPViolationReportBody {
 	/* https://www.w3.org/TR/2026/WD-CSP3-20260311/#reporting */
 	documentURL: string; // 違反が発生したドキュメントの URL
-	referrer?: string | null; // 違反が発生した文書の参照元（null は Firefox のために必要）
+	referrer?: string | null; // 違反が発生した文書の参照元
 	blockedURL?: string; // ブロックされたリソースの URL
 	effectiveDirective: string; // 違反が発生したディレクティブ
 	originalPolicy: string; // 元のポリシー
-	sourceFile?: string;
-	sample?: string | null; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字（null は Firefox のために必要）
+	sourceFile?: string | null;
+	sample?: string | null; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
 	statusCode: number | undefined; // undefined は古い Firefox のために必要
 	lineNumber?: number;
 	columnNumber?: number;
-}
+} // 各プロパティの null は Firefox 149+ のために必要
 
 interface ReportingApiV1 {
 	/* https://www.w3.org/TR/2024/WD-reporting-1-20240813/#serialize-reports */
@@ -184,7 +184,7 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 			blocked_url: body.blockedURL,
 			effective_directive: body.effectiveDirective,
 			original_policy: body.originalPolicy,
-			source_file: body.sourceFile,
+			source_file: body.sourceFile ?? undefined,
 			sample: body.sample ?? undefined,
 			disposition: body.disposition,
 			status_code: body.statusCode,
