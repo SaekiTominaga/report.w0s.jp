@@ -17,7 +17,7 @@ interface CSPViolationReportBody {
 	effectiveDirective: string; // 違反が発生したディレクティブ
 	originalPolicy: string; // 元のポリシー
 	sourceFile?: string;
-	sample?: string; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
+	sample?: string | null; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字（null は Firefox のために必要）
 	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
 	statusCode: number | undefined; // undefined は古い Firefox のために必要
 	lineNumber?: number;
@@ -185,7 +185,7 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 			effective_directive: body.effectiveDirective,
 			original_policy: body.originalPolicy,
 			source_file: body.sourceFile,
-			sample: body.sample,
+			sample: body.sample ?? undefined,
 			disposition: body.disposition,
 			status_code: body.statusCode,
 			line_number: body.lineNumber,
