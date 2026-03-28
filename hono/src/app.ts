@@ -23,11 +23,7 @@ export interface Variables {
 
 const app = new Hono<{ Variables: Variables }>();
 
-app.use(async (context, next) => {
-	context.set('logger', getLogger(context.req.path.substring(1)));
-	await next();
-});
-
+/* Headers */
 app.use(async (context, next) => {
 	/* HSTS */
 	context.header('Strict-Transport-Security', config.response.header.hsts);
@@ -44,6 +40,7 @@ app.use(async (context, next) => {
 	await next();
 });
 
+/* Favicon */
 app.get('/favicon.ico', async (context) => {
 	const file = await fs.promises.readFile(`${config.static.root}/favicon.svg`);
 
@@ -52,6 +49,7 @@ app.get('/favicon.ico', async (context) => {
 	return context.body(Buffer.from(file));
 });
 
+/* Static files */
 app.use(
 	serveStatic({
 		root: config.static.root,
@@ -115,6 +113,12 @@ app.use(
 		allowMethods: config.api.allowMethods,
 	}),
 );
+
+/* Logger */
+app.use(async (context, next) => {
+	context.set('logger', getLogger(context.req.path.substring(1)));
+	await next();
+});
 
 /* Routes */
 app.route(`/${config.api.dir}/csp`, cspApp);
