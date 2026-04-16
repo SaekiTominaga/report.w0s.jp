@@ -4,7 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "tsx --watch --env-file=.env.development --tsconfig hono/tsconfig.json hono/src/app.ts",
-		"build": "tsc -p hono/tsconfig.json",
+		"build": "tsc --project hono",
 		"lint": "eslint hono/src/**/*.ts",
 		"test": "node --experimental-test-coverage --env-file=.env.development --env-file=.env.test --test hono/src/**/*.test.ts"
 	},
@@ -26,7 +26,7 @@
 		"@types/node": "24.10.0",
 		"@types/nodemailer": "8.0.0",
 		"@w0s/eslint-config": "9.5.1",
-		"@w0s/tsconfig": "2.0.1",
+		"@w0s/tsconfig": "3.0.0",
 		"eslint": "^9.39.2",
 		"eslint-plugin-functional": "9.0.4",
 		"eslint-plugin-import": "2.32.0",
@@ -35,7 +35,7 @@
 		"globals": "17.5.0",
 		"prettier": "3.8.1",
 		"tsx": "4.21.0",
-		"typescript": "5.9.3",
+		"typescript": "6.0.2",
 		"typescript-eslint": "8.58.2"
 	},
 	"packageManager": "pnpm@10.28.1"
