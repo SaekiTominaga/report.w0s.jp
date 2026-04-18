@@ -27,8 +27,8 @@ importers:
         specifier: 4.12.14
         version: 4.12.14
       kysely:
-        specifier: 0.28.15
-        version: 0.28.15
+        specifier: 0.28.16
+        version: 0.28.16
       nodemailer:
         specifier: 8.0.5
         version: 8.0.5
@@ -1152,8 +1152,8 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  kysely@0.28.15:
-    resolution: {integrity: sha512-r2clcf7HLWvDXaVUEvQymXJY4i3bSOIV3xsL/Upy3ZfSv5HeKsk9tsqbBptLvth5qHEIhxeHTA2jNLyQABkLBA==}
+  kysely@0.28.16:
+    resolution: {integrity: sha512-3i5pmOiZvMDj00qhrIVbH0AnioVTx22DMP7Vn5At4yJO46iy+FM8Y/g61ltenLVSo3fiO8h8Q3QOFgf/gQ72ww==}
     engines: {node: '>=20.0.0'}
 
   levn@0.4.1:
@@ -2794,7 +2794,7 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  kysely@0.28.15: {}
+  kysely@0.28.16: {}
 
   levn@0.4.1:
     dependencies:
