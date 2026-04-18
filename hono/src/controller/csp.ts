@@ -6,7 +6,7 @@ import { env } from '@w0s/env-value-type';
 import type { Variables } from '../app.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
-import { header as headerValidator, type ContentType } from '../validator/csp.ts';
+import { type ContentType, header as headerValidator } from '../validator/csp.ts';
 import type { DCsp } from '../../../@types/db_report.d.ts';
 
 interface CSPViolationReportBody {
