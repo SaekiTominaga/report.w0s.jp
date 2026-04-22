@@ -20,8 +20,8 @@ interface CSPViolationReportBody {
 	sample?: string | null; // 違反の原因となったインラインスクリプト、イベントハンドラー、またはスタイルの最初の40文字
 	disposition: 'enforce' | 'report' | undefined; // undefined は Firefox, Safari の互換性確保のために必要
 	statusCode: number | undefined; // undefined は古い Firefox のために必要
-	lineNumber?: number;
-	columnNumber?: number;
+	lineNumber?: number | null;
+	columnNumber?: number | null;
 } // 各プロパティの null は Firefox 149+ のために必要
 
 interface ReportingApiV1 {
@@ -188,8 +188,8 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 			sample: body.sample ?? undefined,
 			disposition: body.disposition,
 			status_code: body.statusCode,
-			line_number: body.lineNumber,
-			column_number: body.columnNumber,
+			line_number: body.lineNumber ?? undefined,
+			column_number: body.columnNumber ?? undefined,
 			ua: userAgent,
 		};
 	});
