@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "tsx --watch --env-file=.env.development --tsconfig hono/tsconfig.json hono/src/app.ts",
 		"build": "tsc --project hono",
-		"lint": "eslint hono/src/**/*.ts",
+		"lint": "eslint hono/src",
 		"test": "node --experimental-test-coverage --env-file=.env.development --env-file=.env.test --test hono/src/**/*.test.ts"
 	},
 	"dependencies": {
