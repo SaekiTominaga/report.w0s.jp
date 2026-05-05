@@ -1,3 +1,4 @@
+import { inspect } from 'node:util';
 import ejs from 'ejs';
 import { Hono } from 'hono';
 import { env } from '@w0s/env-value-type';
@@ -15,7 +16,7 @@ export const referrerApp = new Hono<{ Variables: Variables }>().post(jsonValidat
 
 	const responseBody = req.valid('json');
 	const { documentURL, referrer } = responseBody;
-	logger.debug(responseBody);
+	logger.debug(inspect(responseBody));
 
 	const ua = req.header('User-Agent');
 

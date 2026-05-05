@@ -5,7 +5,7 @@ import { cors } from 'hono/cors';
 import { HTTPException } from 'hono/http-exception';
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
-import type { Logger } from 'pino';
+import type { Logger } from 'winston';
 import { env } from '@w0s/env-value-type';
 import { getLogger } from './logger.ts';
 import config from './config/hono.ts';
@@ -160,7 +160,7 @@ app.onError((err, context) => {
 			logger.error(err.message);
 		}
 	} else {
-		logger.fatal(err.stack);
+		logger.error(err.stack);
 	}
 
 	const status = err instanceof HTTPException ? err.status : 500;

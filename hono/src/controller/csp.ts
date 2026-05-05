@@ -1,3 +1,4 @@
+import { inspect } from 'node:util';
 import { SqliteError } from 'better-sqlite3';
 import ejs from 'ejs';
 import { Hono } from 'hono';
@@ -160,7 +161,7 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 	const ua = req.header('User-Agent');
 	const requestJson = await req.json<ReportingApiV1[] | ReportingApiSafari | ReportUri>();
 
-	logger.debug(requestJson, `${contentType} <${String(ua)}>`);
+	logger.debug(`${inspect(requestJson)} ${contentType} <${String(ua)}>`);
 
 	const reportingList = parseRequestJson(requestJson, {
 		contentType: contentType,
