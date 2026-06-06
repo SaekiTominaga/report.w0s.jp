@@ -16,7 +16,7 @@
 		"better-sqlite3": "12.10.0",
 		"ejs": "3.1.10",
 		"hono": "4.12.23",
-		"kysely": "0.29.0",
+		"kysely": "0.29.2",
 		"nodemailer": "8.0.7",
 		"winston": "3.19.0",
 		"winston-transport": "4.9.0"
