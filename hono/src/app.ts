@@ -23,6 +23,12 @@ export interface Variables {
 
 const app = new Hono<{ Variables: Variables }>();
 
+/* Logger */
+app.use(async (context, next) => {
+	context.set('logger', getLogger(context.req.path.substring(1)));
+	await next();
+});
+
 /* Headers */
 app.use(async (context, next) => {
 	/* HSTS */
@@ -113,12 +119,6 @@ app.use(
 		allowMethods: config.api.allowMethods,
 	}),
 );
-
-/* Logger */
-app.use(async (context, next) => {
-	context.set('logger', getLogger(context.req.path.substring(1)));
-	await next();
-});
 
 /* Routes */
 app.route(`/${config.api.dir}/csp`, cspApp);
