@@ -30,8 +30,8 @@ importers:
         specifier: 0.29.2
         version: 0.29.2
       nodemailer:
-        specifier: 8.0.10
-        version: 8.0.10
+        specifier: 8.0.11
+        version: 8.0.11
       winston:
         specifier: 3.19.0
         version: 3.19.0
@@ -49,8 +49,8 @@ importers:
         specifier: 24.12.4
         version: 24.12.4
       '@types/nodemailer':
-        specifier: 8.0.0
-        version: 8.0.0
+        specifier: 8.0.1
+        version: 8.0.1
       '@w0s/eslint-config':
         specifier: 9.7.0
         version: 9.7.0(@eslint/js@9.39.4)(eslint-plugin-functional@9.0.5(eslint@9.39.4)(typescript@6.0.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.60.0(eslint@9.39.4)(typescript@6.0.3))(eslint@9.39.4))(eslint-plugin-jsdoc@62.9.0(eslint@9.39.4))(eslint-plugin-safely-storage@1.1.0(eslint@9.39.4))(eslint@9.39.4)(globals@17.6.0)(typescript-eslint@8.60.0(eslint@9.39.4)(typescript@6.0.3))
@@ -356,8 +356,8 @@ packages:
   '@types/node@24.12.4':
     resolution: {integrity: sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA==}
 
-  '@types/nodemailer@8.0.0':
-    resolution: {integrity: sha512-fyf8jWULsCo0d0BuoQ75i6IeoHs47qcqxWc7yUdUcV0pOZGjUTTOvwdG1PRXUDqN/8A64yQdQdnA2pZgcdi+cA==}
+  '@types/nodemailer@8.0.1':
+    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
 
   '@types/triple-beam@1.3.5':
     resolution: {integrity: sha512-6WaYesThRMCl19iryMYP7/x2OVgCtbIVflDGFpWnb9irXI3UjYE4AzmYuiUKY1AJstGijoY+MgUszMgRxIYTYw==}
@@ -1196,8 +1196,8 @@ packages:
     resolution: {integrity: sha512-pyFS63ptit/P5WqUkt+UUfe+4oevH+bFeIiPPdfb0pFeYEu/1ELnJu5l+5EcTKYL5M7zaAa7S8ddywgXypqKCw==}
     engines: {node: '>= 0.4'}
 
-  nodemailer@8.0.10:
-    resolution: {integrity: sha512-BLFuSth7QtHOkBzyqTehWWyub0NTRDuK2Q2SQfnGLsrJnzyU+Yeh4WpV1eZGuARFj1xQJHIdnTuJZLP+b9R1GQ==}
+  nodemailer@8.0.11:
+    resolution: {integrity: sha512-nrO/pDAUKl+wXX+lx16tDLbnm0fW6sK/x8mgohaCpg+CdCEl482bD4tCuAZk2DyliruiNTIZxRCoWkDqJEnAiA==}
     engines: {node: '>=6.0.0'}
 
   object-deep-merge@2.0.0:
@@ -1784,9 +1784,9 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/nodemailer@8.0.0':
+  '@types/nodemailer@8.0.1':
     dependencies:
-      '@types/node': 24.10.0
+      '@types/node': 24.12.4
 
   '@types/triple-beam@1.3.5': {}
 
@@ -2782,7 +2782,7 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
-  nodemailer@8.0.10: {}
+  nodemailer@8.0.11: {}
 
   object-deep-merge@2.0.0: {}
 
