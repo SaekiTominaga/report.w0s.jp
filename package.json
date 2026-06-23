@@ -14,7 +14,7 @@
 		"@w0s/env-value-type": "1.0.1",
 		"@w0s/sqlite-utility": "2.0.1",
 		"better-sqlite3": "12.10.0",
-		"ejs": "3.1.10",
+		"ejs": "6.0.1",
 		"hono": "4.12.25",
 		"kysely": "0.29.2",
 		"nodemailer": "9.0.1",
