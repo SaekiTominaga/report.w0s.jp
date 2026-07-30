@@ -54,7 +54,7 @@ app.use(
 		onFound: (localPath, context) => {
 			const { res } = context;
 
-			const urlPath = localPath.substring(config.static.root.length).replace(/\.br$/v, '').replaceAll(path.sep, '/'); // URL のパス部分 e.g. ('/foo.html')
+			const urlPath = localPath.substring(config.static.root.length).replaceAll(path.sep, '/'); // URL のパス部分 e.g. ('/foo.html')
 			const urlExtension = path.extname(urlPath); // URL の拡張子部分 (e.g. '.html')
 
 			/* Content-Type; hono 公式に登録されていない MIME タイプを設定 */

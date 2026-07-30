@@ -15,7 +15,6 @@ export default {
 	static: {
 		root: 'public',
 		index: 'index.html',
-		extensions: ['.html'], // URL 上で省略できる拡張子
 		headers: {
 			contentType: {
 				path: {
