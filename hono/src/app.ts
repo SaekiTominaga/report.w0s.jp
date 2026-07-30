@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -46,36 +45,28 @@ app.use(async (context, next) => {
 	await next();
 });
 
-/* Favicon */
-app.get('/favicon.ico', async (context) => {
-	const file = await fs.promises.readFile(`${config.static.root}/favicon.svg`);
-
-	context.header('Content-Type', 'image/svg+xml;charset=utf-8');
-	context.header('Cache-Control', 'max-age=604800');
-	return context.body(Buffer.from(file));
-});
-
 /* Static files */
 app.use(
 	serveStatic({
 		root: config.static.root,
 		index: config.static.index,
 		precompressed: false,
-		rewriteRequestPath: (urlPath) => {
-			if (urlPath.endsWith('/') || urlPath.includes('.')) {
-				return urlPath;
-			}
-
-			return `${urlPath}${config.static.extension}`;
-		},
 		onFound: (localPath, context) => {
 			const { res } = context;
 
-			const urlPath = path.normalize(localPath).substring(path.normalize(config.static.root).length).replaceAll(path.sep, '/'); // URL のパス部分 e.g. ('/foo.html')
+			const urlPath = localPath.substring(config.static.root.length).replace(/\.br$/v, '').replaceAll(path.sep, '/'); // URL のパス部分 e.g. ('/foo.html')
 			const urlExtension = path.extname(urlPath); // URL の拡張子部分 (e.g. '.html')
+
+			/* Content-Type; hono 公式に登録されていない MIME タイプを設定 */
+			const contentTypeRecord = Object.entries(config.static.headers.contentType.path).find(([ctPath]) => ctPath === urlPath);
+			if (contentTypeRecord !== undefined) {
+				const [, contentType] = contentTypeRecord;
+				res.headers.set('Content-Type', contentType);
+			}
 
 			/* Cache-Control */
 			const cacheControl =
+				config.static.headers.cacheControl.path.find((ccPath) => ccPath.paths.includes(urlPath))?.value ??
 				config.static.headers.cacheControl.extension.find((ccExt) => ccExt.extensions.includes(urlExtension))?.value ??
 				config.static.headers.cacheControl.default;
 			res.headers.set('Cache-Control', cacheControl);
@@ -88,35 +79,35 @@ app.use(
 	`/${config.api.dir}/csp`,
 	cors({
 		origin: env('CSP_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: config.api.allowMethods,
+		allowMethods: [...config.api.allowMethods],
 	}),
 );
 app.use(
 	`/${config.api.dir}/js`,
 	cors({
 		origin: env('JS_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: config.api.allowMethods,
+		allowMethods: [...config.api.allowMethods],
 	}),
 );
 app.use(
 	`/${config.api.dir}/js-sample`,
 	cors({
 		origin: env('JS_SAMPLE_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: config.api.allowMethods,
+		allowMethods: [...config.api.allowMethods],
 	}),
 );
 app.use(
 	`/${config.api.dir}/referrer`,
 	cors({
 		origin: env('REFERRER_ORIGINS', 'string[]'),
-		allowMethods: config.api.allowMethods,
+		allowMethods: [...config.api.allowMethods],
 	}),
 );
 app.use(
 	`/${config.api.dir}/referrer-sample`,
 	cors({
 		origin: env('REFERRER_SAMPLE_ORIGINS', 'string[]'),
-		allowMethods: config.api.allowMethods,
+		allowMethods: [...config.api.allowMethods],
 	}),
 );
 

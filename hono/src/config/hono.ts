@@ -15,14 +15,25 @@ export default {
 	static: {
 		root: 'public',
 		index: 'index.html',
-		extension: '.html', // URL 上で省略できる拡張子
+		extensions: ['.html'], // URL 上で省略できる拡張子
 		headers: {
+			contentType: {
+				path: {
+					'/favicon.ico': 'image/svg+xml; charset=utf-8',
+				},
+			},
 			cacheControl: {
-				default: 'max-age=600',
+				default: 'max-age=600', // 10分
+				path: [
+					{
+						paths: ['/favicon.ico'] as string[],
+						value: 'max-age=604800', // 1週間
+					},
+				],
 				extension: [
 					{
-						extensions: ['.webp', '.jpg', '.jpeg', '.png', '.svg'],
-						value: 'max-age=3600',
+						extensions: ['.avif', '.webp', '.jpg', '.jpeg', '.png', '.svg'] as string[],
+						value: 'max-age=3600', // 1時間
 					},
 				],
 			},
@@ -30,6 +41,6 @@ export default {
 	},
 	api: {
 		dir: 'report', // API を示すディレクトリ
-		allowMethods: ['POST'],
+		allowMethods: ['POST'] as string[],
 	},
-};
+} as const;
