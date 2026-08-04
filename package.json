@@ -15,7 +15,7 @@
 		"@w0s/sqlite-utility": "3.0.0",
 		"better-sqlite3": "12.11.1",
 		"ejs": "6.0.1",
-		"hono": "4.12.31",
+		"hono": "4.12.34",
 		"kysely": "0.29.2",
 		"nodemailer": "9.0.1",
 		"winston": "3.19.0",
