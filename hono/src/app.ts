@@ -130,6 +130,7 @@ app.notFound((context) => {
 		`<!DOCTYPE html>
 <html lang=en>
 <meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=text-scale content=scale>
 <title>report.w0s.jp</title>
 <h1>${TITLE}</h1>`,
 		404,
@@ -165,6 +166,7 @@ app.onError((err, context) => {
 		`<!DOCTYPE html>
 <html lang=en>
 <meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=text-scale content=scale>
 <title>report.w0s.jp</title>
 <h1>${title}</h1>`,
 		status,
