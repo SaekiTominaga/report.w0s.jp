@@ -53,7 +53,7 @@ importers:
         version: 8.0.0
       '@w0s/eslint-config':
         specifier: 9.7.0
-        version: 9.7.0(@eslint/js@9.39.5)(eslint-plugin-functional@9.0.5(eslint@9.39.5)(typescript@6.0.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.5)(typescript@6.0.3))(eslint@9.39.5))(eslint-plugin-jsdoc@62.9.0(eslint@9.39.5))(eslint-plugin-safely-storage@1.1.0(eslint@9.39.5))(eslint@9.39.5)(globals@17.7.0)(typescript-eslint@8.62.0(eslint@9.39.5)(typescript@6.0.3))
+        version: 9.7.0(@eslint/js@9.39.5)(eslint-plugin-functional@9.0.5(eslint@9.39.5)(typescript@6.0.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.5)(typescript@6.0.3))(eslint@9.39.5))(eslint-plugin-jsdoc@62.9.0(eslint@9.39.5))(eslint-plugin-safely-storage@1.1.0(eslint@9.39.5))(eslint@9.39.5)(globals@17.11.0)(typescript-eslint@8.62.0(eslint@9.39.5)(typescript@6.0.3))
       '@w0s/tsconfig':
         specifier: 3.0.0
         version: 3.0.0(typescript@6.0.3)
@@ -73,8 +73,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0(eslint@9.39.5)
       globals:
-        specifier: 17.7.0
-        version: 17.7.0
+        specifier: 17.11.0
+        version: 17.11.0
       prettier:
         specifier: 3.9.6
         version: 3.9.6
@@ -832,6 +832,7 @@ packages:
   eslint@9.39.5:
     resolution: {integrity: sha512-DgZS62aPLXKlnxILS/AYCoRvHaZeXceIzlXPkkGGzJWSow1aEk0lbTlxUSlyjC8jcaKxAdOnTDz+o1JFSBsyjw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -958,8 +959,8 @@ packages:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
     engines: {node: '>=18'}
 
-  globals@17.7.0:
-    resolution: {integrity: sha512-Czmyns5dUsq4seFBR/Kdydhmo8y9kC79hiSkPn0YcGtNnYWnrgt0vjrSjx9tspoDGWm2CMarffRuLjM4xUz8xg==}
+  globals@17.11.0:
+    resolution: {integrity: sha512-Z2I8hM+PbJDXQDq3Icgpzv+mPdwr68iZUU9d5WW4FuXfDUQfkZaZuvjMv42/5crNyw154+9+VWXbYrUgDXbxNw==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -1975,7 +1976,7 @@ snapshots:
 
   '@w0s/env-value-type@2.0.0': {}
 
-  '@w0s/eslint-config@9.7.0(@eslint/js@9.39.5)(eslint-plugin-functional@9.0.5(eslint@9.39.5)(typescript@6.0.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.5)(typescript@6.0.3))(eslint@9.39.5))(eslint-plugin-jsdoc@62.9.0(eslint@9.39.5))(eslint-plugin-safely-storage@1.1.0(eslint@9.39.5))(eslint@9.39.5)(globals@17.7.0)(typescript-eslint@8.62.0(eslint@9.39.5)(typescript@6.0.3))':
+  '@w0s/eslint-config@9.7.0(@eslint/js@9.39.5)(eslint-plugin-functional@9.0.5(eslint@9.39.5)(typescript@6.0.3))(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.5)(typescript@6.0.3))(eslint@9.39.5))(eslint-plugin-jsdoc@62.9.0(eslint@9.39.5))(eslint-plugin-safely-storage@1.1.0(eslint@9.39.5))(eslint@9.39.5)(globals@17.11.0)(typescript-eslint@8.62.0(eslint@9.39.5)(typescript@6.0.3))':
     dependencies:
       '@eslint/js': 9.39.5
       eslint: 9.39.5
@@ -1983,7 +1984,7 @@ snapshots:
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@9.39.5)(typescript@6.0.3))(eslint@9.39.5)
       eslint-plugin-jsdoc: 62.9.0(eslint@9.39.5)
       eslint-plugin-safely-storage: 1.1.0(eslint@9.39.5)
-      globals: 17.7.0
+      globals: 17.11.0
       typescript-eslint: 8.62.0(eslint@9.39.5)(typescript@6.0.3)
 
   '@w0s/sqlite-utility@3.0.0': {}
@@ -2613,7 +2614,7 @@ snapshots:
 
   globals@14.0.0: {}
 
-  globals@17.7.0: {}
+  globals@17.11.0: {}
 
   globalthis@1.0.4:
     dependencies:
