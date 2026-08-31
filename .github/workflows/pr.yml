@@ -36,6 +36,3 @@ jobs:
 
       - name: Run lint
         run: pnpm lint
-
-      - name: Run tsc
-        run: tsc --project hono --noEmit

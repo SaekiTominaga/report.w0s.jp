@@ -8,7 +8,7 @@ import type { Variables } from '../app.ts';
 import ReportCspDao from '../db/CSP.ts';
 import Mail from '../util/Mail.ts';
 import { type ContentType, header as headerValidator } from '../validator/csp.ts';
-import type { DCsp } from '../../../@types/db_report.d.ts';
+import type { DCsp } from '../../../@types/dbReport.d.ts';
 
 interface CSPViolationReportBody {
 	/* https://www.w3.org/TR/2026/WD-CSP3-20260311/#reporting */
@@ -67,15 +67,13 @@ interface ReportUri {
 	}>;
 }
 
-/**
- * CSP エラー
- */
+/* ===== CSP エラー ===== */
 
 const isReportingApiArray = (
 	arg: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
 ): arg is readonly Readonly<ReportingApiV1>[] => Array.isArray(arg);
 
-export const parseRequestJson = (
+const parseRequestJson = (
 	requestJson: readonly Readonly<ReportingApiV1>[] | Readonly<ReportingApiSafari> | Readonly<ReportUri>,
 	headers: Readonly<{
 		contentType: ContentType;
@@ -140,7 +138,7 @@ export const parseRequestJson = (
 	];
 };
 
-export const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOrigins: readonly string[]): boolean =>
+const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOrigins: readonly string[]): boolean =>
 	reportings.some(({ body }) => {
 		const url = URL.parse(body.documentURL);
 		if (url === null) {
@@ -150,10 +148,10 @@ export const cors = (reportings: readonly Readonly<ReportingApiV1CSP>[], allowOr
 		return allowOrigins.includes(url.origin);
 	});
 
-export const noticeFilter = (reportingList: readonly Readonly<ReportingApiV1CSP>[]): ReportingApiV1CSP[] =>
+const noticeFilter = (reportingList: readonly Readonly<ReportingApiV1CSP>[]): ReportingApiV1CSP[] =>
 	reportingList.filter(({ body }) => body.disposition !== 'report');
 
-export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator, async (context) => {
+const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator, async (context) => {
 	const { req } = context;
 	const logger = context.get('logger');
 
@@ -197,23 +195,23 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 
 	try {
 		await dao.insert(dbInsertList);
-	} catch (e) {
-		if (e instanceof SqliteError) {
-			if (e.code === 'SQLITE_BUSY') {
-				logger.warn(e.message);
+	} catch (error) {
+		if (error instanceof SqliteError) {
+			if (error.code === 'SQLITE_BUSY') {
+				logger.warn(error.message);
 			} else {
-				logger.error(e.message);
+				logger.error(error.message);
 			}
 
-			return context.json({ message: e.message }, 500);
+			return context.json({ message: error.message }, 500);
 		}
 
-		throw e;
+		throw error;
 	}
 
 	/* 既知のエラーは通知除外する */
 	const noticeList = noticeFilter(reportingList);
-	if (noticeList.length >= 1) {
+	if (noticeList.length > 0) {
 		/* メール通知 */
 		const html = await ejs.renderFile(`${env('ROOT')}/${env('TEMPLATE_DIR')}/mail/csp.ejs`, {
 			reportings: noticeList,
@@ -222,7 +220,9 @@ export const cspApp = new Hono<{ Variables: Variables }>().post(headerValidator,
 		await new Mail().sendHtml(env('CSP_MAIL_TITLE'), html);
 	}
 
-	return new Response(null, {
+	return new Response(undefined, {
 		status: 204,
 	});
 });
+
+export { parseRequestJson, cors, noticeFilter, cspApp };

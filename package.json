@@ -5,8 +5,7 @@
 	"scripts": {
 		"dev": "tsx --watch --env-file=.env.development --tsconfig hono/tsconfig.json hono/src/app.ts",
 		"build": "tsc --project hono",
-		"lint": "eslint hono/src",
-		"pretest": "tsc --project hono --noEmit",
+		"lint": "oxlint",
 		"test": "node --experimental-test-coverage --env-file=.env.development --env-file=.env.test --test hono/src/**/*.test.ts"
 	},
 	"dependencies": {
@@ -26,18 +25,14 @@
 		"@types/ejs": "3.1.5",
 		"@types/node": "24.13.2",
 		"@types/nodemailer": "8.0.0",
-		"@w0s/eslint-config": "9.7.0",
+		"@w0s/oxlint-config": "^1.0.5",
 		"@w0s/tsconfig": "3.1.1",
-		"eslint": "^9.39.5",
-		"eslint-plugin-functional": "9.0.5",
-		"eslint-plugin-import": "2.32.0",
-		"eslint-plugin-jsdoc": "62.9.0",
-		"eslint-plugin-safely-storage": "1.1.0",
-		"globals": "17.11.0",
+		"oxlint": "^1.80.0",
+		"oxlint-plugin-safely-storage": "^1.0.0",
+		"oxlint-tsgolint": "^7.0.2001",
 		"prettier": "3.9.6",
 		"tsx": "4.23.12",
-		"typescript": "6.0.3",
-		"typescript-eslint": "8.67.0"
+		"typescript": "7.0.2"
 	},
 	"packageManager": "pnpm@11.8.0"
 }

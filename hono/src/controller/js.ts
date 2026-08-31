@@ -6,9 +6,8 @@ import ReportJsDao from '../db/JS.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/js.ts';
 
-/**
- * JavaScript エラー
- */
+/* ===== JavaScript エラー ===== */
+
 export const jsApp = new Hono<{ Variables: Variables }>().post(jsonValidator, async (context) => {
 	const { req } = context;
 	const logger = context.get('logger');
@@ -54,7 +53,7 @@ export const jsApp = new Hono<{ Variables: Variables }>().post(jsonValidator, as
 		logger.info('重複データにつき DB 登録スルー');
 	}
 
-	return new Response(null, {
+	return new Response(undefined, {
 		status: 204,
 	});
 });

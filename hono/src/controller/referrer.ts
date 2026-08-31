@@ -7,9 +7,7 @@ import ReportReferrerDao from '../db/Referrer.ts';
 import Mail from '../util/Mail.ts';
 import { json as jsonValidator } from '../validator/referrer.ts';
 
-/**
- * リファラーエラー
- */
+/* ===== リファラーエラー ===== */
 export const referrerApp = new Hono<{ Variables: Variables }>().post(jsonValidator, async (context) => {
 	const { req } = context;
 	const logger = context.get('logger');
@@ -46,7 +44,7 @@ export const referrerApp = new Hono<{ Variables: Variables }>().post(jsonValidat
 		logger.info('重複データにつき DB 登録スルー');
 	}
 
-	return new Response(null, {
+	return new Response(undefined, {
 		status: 204,
 	});
 });
