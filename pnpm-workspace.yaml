@@ -5,15 +5,11 @@
 minimumReleaseAgeExclude:
   - '@types/*'
   - '@w0s/*'
+  - oxlint-plugin-safely-storage
 trustPolicy: no-downgrade
-trustPolicyExclude:
-  - semver@6.3.1 # eslint-plugin-import@2.32.0 <https://github.com/import-js/eslint-plugin-import/blob/main/package.json>
 blockExoticSubdeps: true
 
 ## Dependency Hoisting Settings
-
-publicHoistPattern:
-  - 'eslint'
 
 ## Peer Dependency Settings
 
