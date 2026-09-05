@@ -52,19 +52,19 @@ importers:
         specifier: 8.0.0
         version: 8.0.0
       '@w0s/oxlint-config':
-        specifier: ^1.0.5
+        specifier: 1.0.5
         version: 1.0.5(eslint-plugin-safely-storage@1.1.0(eslint@10.9.1))(oxlint-tsgolint@7.0.2001)(oxlint@1.80.0(oxlint-tsgolint@7.0.2001))
       '@w0s/tsconfig':
         specifier: 3.1.1
         version: 3.1.1(typescript@7.0.2)
       oxlint:
-        specifier: ^1.80.0
+        specifier: 1.80.0
         version: 1.80.0(oxlint-tsgolint@7.0.2001)
       oxlint-plugin-safely-storage:
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0(@oxlint/plugins@1.80.0)(oxlint@1.80.0(oxlint-tsgolint@7.0.2001))
       oxlint-tsgolint:
-        specifier: ^7.0.2001
+        specifier: 7.0.2001
         version: 7.0.2001
       prettier:
         specifier: 3.9.6
