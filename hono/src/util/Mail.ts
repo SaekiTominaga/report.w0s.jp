@@ -1,12 +1,11 @@
-import nodemailer from 'nodemailer';
-import type SMTPTransport from 'nodemailer/lib/smtp-transport/index.ts';
+import { type Transporter, createTransport } from 'nodemailer';
 import { env } from '@w0s/env-value-type';
 
 export default class Mail {
-	readonly #transport: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+	readonly #transport: Transporter;
 
 	constructor() {
-		this.#transport = nodemailer.createTransport({
+		this.#transport = createTransport({
 			port: env('MAIL_PORT', 'number'),
 			host: env('MAIL_SMTP'),
 			auth: {
