@@ -12,8 +12,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1(hono@4.13.3)
       '@w0s/env-value-type':
-        specifier: 2.0.0
-        version: 2.0.0
+        specifier: 2.0.1
+        version: 2.0.1
       '@w0s/sqlite-utility':
         specifier: 3.0.0
         version: 3.0.0
@@ -267,8 +267,8 @@ packages:
     resolution: {integrity: sha512-vqTaUEgxzm+YDSdElad6PiRoX4t8VGDjCtt05zn4nU810UIx/uNEV7/lZJ6KwFThKZOzOxzXy48da+No7HZaMw==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@eslint/plugin-kit@0.7.2':
-    resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
+  '@eslint/plugin-kit@0.7.3':
+    resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
   '@hono/node-server@2.1.1':
@@ -600,8 +600,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@w0s/env-value-type@2.0.0':
-    resolution: {integrity: sha512-ii6VpWUGatKIBb5bLY3TG/Js5VR8n+peldTM8tXF8WpobXJVON+mbp2G8A8a/qeoS91FskbmsTbo+pynECRAKg==}
+  '@w0s/env-value-type@2.0.1':
+    resolution: {integrity: sha512-kWStTF+fnHdEMs3YXH0Jt0sPSqpU3sLRJSbpZE6We3MDpG9g0t0mhZl4+ymGL02dni3Q+6K8z8q/RFOX2OkoEQ==}
     engines: {node: '>=22'}
 
   '@w0s/oxlint-config@1.0.5':
@@ -1216,7 +1216,7 @@ snapshots:
 
   '@eslint/object-schema@3.0.5': {}
 
-  '@eslint/plugin-kit@0.7.2':
+  '@eslint/plugin-kit@0.7.3':
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
@@ -1405,7 +1405,7 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  '@w0s/env-value-type@2.0.0': {}
+  '@w0s/env-value-type@2.0.1': {}
 
   '@w0s/oxlint-config@1.0.5(eslint-plugin-safely-storage@1.1.0(eslint@10.9.1))(oxlint-tsgolint@7.0.2001)(oxlint@1.80.0(oxlint-tsgolint@7.0.2001))':
     dependencies:
@@ -1560,7 +1560,7 @@ snapshots:
       '@eslint/config-array': 0.23.5
       '@eslint/config-helpers': 0.7.0
       '@eslint/core': 1.2.1
-      '@eslint/plugin-kit': 0.7.2
+      '@eslint/plugin-kit': 0.7.3
       '@humanfs/node': 0.16.8
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.3
