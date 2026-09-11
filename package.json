@@ -7,7 +7,7 @@
 		"prebuild": "rimraf hono/dist hono/tsconfig.tsbuildinfo",
 		"build": "tsc --project hono",
 		"lint": "oxlint",
-		"test": "node --experimental-test-coverage --env-file=.env.development --env-file=.env.test --test hono/src/**/*.test.ts"
+		"test": "node --experimental-test-coverage --env-file=.env.development --env-file=.env.test --test \"hono/src/**/*.test.ts\""
 	},
 	"dependencies": {
 		"@hono/node-server": "2.1.1",
