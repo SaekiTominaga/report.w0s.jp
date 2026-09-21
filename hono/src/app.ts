@@ -13,8 +13,6 @@ import { jsApp } from './controller/js.ts';
 import { jsSampleApp } from './controller/jsSample.ts';
 import { referrerApp } from './controller/referrer.ts';
 import { referrerSampleApp } from './controller/referrerSample.ts';
-import { csp as cspHeader, reportingEndpoints as reportingEndpointsHeader } from './util/httpHeader.ts';
-import { isApi } from './util/request.ts';
 
 interface Variables {
 	logger: Logger;
@@ -32,12 +30,6 @@ app.use(async (context, next) => {
 app.use(async (context, next) => {
 	/* HSTS */
 	context.header('Strict-Transport-Security', config.response.header.hsts);
-
-	/* CSP */
-	context.header('Content-Security-Policy', cspHeader(config.response.header.csp));
-
-	/* Report */
-	context.header('Reporting-Endpoints', reportingEndpointsHeader(config.response.header.reportingEndpoints));
 
 	/* MIME スニッフィング抑止 */
 	context.header('X-Content-Type-Options', 'nosniff');
@@ -76,65 +68,53 @@ app.use(
 
 /* CORS */
 app.use(
-	`/${config.api.dir}/csp`,
+	`/report/csp`,
 	cors({
 		origin: env('CSP_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: [...config.api.allowMethods],
+		allowMethods: ['POST'],
 	}),
 );
 app.use(
-	`/${config.api.dir}/js`,
+	`/report/js`,
 	cors({
 		origin: env('JS_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: [...config.api.allowMethods],
+		allowMethods: ['POST'],
 	}),
 );
 app.use(
-	`/${config.api.dir}/js-sample`,
+	`/report/js-sample`,
 	cors({
 		origin: env('JS_SAMPLE_ALLOW_ORIGINS', 'string[]'),
-		allowMethods: [...config.api.allowMethods],
+		allowMethods: ['POST'],
 	}),
 );
 app.use(
-	`/${config.api.dir}/referrer`,
+	`/report/referrer`,
 	cors({
 		origin: env('REFERRER_ORIGINS', 'string[]'),
-		allowMethods: [...config.api.allowMethods],
+		allowMethods: ['POST'],
 	}),
 );
 app.use(
-	`/${config.api.dir}/referrer-sample`,
+	`/report/referrer-sample`,
 	cors({
 		origin: env('REFERRER_SAMPLE_ORIGINS', 'string[]'),
-		allowMethods: [...config.api.allowMethods],
+		allowMethods: ['POST'],
 	}),
 );
 
 /* Routes */
-app.route(`/${config.api.dir}/csp`, cspApp);
-app.route(`/${config.api.dir}/js`, jsApp);
-app.route(`/${config.api.dir}/js-sample`, jsSampleApp);
-app.route(`/${config.api.dir}/referrer`, referrerApp);
-app.route(`/${config.api.dir}/referrer-sample`, referrerSampleApp);
+app.route(`/report/csp`, cspApp);
+app.route(`/report/js`, jsApp);
+app.route(`/report/js-sample`, jsSampleApp);
+app.route(`/report/referrer`, referrerApp);
+app.route(`/report/referrer-sample`, referrerSampleApp);
 
 /* Error pages */
 app.notFound((context) => {
 	const TITLE = '404 Not Found';
 
-	if (isApi(context)) {
-		return context.json({ message: TITLE }, 404);
-	}
-
-	return context.html(
-		`<!DOCTYPE html>
-<html lang=en>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=text-scale content=scale>
-<title>report.w0s.jp</title>
-<h1>${TITLE}</h1>`,
-		404,
-	);
+	return context.json({ message: TITLE }, 404);
 });
 app.onError((err, context) => {
 	const logger = context.get('logger');
@@ -158,19 +138,7 @@ app.onError((err, context) => {
 	const status = err instanceof HTTPException ? err.status : 500;
 	const message = err instanceof HTTPException ? err.message : undefined;
 
-	if (isApi(context)) {
-		return context.json({ message: message ?? title }, status);
-	}
-
-	return context.html(
-		`<!DOCTYPE html>
-<html lang=en>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=text-scale content=scale>
-<title>report.w0s.jp</title>
-<h1>${title}</h1>`,
-		status,
-	);
+	return context.json({ message: message ?? title }, status);
 });
 
 /* HTTP Server */

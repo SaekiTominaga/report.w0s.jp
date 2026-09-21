@@ -6,8 +6,6 @@ await test('headers', async () => {
 	const res = await app.request('/robots.txt');
 
 	assert.equal(res.headers.get('Strict-Transport-Security'), 'max-age=31536000');
-	assert.equal(res.headers.get('Content-Security-Policy'), "frame-ancestors 'self';report-uri /report/csp;report-to csp");
-	assert.equal(res.headers.get('Reporting-Endpoints'), 'csp="/report/csp"');
 	assert.equal(res.headers.get('X-Content-Type-Options'), 'nosniff');
 });
 
@@ -37,30 +35,12 @@ await test('serveStatic', async (t) => {
 	});
 });
 
-await test('404', async (t) => {
-	await t.test('normal', async () => {
-		const res = await app.request('/foo');
-
-		assert.equal(res.status, 404);
-		assert.equal(res.headers.get('Content-Type'), 'text/html; charset=UTF-8');
-		assert.equal(
-			await res.text(),
-			`<!DOCTYPE html>
-<html lang=en>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta name=text-scale content=scale>
-<title>report.w0s.jp</title>
-<h1>404 Not Found</h1>`,
-		);
+await test('404', async () => {
+	const res = await app.request('/xxx/', {
+		method: 'post',
 	});
 
-	await t.test('API', async () => {
-		const res = await app.request('/report/', {
-			method: 'post',
-		});
-
-		assert.equal(res.status, 404);
-		assert.equal(res.headers.get('Content-Type'), 'application/json');
-		assert.deepStrictEqual(await res.json(), { message: '404 Not Found' });
-	});
+	assert.equal(res.status, 404);
+	assert.equal(res.headers.get('Content-Type'), 'application/json');
+	assert.deepStrictEqual(await res.json(), { message: '404 Not Found' });
 });
