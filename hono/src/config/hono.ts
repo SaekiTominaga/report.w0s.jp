@@ -2,14 +2,6 @@ export default {
 	response: {
 		header: {
 			hsts: 'max-age=31536000',
-			csp: {
-				'frame-ancestors': ["'self'"],
-				'report-uri': ['/report/csp'],
-				'report-to': ['csp'],
-			},
-			reportingEndpoints: {
-				csp: '/report/csp',
-			},
 		},
 	},
 	static: {
@@ -37,9 +29,5 @@ export default {
 				],
 			},
 		},
-	},
-	api: {
-		dir: 'report', // API を示すディレクトリ
-		allowMethods: ['POST'] as string[],
 	},
 } as const;

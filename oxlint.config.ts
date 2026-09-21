@@ -9,7 +9,7 @@ export default defineConfig({
 	},
 	overrides: [
 		{
-			files: ['hono/src/**/*.ts'],
+			files: ['hono/src/app.ts', 'hono/src/logger.ts'],
 			rules: {
 				'node/no-process-env': 'off',
 			},

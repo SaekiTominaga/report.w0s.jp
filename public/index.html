@@ -1,28 +1,52 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<meta name="viewport" content="width=device-width" />
 		<meta name="text-scale" content="scale" />
-		<title>report.w0s.jp</title>
+
+		<title>api.w0s.jp</title>
+
 		<style>
 			:root {
-				--anchor-hover-color: #d00;
+				--color-red: oklch(62.8% 0.258 29.234deg);
+				--color-aqua: oklch(90.54% 0.1546 194.77deg);
+				--color-blue: oklch(45.201% 0.3132 264.05deg);
+				--color-purple: oklch(42.091% 0.1935 328.36deg);
+
+				--link-color-hover: oklch(from var(--color-red) calc(l - 0.1) c h);
+			}
+
+			*,
+			::before,
+			::after {
+				box-sizing: border-box;
 			}
 
 			:focus {
-				outline: 1px solid #4d90fe;
+				outline: 1px solid oklch(from var(--color-blue) calc(l + 0.25) c h);
 			}
 
 			:any-link {
 				text-decoration-thickness: from-font;
 
+				&:focus {
+					text-decoration-line: unset;
+				}
+
 				&:hover {
-					color: var(--anchor-hover-color);
+					color: var(--link-color-hover);
 				}
 			}
 
+			:link {
+				color: oklch(from var(--color-blue) calc(l + 0.1) c h);
+			}
+
+			:visited {
+				color: oklch(from var(--color-purple) calc(l + 0.05) c h);
+			}
+
 			body {
-				box-sizing: border-box;
 				margin-block: unset;
 				margin-inline: auto;
 				padding-inline: 2dvi;
@@ -31,23 +55,23 @@
 
 			.link {
 				& a {
-					--bullet-size: 0.75em;
-					--bullet-color: #0bb;
+					--bullet-block-size: 0.75em;
+					--bullet-color: oklch(from var(--color-aqua) calc(l - 0.2) c h);
 
 					outline-offset: 0.1em;
 
 					&::before {
 						display: inline flow-root;
 						margin-inline-end: 0.5em;
-						clip-path: polygon(0 0, 0 100%, 100% 50%);
-						background-color: var(--bullet-color);
-						block-size: var(--bullet-size);
-						inline-size: calc(var(--bullet-size) * 0.6);
+						border-block-start: var(--bullet-block-size) solid var(--bullet-color);
+						clip-path: polygon(0 0, 100% 50%, 0 100%);
+						inline-size: calc(var(--bullet-block-size) * 0.6);
+						vertical-align: calc((1cap - var(--bullet-block-size)) / 2);
 						content: '';
 					}
 
 					&:hover::before {
-						--bullet-color: var(--anchor-hover-color);
+						--bullet-color: var(--link-color-hover);
 					}
 				}
 			}
@@ -55,11 +79,11 @@
 	</head>
 	<body>
 		<header>
-			<h1>report.w0s.jp</h1>
+			<h1>api.w0s.jp</h1>
 		</header>
 
 		<main>
-			<p class="link"><a href="https://github.com/SaekiTominaga/report.w0s.jp">Source Code (GitHub)</a></p>
+			<p class="link"><a href="https://github.com/SaekiTominaga/api.w0s.jp">Source Code (GitHub)</a></p>
 		</main>
 	</body>
 </html>
