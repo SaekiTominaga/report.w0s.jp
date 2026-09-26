@@ -1,3 +1,1 @@
-# report.w0s.jp
-
-report.w0s.jp
+# api.w0s.jp
